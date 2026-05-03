@@ -1,0 +1,10 @@
+# Editor / OS noise
+.DS_Store
+*.swp
+*~
+.vscode/
+
+# Future tree-sitter build artifacts (parser.c is checked in deliberately,
+# but build/ and node_modules/ are generated and not tracked)
+node_modules/
+build/
