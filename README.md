@@ -20,6 +20,13 @@ probabilistic models.
   code blocks), `flatppl-python` (`flatppl(r"""…""")`),
   `flatppl-julia` (`flatppl"""…"""`).
 
+## Spell-checker vocabulary
+
+[`cspell/flatppl-words.txt`](cspell/flatppl-words.txt) is the canonical
+[Code Spell Checker](https://cspell.org) dictionary of FlatPPL
+builtins / keywords (generated from the engine's `builtins.js`
+`ALL_KNOWN` catalog).
+
 ## License
 
 [MIT](LICENSE)
