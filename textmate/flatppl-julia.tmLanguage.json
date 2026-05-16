@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "scopeName": "flatppl.embedded.julia",
+  "injectionSelector": "L:source.julia -comment",
+  "patterns": [
+    { "include": "#flatppl-macro-triple" },
+    { "include": "#flatppl-macro-single" }
+  ],
+  "repository": {
+    "flatppl-macro-triple": {
+      "comment": "Embedded canonical FlatPPL in Julia via the string macro flatppl\"\"\"…\"\"\".",
+      "begin": "(\\bflatppl)(\"\"\")",
+      "beginCaptures": {
+        "1": { "name": "support.function.macro.flatppl.julia" },
+        "2": { "name": "punctuation.definition.string.begin.julia" }
+      },
+      "end": "(\"\"\")",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.string.end.julia" }
+      },
+      "contentName": "meta.embedded.block.flatppl",
+      "patterns": [
+        { "include": "source.flatppl" }
+      ]
+    },
+    "flatppl-macro-single": {
+      "comment": "Single-quoted form flatppl\"…\" (one line). Does not match the triple form (handled above, listed first).",
+      "begin": "(\\bflatppl)(\")",
+      "beginCaptures": {
+        "1": { "name": "support.function.macro.flatppl.julia" },
+        "2": { "name": "punctuation.definition.string.begin.julia" }
+      },
+      "end": "(\")",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.string.end.julia" }
+      },
+      "contentName": "meta.embedded.block.flatppl",
+      "patterns": [
+        { "include": "source.flatppl" }
+      ]
+    }
+  }
+}
