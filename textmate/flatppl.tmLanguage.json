@@ -136,6 +136,11 @@
     "operator": {
       "patterns": [
         {
+          "comment": "Dot-prefixed broadcast operators and dot-call (spec §05 Broadcasting syntax): `a .op b`, `.op x`, `f.(…)` — sugar for broadcast(...). Listed first so `.==`/`.<=`/etc. munch as one token rather than dot + plain op. `#number` is matched earlier in the file, so the `.` of a trailing-dot real literal (`1.+x` → `1.` then `+`) is never grabbed here (the Julia rule).",
+          "name": "keyword.operator.broadcast.flatppl",
+          "match": "\\.(?:==|!=|<=|>=|&&|\\|\\||\\+|\\-|\\*|/|\\^|<|>|!)|\\.(?=\\()"
+        },
+        {
           "name": "keyword.operator.comparison.flatppl",
           "match": "==|!=|<=|>=|<|>"
         },
