@@ -20,6 +20,12 @@ boolean
 booleans
 broadcast
 broadcasted
+builtin_fromnormal
+builtin_fromuniform
+builtin_logdensityof
+builtin_sample
+builtin_tonormal
+builtin_touniform
 cartpow
 cartprod
 cat
