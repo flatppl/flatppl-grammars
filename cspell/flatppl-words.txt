@@ -1,12 +1,19 @@
 # FlatPPL builtin / keyword vocabulary for the Code Spell Checker.
 abs
 abs2
+acos
+acosh
 add
 addaxes
 adjoint
 all
 anything
 array
+asin
+asinh
+atan
+atan2
+atanh
 base
 bayesupdate
 Bernoulli
@@ -41,7 +48,10 @@ complex
 complexes
 conj
 cos
+cosh
 Counting
+cumprod
+cumsum
 densityof
 det
 diagmat
@@ -54,6 +64,7 @@ draw
 elementof
 equal
 exp
+expm1
 Exponential
 external
 extlinspace
@@ -104,7 +115,7 @@ land
 lawof
 le
 Lebesgue
-length
+lengthof
 likelihoodof
 linsolve
 linspace
@@ -115,6 +126,7 @@ load_data
 load_module
 log
 log10
+log1p
 logabsdet
 logdensityof
 loggamma
@@ -173,9 +185,12 @@ selectbins
 self
 self_outer
 sin
+sinh
+sizeof
 softmax
 sqrt
 standard_module
+std
 stdsimplex
 stepwise
 string
@@ -184,6 +199,8 @@ sub
 sum
 superpose
 table
+tan
+tanh
 totalmass
 trace
 transpose
