@@ -100,7 +100,7 @@
     },
     "analysis-operation": {
       "comment": "Likelihood, posterior, and disintegration operations",
-      "match": "\\b(likelihoodof|joint_likelihood|densityof|logdensityof|bayesupdate|disintegrate)\\b",
+      "match": "\\b(likelihoodof|joint_likelihood|densityof|logdensityof|bayesupdate|disintegrate|restrict)\\b",
       "name": "entity.name.function.analysis.flatppl"
     },
     "higher-order": {
@@ -139,6 +139,11 @@
           "comment": "Dot-prefixed broadcast operators and dot-call (spec §05 Broadcasting syntax): `a .op b`, `.op x`, `f.(…)` — sugar for broadcast(...). Listed first so `.==`/`.<=`/etc. munch as one token rather than dot + plain op. `#number` is matched earlier in the file, so the `.` of a trailing-dot real literal (`1.+x` → `1.` then `+`) is never grabbed here (the Julia rule).",
           "name": "keyword.operator.broadcast.flatppl",
           "match": "\\.(?:==|!=|<=|>=|&&|\\|\\||\\+|\\-|\\*|/|\\^|<|>|!)|\\.(?=\\()"
+        },
+        {
+          "comment": "Lambda arrow (spec §05 Lambda syntax): `(args) -> expr` lowers to functionof.",
+          "name": "keyword.operator.lambda.flatppl",
+          "match": "->"
         },
         {
           "name": "keyword.operator.comparison.flatppl",

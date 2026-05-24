@@ -173,6 +173,7 @@ reals
 record
 reduce
 relabel
+restrict
 reverse
 rnginit
 rngstate
