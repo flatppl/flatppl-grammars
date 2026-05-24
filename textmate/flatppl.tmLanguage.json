@@ -104,8 +104,8 @@
       "name": "entity.name.function.analysis.flatppl"
     },
     "higher-order": {
-      "comment": "Higher-order callables and function annotations",
-      "match": "\\b(broadcast|broadcasted|reduce|scan|fchain|bijection)\\b",
+      "comment": "Higher-order callables and function annotations. `aggregate` (spec §04 §sec:aggregate) is the multi-axis tensor contraction; axis labels `.name` inside its body are picked up by the dot-access pattern.",
+      "match": "\\b(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate)\\b",
       "name": "entity.name.function.higher-order.flatppl"
     },
     "set-constructor": {
@@ -174,9 +174,18 @@
       ]
     },
     "assignment": {
-      "comment": "= for canonical assignment; ~ for FlatPPL/FlatPPJ tilde-binding lowering to draw(...).",
-      "match": "(?<![=!<>])(=|~)(?!=)",
-      "name": "keyword.operator.assignment.flatppl"
+      "patterns": [
+        {
+          "comment": "Aggregate shorthand (spec §05 Axis names + §04 §sec:aggregate): `C[.i, .k] := expr` lowers to `C = aggregate(sum, [.i, .k], expr)`. Listed BEFORE the bare `=` so the multi-char `:=` token wins over `:` `=` lookalikes.",
+          "name": "keyword.operator.assignment.aggregate.flatppl",
+          "match": ":="
+        },
+        {
+          "comment": "= for canonical assignment; ~ for FlatPPL/FlatPPJ tilde-binding lowering to draw(...).",
+          "name": "keyword.operator.assignment.flatppl",
+          "match": "(?<![=!<>])(=|~)(?!=)"
+        }
+      ]
     },
     "function-call": {
       "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\\s*\\()",
