@@ -150,9 +150,9 @@
           "match": "==|!=|<=|>=|<|>"
         },
         {
-          "comment": "Logical operators for FlatPPL/FlatPPJ (&&/||/!) and FlatPPY (and/or/not).",
+          "comment": "Logical operators (&&/||/!). The `!(?![=,\\]])` form excludes positions where `!` is the singleton-axis selector inside `[...]` (followed by `,` or `]`) — those match the selector pattern below — and the `!=` comparison form (which is handled in the comparison pattern above by maximal munch, but we still gate to be safe).",
           "name": "keyword.operator.logical.flatppl",
-          "match": "&&|\\|\\||!(?!=)|\\b(and|or|not)\\b"
+          "match": "&&|\\|\\||!(?![=,\\]])|\\b(and|or|not)\\b"
         },
         {
           "comment": "Exponentiation (FlatPPL/FlatPPJ); right-assoc, lowers to pow(...).",
@@ -168,8 +168,9 @@
           "match": "\\bin\\b"
         },
         {
+          "comment": "Axis selectors (spec §07). Both the keywords `all`/`only` and the surface symbols `:` (always a slice marker in FlatPPL) and `!` (when immediately followed by `,` or `]` inside `[...]`) share the same scope so they're visually distinguishable from arithmetic / logical operators. The `!(?=[,\\]])` lookahead matches the singleton-axis usage; bare `!` (logical NOT) is handled by the logical-operator pattern above.",
           "name": "keyword.operator.selector.flatppl",
-          "match": "\\ball\\b"
+          "match": ":|!(?=[,\\]])|\\b(all|only)\\b"
         }
       ]
     },
