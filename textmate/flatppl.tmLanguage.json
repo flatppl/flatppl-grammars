@@ -141,7 +141,7 @@
           "match": "\\.(?:==|!=|<=|>=|&&|\\|\\||\\+|\\-|\\*|/|\\^|<|>|!)|\\.(?=\\()"
         },
         {
-          "comment": "Lambda arrow (spec §05 Lambda syntax): `(args) -> expr` lowers to functionof.",
+          "comment": "Lambda arrow (spec §05 Lambda syntax): `arg -> expr` (single-arg, bare) or `(arg1, arg2, ...) -> expr` (multi-arg, ≥ 2 names) lowers to functionof. `(arg) -> expr` is not valid syntax.",
           "name": "keyword.operator.lambda.flatppl",
           "match": "->"
         },
