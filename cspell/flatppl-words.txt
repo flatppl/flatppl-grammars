@@ -42,6 +42,7 @@ Categorical0
 Cauchy
 ceil
 checked
+ChiSquared
 cis
 col_gram
 colstack
@@ -82,6 +83,7 @@ gamma
 Gamma
 ge
 GeneralizedNormal
+Geometric
 get
 get0
 gt
@@ -113,6 +115,7 @@ l1unit
 l2norm
 l2unit
 land
+Laplace
 lawof
 le
 Lebesgue
@@ -151,6 +154,8 @@ mul
 Multinomial
 MvNormal
 neg
+NegativeBinomial
+NegativeBinomial2
 nonnegintegers
 nonnegreals
 Normal
@@ -216,6 +221,7 @@ unitinterval
 valueset
 var
 vector
+VonMises
 Weibull
 weighted
 Wishart
