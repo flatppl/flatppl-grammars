@@ -28,15 +28,15 @@
     "comment": {
       "patterns": [
         {
-          "comment": "Doc-comment block: %%% on its own line, optional markup tag (md, typ) immediately after, closed by matching %%% on its own line. Spec §05.",
+          "comment": "Doc-comment block: %%% on its own line, optional markup tag (md, typ) immediately after, closed by matching %%% on its own line. Spec §05. The trailing `markup.italic` scope is a styling hint for themes that don't already differentiate `comment.documentation` from plain `comment` — every major theme (Dark+, Light+, Monokai, GitHub, …) maps `markup.italic` to an italic font style, so the doc-comment renders visibly distinct from `#` / `###` regular comments out of the box. Users who want a different treatment can override either scope via `editor.tokenColorCustomizations`.",
           "begin": "^[ \\t]*%%%(md|typ)?[ \\t]*$",
           "end": "^[ \\t]*%%%[ \\t]*$",
-          "name": "comment.block.documentation.flatppl"
+          "name": "comment.block.documentation.flatppl markup.italic"
         },
         {
-          "comment": "Doc-comment line: % with optional markup tag (md, typ) immediately after, content to end of line (engine tokenizer also terminates on ; for transport safety).",
+          "comment": "Doc-comment line: % with optional markup tag (md, typ) immediately after, content to end of line (engine tokenizer also terminates on ; for transport safety). See the block-form note above re: the trailing `markup.italic` scope.",
           "match": "%(md|typ)?.*$",
-          "name": "comment.line.documentation.flatppl"
+          "name": "comment.line.documentation.flatppl markup.italic"
         },
         {
           "comment": "Plain block comment: ### on its own line (with optional leading horizontal whitespace), closed by matching ### on its own line. Spec §05.",
