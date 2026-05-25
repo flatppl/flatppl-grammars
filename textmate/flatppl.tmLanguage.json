@@ -26,8 +26,19 @@
   ],
   "repository": {
     "comment": {
-      "match": "#.*$",
-      "name": "comment.line.number-sign.flatppl"
+      "patterns": [
+        {
+          "comment": "Block comment: ### on its own line (with optional leading horizontal whitespace), closed by matching ### on its own line. Spec §05.",
+          "begin": "^[ \\t]*###[ \\t]*$",
+          "end": "^[ \\t]*###[ \\t]*$",
+          "name": "comment.block.number-sign.flatppl"
+        },
+        {
+          "comment": "Line comment: # to end of line (or to ; — handled by the engine tokenizer; the TextMate grammar highlights to EOL for simplicity).",
+          "match": "#.*$",
+          "name": "comment.line.number-sign.flatppl"
+        }
+      ]
     },
     "string": {
       "name": "string.quoted.double.flatppl",
