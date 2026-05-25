@@ -28,13 +28,24 @@
     "comment": {
       "patterns": [
         {
-          "comment": "Block comment: ### on its own line (with optional leading horizontal whitespace), closed by matching ### on its own line. Spec §05.",
+          "comment": "Doc-comment block: %%% on its own line, optional markup tag (md, typ) immediately after, closed by matching %%% on its own line. Spec §05.",
+          "begin": "^[ \\t]*%%%(md|typ)?[ \\t]*$",
+          "end": "^[ \\t]*%%%[ \\t]*$",
+          "name": "comment.block.documentation.flatppl"
+        },
+        {
+          "comment": "Doc-comment line: % with optional markup tag (md, typ) immediately after, content to end of line (engine tokenizer also terminates on ; for transport safety).",
+          "match": "%(md|typ)?.*$",
+          "name": "comment.line.documentation.flatppl"
+        },
+        {
+          "comment": "Plain block comment: ### on its own line (with optional leading horizontal whitespace), closed by matching ### on its own line. Spec §05.",
           "begin": "^[ \\t]*###[ \\t]*$",
           "end": "^[ \\t]*###[ \\t]*$",
           "name": "comment.block.number-sign.flatppl"
         },
         {
-          "comment": "Line comment: # to end of line (or to ; — handled by the engine tokenizer; the TextMate grammar highlights to EOL for simplicity).",
+          "comment": "Plain line comment: # to end of line (or to ; — handled by the engine tokenizer; the TextMate grammar highlights to EOL for simplicity).",
           "match": "#.*$",
           "name": "comment.line.number-sign.flatppl"
         }
