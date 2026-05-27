@@ -93,6 +93,8 @@ ifelse
 iid
 im
 imag
+indicesof
+indicesof0
 inf
 integer
 integers
