@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  FlatPPL syntax definition for KSyntaxHighlighting / skylighting (Pandoc).
+  Hand-ported from textmate/flatppl.tmLanguage.json. Keep the two in sync.
+  Token category -> defStyleNum mapping documented in the itemDatas block.
+-->
+<language name="FlatPPL"
+          version="1"
+          kateversion="5.0"
+          section="Scientific"
+          extensions="*.flatppl"
+          mimetype="text/x-flatppl"
+          author="FlatPPL"
+          license="MIT">
+  <highlighting>
+    <list name="kernels">
+      <item>Uniform</item><item>Normal</item><item>GeneralizedNormal</item><item>Cauchy</item>
+      <item>StudentT</item><item>Logistic</item><item>LogNormal</item><item>Exponential</item>
+      <item>Gamma</item><item>Weibull</item><item>InverseGamma</item><item>Beta</item>
+      <item>ChiSquared</item><item>VonMises</item><item>Laplace</item><item>Bernoulli</item>
+      <item>Categorical</item><item>Categorical0</item><item>Binomial</item><item>Poisson</item>
+      <item>Geometric</item><item>NegativeBinomial</item><item>NegativeBinomial2</item>
+      <item>MvNormal</item><item>Wishart</item><item>InverseWishart</item><item>LKJ</item>
+      <item>LKJCholesky</item><item>Dirichlet</item><item>Multinomial</item>
+      <item>PoissonProcess</item><item>BinnedPoissonProcess</item><item>Dirac</item>
+      <item>Lebesgue</item><item>Counting</item>
+    </list>
+    <contexts>
+      <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
+        <keyword String="kernels" attribute="Kernel" context="#stay"/>
+        <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Kernel"      defStyleNum="dsDataType"/>
+    </itemDatas>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="#"/>
+    </comments>
+    <keywords casesensitive="1"/>
+  </general>
+</language>

@@ -1,0 +1,28 @@
+%%%md
+# Doc block (markdown). Distinct from plain comments.
+%%%
+% inline doc comment
+###
+plain block comment over
+multiple lines
+###
+# plain line comment
+hx = 0xFF_00
+fl1 = 1_000.5e-3
+fl2 = .5
+n = 42
+s = "hi\n\tthere\q"
+mu ~ Normal(0, 5)
+p = normalize(truncate(Cauchy(0, 1), interval(0, inf)))
+L = likelihoodof(k, record(y = y))
+theta ~ iid(Normal(mu, tau), J)
+z = reduce(add, v)
+eta = alpha .+ X * beta
+q = invlogit.(eta)
+C[.i, .k] := expr
+dom = reals
+mod1 = self
+ph = _name_
+hole = fn(_ -> 1)
+cmp = (a <= b) && (c != d)
+sel = v[all, only, :, !]
