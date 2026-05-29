@@ -27,13 +27,28 @@
     </list>
     <contexts>
       <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
+        <!-- Comments: doc forms first (spec §05). -->
+        <RegExpr String="^[ \t]*%%%(md|typ)?[ \t]*$" attribute="Documentation" context="DocBlock" beginRegion="DocBlock"/>
+        <RegExpr String="%(md|typ)?.*$" attribute="Documentation" context="#stay"/>
+        <RegExpr String="^[ \t]*###[ \t]*$" attribute="Comment" context="BlockComment" beginRegion="BlockComment"/>
+        <RegExpr String="#.*$" attribute="Comment" context="#stay"/>
         <keyword String="kernels" attribute="Kernel" context="#stay"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
       </context>
+
+      <context name="DocBlock" attribute="Documentation" lineEndContext="#stay">
+        <RegExpr String="^[ \t]*%%%[ \t]*$" attribute="Documentation" context="#pop" endRegion="DocBlock"/>
+      </context>
+
+      <context name="BlockComment" attribute="Comment" lineEndContext="#stay">
+        <RegExpr String="^[ \t]*###[ \t]*$" attribute="Comment" context="#pop" endRegion="BlockComment"/>
+      </context>
     </contexts>
     <itemDatas>
-      <itemData name="Normal Text" defStyleNum="dsNormal"/>
-      <itemData name="Kernel"      defStyleNum="dsDataType"/>
+      <itemData name="Normal Text"   defStyleNum="dsNormal"/>
+      <itemData name="Kernel"        defStyleNum="dsDataType"/>
+      <itemData name="Comment"       defStyleNum="dsComment"/>
+      <itemData name="Documentation" defStyleNum="dsDocumentation"/>
     </itemDatas>
   </highlighting>
   <general>

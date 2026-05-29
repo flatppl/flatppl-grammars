@@ -24,8 +24,8 @@ assert() { # $1 = grep -E pattern, $2 = description
 assert 'class="sourceCode flatppl"' 'flatppl recognized as a language'
 assert '<span class="dt">Normal</span>' 'distribution kernel Normal -> dt'
 # Task 2
-#assert '<span class="co">' 'plain comment -> co'
-#assert '<span class="do">' 'doc comment -> do'
+assert '<span class="co">' 'plain comment -> co'
+assert '<span class="do">' 'doc comment -> do'
 # Task 3
 #assert '<span class="st">' 'string -> st'
 #assert '<span class="sc">' 'valid escape -> sc'
