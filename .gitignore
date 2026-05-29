@@ -8,3 +8,4 @@
 # but build/ and node_modules/ are generated and not tracked)
 node_modules/
 build/
+docs/
