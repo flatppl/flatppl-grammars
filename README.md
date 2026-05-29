@@ -34,6 +34,22 @@ probabilistic models.
   isn't a call. These names are reserved in FlatPPL, so the colouring is
   semantically correct.
 
+## Keyword list maintenance
+
+All 10 keyword categories are defined once in [`keyword-lists.json`](keyword-lists.json)
+at the repo root. The TextMate alternation regexes and Kate `<list>` blocks are
+generated from it — do not edit those sections directly.
+
+**To add or remove a keyword:**
+
+1. Edit `keyword-lists.json`.
+2. Run `pixi run gen-grammars` — updates both grammars in-place.
+3. Commit all three files together: `keyword-lists.json`, `textmate/flatppl.tmLanguage.json`,
+   `kate/flatppl.xml`.
+
+The pre-commit hook runs `pixi run check-grammars` automatically on commits that
+touch any of those three files. CI runs the same check on every push.
+
 ## Spell-checker vocabulary
 
 [`cspell/flatppl-words.txt`](cspell/flatppl-words.txt) is the canonical
