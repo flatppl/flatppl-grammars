@@ -13,6 +13,11 @@
           author="FlatPPL"
           license="MIT">
   <highlighting>
+    <list name="specialops">
+      <item>draw</item><item>lawof</item><item>functionof</item><item>kernelof</item>
+      <item>fn</item><item>elementof</item><item>external</item><item>valueset</item>
+      <item>load_module</item><item>standard_module</item><item>load_data</item>
+    </list>
     <list name="kernels">
       <item>Uniform</item><item>Normal</item><item>GeneralizedNormal</item><item>Cauchy</item>
       <item>StudentT</item><item>Logistic</item><item>LogNormal</item><item>Exponential</item>
@@ -24,6 +29,22 @@
       <item>LKJCholesky</item><item>Dirichlet</item><item>Multinomial</item>
       <item>PoissonProcess</item><item>BinnedPoissonProcess</item><item>Dirac</item>
       <item>Lebesgue</item><item>Counting</item>
+    </list>
+    <list name="combinators">
+      <item>weighted</item><item>logweighted</item><item>normalize</item><item>totalmass</item>
+      <item>superpose</item><item>joint</item><item>jointchain</item><item>kchain</item>
+      <item>iid</item><item>truncate</item><item>pushfwd</item>
+    </list>
+    <list name="analysis">
+      <item>likelihoodof</item><item>joint_likelihood</item><item>densityof</item>
+      <item>logdensityof</item><item>bayesupdate</item><item>disintegrate</item><item>restrict</item>
+    </list>
+    <list name="higherorder">
+      <item>broadcast</item><item>broadcasted</item><item>reduce</item><item>scan</item>
+      <item>fchain</item><item>bijection</item><item>aggregate</item>
+    </list>
+    <list name="setctors">
+      <item>interval</item><item>cartprod</item><item>cartpow</item><item>stdsimplex</item>
     </list>
     <contexts>
       <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
@@ -40,7 +61,13 @@
         <RegExpr String="\.[0-9]+(_[0-9]+)*([eE][+-]?[0-9]+(_[0-9]+)*)?" attribute="Float" context="#stay"/>
         <RegExpr String="\b[0-9]+(_[0-9]+)*[eE][+-]?[0-9]+(_[0-9]+)*\b" attribute="Float" context="#stay"/>
         <RegExpr String="\b[0-9]+(_[0-9]+)*\b" attribute="DecVal" context="#stay"/>
-        <keyword String="kernels" attribute="Kernel" context="#stay"/>
+        <!-- Keyword categories -->
+        <keyword String="specialops"  attribute="Keyword"     context="#stay"/>
+        <keyword String="kernels"     attribute="Kernel"      context="#stay"/>
+        <keyword String="combinators" attribute="Combinator"  context="#stay"/>
+        <keyword String="analysis"    attribute="Analysis"    context="#stay"/>
+        <keyword String="higherorder" attribute="HigherOrder" context="#stay"/>
+        <keyword String="setctors"    attribute="SetCtor"     context="#stay"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
       </context>
 
@@ -60,7 +87,12 @@
     </contexts>
     <itemDatas>
       <itemData name="Normal Text"   defStyleNum="dsNormal"/>
+      <itemData name="Keyword"       defStyleNum="dsKeyword"/>
       <itemData name="Kernel"        defStyleNum="dsDataType"/>
+      <itemData name="Combinator"    defStyleNum="dsBuiltIn"/>
+      <itemData name="Analysis"      defStyleNum="dsControlFlow"/>
+      <itemData name="HigherOrder"   defStyleNum="dsImport"/>
+      <itemData name="SetCtor"       defStyleNum="dsExtension"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>
       <itemData name="Documentation" defStyleNum="dsDocumentation"/>
       <itemData name="String"        defStyleNum="dsString"/>
