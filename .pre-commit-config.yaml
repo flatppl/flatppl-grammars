@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-grammars
+        name: Keyword lists in sync with grammars
+        entry: pixi run check-grammars
+        language: system
+        pass_filenames: false
+        files: ^(keyword-lists\.json|textmate/flatppl\.tmLanguage\.json|kate/flatppl\.xml)$
