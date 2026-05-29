@@ -24,9 +24,10 @@ def load_categories():
 # ── TextMate ──────────────────────────────────────────────────────────────────
 
 def _tm_match(words, suffix):
+    escaped = [re.escape(w) for w in words]
     if suffix:
-        return r"\b(" + "|".join(words) + ")" + suffix
-    return r"\b(" + "|".join(words) + r")\b"
+        return r"\b(" + "|".join(escaped) + ")" + suffix
+    return r"\b(" + "|".join(escaped) + r")\b"
 
 
 def check_or_update_textmate(categories, *, check):
@@ -49,8 +50,8 @@ def check_or_update_textmate(categories, *, check):
             # Surgical in-place replacement: find the entry block and swap
             # only the "match" value, preserving all surrounding formatting.
             entry_re = re.compile(
-                rf'("{re.escape(key)}":\s*\{{)(.*?)(\}})',
-                re.DOTALL,
+                rf'("{re.escape(key)}":\s*\{{)(.*?)(^\s*\}})',
+                re.DOTALL | re.MULTILINE,
             )
             m = entry_re.search(text)
             if m is None:
