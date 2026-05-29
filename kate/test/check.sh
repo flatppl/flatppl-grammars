@@ -46,10 +46,11 @@ assert '<span class="cn">inf</span>' 'constant inf -> cn'
 assert '<span class="vs">reals</span>' 'predefined-set reals -> vs'
 assert '<span class="va">self</span>' 'reserved self -> va'
 # Task 7
-#assert '<span class="an">_name_</span>' 'placeholder _name_ -> an'
-#assert '<span class="rm">' 'hole _ -> rm'
-#assert '<span class="at">' 'dot-access member -> at'
-#assert '<span class="ot">' 'generic function-call -> ot'
+assert '<span class="an">_name_</span>' 'placeholder _name_ -> an'
+assert '<span class="re">' 'hole _ -> re (dsRegionMarker)'
+assert '<span class="at">' 'dot-access member -> at'
+# NB: generic function-calls are intentionally NOT highlighted — skylighting's
+# dsOther emits no HTML class in pandoc, so there is no usable style for them.
 # Task 8
 #assert '<span class="op">' 'operators -> op'
 

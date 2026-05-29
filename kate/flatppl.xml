@@ -101,6 +101,9 @@
         <RegExpr String="\.[0-9]+(_[0-9]+)*([eE][+-]?[0-9]+(_[0-9]+)*)?" attribute="Float" context="#stay"/>
         <RegExpr String="\b[0-9]+(_[0-9]+)*[eE][+-]?[0-9]+(_[0-9]+)*\b" attribute="Float" context="#stay"/>
         <RegExpr String="\b[0-9]+(_[0-9]+)*\b" attribute="DecVal" context="#stay"/>
+        <!-- Placeholder / hole -->
+        <RegExpr String="\b_[a-zA-Z][a-zA-Z0-9_]*_\b" attribute="Placeholder" context="#stay"/>
+        <RegExpr String="_(?![A-Za-z0-9_])" attribute="Hole" context="#stay"/>
         <!-- Keyword categories -->
         <keyword String="specialops"  attribute="Keyword"     context="#stay"/>
         <keyword String="kernels"     attribute="Kernel"      context="#stay"/>
@@ -112,6 +115,10 @@
         <keyword String="constants"   attribute="Constant"    context="#stay"/>
         <keyword String="predefsets"  attribute="PredefSet"   context="#stay"/>
         <keyword String="reserved"    attribute="Reserved"    context="#stay"/>
+        <!-- Members, identifiers (must be last). NB: skylighting's dsOther emits
+             no HTML class, so generic function-calls are intentionally left
+             un-highlighted (plain identifiers) rather than mapped to a dead style. -->
+        <RegExpr String="\.[a-zA-Z_][a-zA-Z0-9_]*" attribute="Member" context="#stay"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
       </context>
 
@@ -141,6 +148,9 @@
       <itemData name="Constant"      defStyleNum="dsConstant"/>
       <itemData name="PredefSet"     defStyleNum="dsVerbatimString"/>
       <itemData name="Reserved"      defStyleNum="dsVariable"/>
+      <itemData name="Member"        defStyleNum="dsAttribute"/>
+      <itemData name="Placeholder"   defStyleNum="dsAnnotation"/>
+      <itemData name="Hole"          defStyleNum="dsRegionMarker"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>
       <itemData name="Documentation" defStyleNum="dsDocumentation"/>
       <itemData name="String"        defStyleNum="dsString"/>
