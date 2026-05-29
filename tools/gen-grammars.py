@@ -59,6 +59,9 @@ def check_or_update_textmate(categories, *, check):
             old_val = json.dumps(actual)    # JSON-escaped, with surrounding quotes
             new_val = json.dumps(expected)
             inner = m.group(2).replace(f'"match": {old_val}', f'"match": {new_val}', 1)
+            if inner == m.group(2):
+                print(f"ERROR: could not splice match value for '{key}' — encoding mismatch", file=sys.stderr)
+                sys.exit(2)
             text = text[: m.start()] + m.group(1) + inner + m.group(3) + text[m.end() :]
 
     if not check and drifted:
@@ -75,7 +78,7 @@ def _kate_items(words):
 def check_or_update_kate(categories, *, check):
     """Return list of drifted list names. Write fixes unless check=True."""
     path = ROOT / "kate" / "flatppl.xml"
-    text = path.read_text()
+    text = path.read_text().replace("\r\n", "\n")
     drifted = []
 
     for cat in categories:
