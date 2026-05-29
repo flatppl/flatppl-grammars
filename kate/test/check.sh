@@ -6,8 +6,9 @@ set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 XML="$DIR/../flatppl.xml"
 SAMPLE="$DIR/sample.flatppl"
-MD="$(mktemp -t flatppl).md"
-OUT="$(mktemp -t flatppl).html"
+MD="$(mktemp -t flatppl.XXXXXX)"; mv "$MD" "$MD.md"; MD="$MD.md"
+OUT="$(mktemp -t flatppl.XXXXXX)"; mv "$OUT" "$OUT.html"; OUT="$OUT.html"
+trap 'rm -f "$MD" "$OUT"' EXIT
 { echo '```flatppl'; cat "$SAMPLE"; echo '```'; } > "$MD"
 pandoc --syntax-definition="$XML" --syntax-highlighting=tango "$MD" -o "$OUT"
 

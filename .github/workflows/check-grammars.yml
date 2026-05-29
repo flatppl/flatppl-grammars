@@ -1,0 +1,26 @@
+name: Check grammars
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pixi
+        uses: prefix-dev/setup-pixi@19eac09b398e3d0c747adc7921926a6d802df4da  # v0.8.8
+        with:
+          cache: true
+
+      - name: Check keyword lists in sync
+        run: pixi run check-grammars
+
+      - name: Test Kate highlighting
+        run: pixi run test-kate
