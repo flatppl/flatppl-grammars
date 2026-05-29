@@ -46,6 +46,46 @@
     <list name="setctors">
       <item>interval</item><item>cartprod</item><item>cartpow</item><item>stdsimplex</item>
     </list>
+    <list name="builtins">
+      <item>identity</item><item>vector</item><item>array</item><item>fill</item><item>zeros</item>
+      <item>ones</item><item>eye</item><item>onehot</item><item>linspace</item><item>extlinspace</item>
+      <item>get</item><item>get0</item><item>cat</item><item>rowstack</item><item>colstack</item>
+      <item>record</item><item>table</item><item>tuple</item><item>partition</item><item>reverse</item>
+      <item>relabel</item><item>fixed</item><item>boolean</item><item>integer</item><item>real</item>
+      <item>complex</item><item>string</item><item>imag</item><item>exp</item><item>expm1</item>
+      <item>log</item><item>log10</item><item>log1p</item><item>pow</item><item>sqrt</item><item>abs</item>
+      <item>abs2</item><item>sin</item><item>cos</item><item>tan</item><item>asin</item><item>acos</item>
+      <item>atan</item><item>atan2</item><item>sinh</item><item>cosh</item><item>tanh</item><item>asinh</item>
+      <item>acosh</item><item>atanh</item><item>min</item><item>max</item><item>floor</item><item>ceil</item>
+      <item>round</item><item>div</item><item>mod</item><item>conj</item><item>cis</item><item>gamma</item>
+      <item>loggamma</item><item>logit</item><item>invlogit</item><item>probit</item><item>invprobit</item>
+      <item>add</item><item>sub</item><item>mul</item><item>divide</item><item>neg</item><item>equal</item>
+      <item>unequal</item><item>lt</item><item>le</item><item>gt</item><item>ge</item><item>isfinite</item>
+      <item>isinf</item><item>isnan</item><item>iszero</item><item>transpose</item><item>adjoint</item>
+      <item>det</item><item>logabsdet</item><item>inv</item><item>trace</item><item>linsolve</item>
+      <item>lower_cholesky</item><item>row_gram</item><item>col_gram</item><item>self_outer</item>
+      <item>cross</item><item>diagmat</item><item>sum</item><item>mean</item><item>var</item><item>std</item>
+      <item>prod</item><item>maximum</item><item>minimum</item><item>cumsum</item><item>cumprod</item>
+      <item>lengthof</item><item>sizeof</item><item>indicesof</item><item>indicesof0</item><item>l1norm</item>
+      <item>l2norm</item><item>l1unit</item><item>l2unit</item><item>logsumexp</item><item>softmax</item>
+      <item>logsoftmax</item><item>land</item><item>lor</item><item>lnot</item><item>lxor</item><item>ifelse</item>
+      <item>filter</item><item>selectbins</item><item>bincounts</item><item>polynomial</item>
+      <item>bernstein</item><item>stepwise</item><item>rngstate</item><item>rnginit</item><item>rand</item>
+      <item>builtin_logdensityof</item><item>builtin_sample</item><item>builtin_touniform</item>
+      <item>builtin_fromuniform</item><item>builtin_tonormal</item><item>builtin_fromnormal</item>
+      <item>checked</item>
+    </list>
+    <list name="constants">
+      <item>true</item><item>false</item><item>inf</item><item>pi</item><item>im</item>
+    </list>
+    <list name="predefsets">
+      <item>reals</item><item>posreals</item><item>nonnegreals</item><item>unitinterval</item>
+      <item>posintegers</item><item>nonnegintegers</item><item>integers</item><item>booleans</item>
+      <item>complexes</item><item>rngstates</item><item>anything</item>
+    </list>
+    <list name="reserved">
+      <item>self</item><item>base</item><item>flatppl_compat</item>
+    </list>
     <contexts>
       <context name="Normal" attribute="Normal Text" lineEndContext="#stay">
         <!-- Comments: doc forms first (spec §05). -->
@@ -68,6 +108,10 @@
         <keyword String="analysis"    attribute="Analysis"    context="#stay"/>
         <keyword String="higherorder" attribute="HigherOrder" context="#stay"/>
         <keyword String="setctors"    attribute="SetCtor"     context="#stay"/>
+        <keyword String="builtins"    attribute="Builtin"     context="#stay"/>
+        <keyword String="constants"   attribute="Constant"    context="#stay"/>
+        <keyword String="predefsets"  attribute="PredefSet"   context="#stay"/>
+        <keyword String="reserved"    attribute="Reserved"    context="#stay"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
       </context>
 
@@ -93,6 +137,10 @@
       <itemData name="Analysis"      defStyleNum="dsControlFlow"/>
       <itemData name="HigherOrder"   defStyleNum="dsImport"/>
       <itemData name="SetCtor"       defStyleNum="dsExtension"/>
+      <itemData name="Builtin"       defStyleNum="dsFunction"/>
+      <itemData name="Constant"      defStyleNum="dsConstant"/>
+      <itemData name="PredefSet"     defStyleNum="dsVerbatimString"/>
+      <itemData name="Reserved"      defStyleNum="dsVariable"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>
       <itemData name="Documentation" defStyleNum="dsDocumentation"/>
       <itemData name="String"        defStyleNum="dsString"/>
