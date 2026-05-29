@@ -19,6 +19,16 @@ probabilistic models.
   language), plus injections: `flatppl-markdown` (fenced ` ```flatppl `
   code blocks), `flatppl-python` (`flatppl(r"""…""")`),
   `flatppl-julia` (`flatppl"""…"""`).
+* [Kate / skylighting definition](kate) — `flatppl.xml`, consumed by
+  Pandoc via `--syntax-definition=flatppl.xml` to highlight fenced
+  ` ```flatppl ` blocks in HTML/LaTeX output. Hand-ported from the
+  TextMate grammar; keep the two in sync. Regression harness:
+  `kate/test/check.sh`. Two deliberate divergences from the TextMate
+  grammar, both forced by skylighting/Pandoc: generic function-calls are
+  left un-highlighted (skylighting's `dsOther` emits no HTML class), and
+  the lookbehind assertions in the TextMate number/hole/assignment rules
+  are replaced by rule ordering (skylighting lookbehind is unreliable;
+  lookahead is fine).
 
 ## Spell-checker vocabulary
 
