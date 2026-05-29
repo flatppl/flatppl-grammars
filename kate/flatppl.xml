@@ -32,6 +32,8 @@
         <RegExpr String="%(md|typ)?.*$" attribute="Documentation" context="#stay"/>
         <RegExpr String="^[ \t]*###[ \t]*$" attribute="Comment" context="BlockComment" beginRegion="BlockComment"/>
         <RegExpr String="#.*$" attribute="Comment" context="#stay"/>
+        <!-- String -->
+        <DetectChar char="&quot;" attribute="String" context="String"/>
         <keyword String="kernels" attribute="Kernel" context="#stay"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
       </context>
@@ -43,12 +45,21 @@
       <context name="BlockComment" attribute="Comment" lineEndContext="#stay">
         <RegExpr String="^[ \t]*###[ \t]*$" attribute="Comment" context="#pop" endRegion="BlockComment"/>
       </context>
+
+      <context name="String" attribute="String" lineEndContext="#pop">
+        <RegExpr String="\\[\\&quot;nrt0]" attribute="Escape" context="#stay"/>
+        <RegExpr String="\\." attribute="Error" context="#stay"/>
+        <DetectChar char="&quot;" attribute="String" context="#pop"/>
+      </context>
     </contexts>
     <itemDatas>
       <itemData name="Normal Text"   defStyleNum="dsNormal"/>
       <itemData name="Kernel"        defStyleNum="dsDataType"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>
       <itemData name="Documentation" defStyleNum="dsDocumentation"/>
+      <itemData name="String"        defStyleNum="dsString"/>
+      <itemData name="Escape"        defStyleNum="dsSpecialChar"/>
+      <itemData name="Error"         defStyleNum="dsError"/>
     </itemDatas>
   </highlighting>
   <general>

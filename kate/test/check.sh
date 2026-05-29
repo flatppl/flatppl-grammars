@@ -27,9 +27,9 @@ assert '<span class="dt">Normal</span>' 'distribution kernel Normal -> dt'
 assert '<span class="co">' 'plain comment -> co'
 assert '<span class="do">' 'doc comment -> do'
 # Task 3
-#assert '<span class="st">' 'string -> st'
-#assert '<span class="sc">' 'valid escape -> sc'
-#assert '<span class="er">' 'invalid escape -> er'
+assert '<span class="st">' 'string -> st'
+assert '<span class="sc">' 'valid escape -> sc'
+assert '<span class="er">' 'invalid escape -> er'
 # Task 4
 #assert '<span class="bn">' 'hex integer -> bn'
 #assert '<span class="fl">' 'float -> fl'
