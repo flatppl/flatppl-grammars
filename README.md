@@ -8,6 +8,15 @@ provide **injection** grammars for FlatPPL embedded in host languages
 — `flatppl(r"""…""")` in Python and `flatppl"""…"""` in Julia — so
 editors highlight the embedded model with the FlatPPL grammar.
 
+## Getting started
+
+[Install pixi](https://pixi.sh), then after cloning:
+
+```bash
+pixi run pre-commit install   # install the pre-commit hook
+pixi run check                # verify grammars and Kate highlighting
+```
+
 ## About FlatPPL
 
 FlatPPL is a minimal, inference-agnostic stochastic language for specifying
@@ -22,17 +31,19 @@ probabilistic models.
 * [Kate / skylighting definition](kate) — `flatppl.xml`, consumed by
   Pandoc via `--syntax-definition=flatppl.xml` to highlight fenced
   ` ```flatppl ` blocks in HTML/LaTeX output. Hand-ported from the
-  TextMate grammar; keep the two in sync. Regression harness:
-  `kate/test/check.sh`. Three deliberate divergences from the TextMate
-  grammar, all forced by skylighting/Pandoc: (1) generic function-calls
-  are left un-highlighted (skylighting's `dsOther` emits no HTML class);
-  (2) the lookbehind assertions in the TextMate number/hole/assignment
-  rules are replaced by rule ordering (skylighting lookbehind is
-  unreliable; lookahead is fine); (3) builtin names are matched as a
-  keyword list (no `(?=\s*\()` call-context guard — Kate keyword lists
-  can't take a lookahead), so a builtin name highlights even where it
-  isn't a call. These names are reserved in FlatPPL, so the colouring is
-  semantically correct.
+  TextMate grammar. Keyword lists are auto-synced from
+  [`keyword-lists.json`](keyword-lists.json) via `pixi run gen-grammars`
+  (see §Keyword list maintenance); structural rules are hand-maintained.
+  Regression harness: `kate/test/check.sh`. Three deliberate divergences
+  from the TextMate grammar, all forced by skylighting/Pandoc:
+  (1) generic function-calls are left un-highlighted (skylighting's
+  `dsOther` emits no HTML class); (2) the lookbehind assertions in the
+  TextMate number/hole/assignment rules are replaced by rule ordering
+  (skylighting lookbehind is unreliable; lookahead is fine);
+  (3) builtin names are matched as a keyword list (no `(?=\s*\()`
+  call-context guard — Kate keyword lists can't take a lookahead), so a
+  builtin name highlights even where it isn't a call. These names are
+  reserved in FlatPPL, so the colouring is semantically correct.
 
 ## Keyword list maintenance
 
