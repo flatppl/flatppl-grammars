@@ -115,6 +115,18 @@
         <keyword String="constants"   attribute="Constant"    context="#stay"/>
         <keyword String="predefsets"  attribute="PredefSet"   context="#stay"/>
         <keyword String="reserved"    attribute="Reserved"    context="#stay"/>
+        <!-- Operators (spec §05). Order is significant: broadcast before
+             arithmetic, := before the ':' selector, comparison before bare '='. -->
+        <RegExpr String="\.(==|!=|&lt;=|&gt;=|&amp;&amp;|\|\||\+|\-|\*|/|\^|&lt;|&gt;|!)|\.(?=\()" attribute="Operator" context="#stay"/>
+        <Detect2Chars char="-" char1="&gt;" attribute="Operator" context="#stay"/>
+        <Detect2Chars char=":" char1="=" attribute="Operator" context="#stay"/>
+        <RegExpr String="==|!=|&lt;=|&gt;=|&lt;|&gt;" attribute="Operator" context="#stay"/>
+        <RegExpr String="&amp;&amp;|\|\||!(?![=,\]])" attribute="Operator" context="#stay"/>
+        <RegExpr String="\^" attribute="Operator" context="#stay"/>
+        <AnyChar String="+-*/" attribute="Operator" context="#stay"/>
+        <RegExpr String="\bin\b" attribute="Operator" context="#stay"/>
+        <RegExpr String=":|!(?=[,\]])|\b(all|only)\b" attribute="Operator" context="#stay"/>
+        <RegExpr String="(=|~)(?!=)" attribute="Operator" context="#stay"/>
         <!-- Members, identifiers (must be last). NB: skylighting's dsOther emits
              no HTML class, so generic function-calls are intentionally left
              un-highlighted (plain identifiers) rather than mapped to a dead style. -->
@@ -149,6 +161,7 @@
       <itemData name="PredefSet"     defStyleNum="dsVerbatimString"/>
       <itemData name="Reserved"      defStyleNum="dsVariable"/>
       <itemData name="Member"        defStyleNum="dsAttribute"/>
+      <itemData name="Operator"      defStyleNum="dsOperator"/>
       <itemData name="Placeholder"   defStyleNum="dsAnnotation"/>
       <itemData name="Hole"          defStyleNum="dsRegionMarker"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>

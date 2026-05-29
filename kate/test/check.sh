@@ -52,6 +52,6 @@ assert '<span class="at">' 'dot-access member -> at'
 # NB: generic function-calls are intentionally NOT highlighted — skylighting's
 # dsOther emits no HTML class in pandoc, so there is no usable style for them.
 # Task 8
-#assert '<span class="op">' 'operators -> op'
+assert '<span class="op">' 'operators -> op'
 
 exit $fail
