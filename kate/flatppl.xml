@@ -34,6 +34,12 @@
         <RegExpr String="#.*$" attribute="Comment" context="#stay"/>
         <!-- String -->
         <DetectChar char="&quot;" attribute="String" context="String"/>
+        <!-- Numbers (spec §05). -->
+        <RegExpr String="\b0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*\b" attribute="BaseN" context="#stay"/>
+        <RegExpr String="\b[0-9]+(_[0-9]+)*\.([0-9]+(_[0-9]+)*)?([eE][+-]?[0-9]+(_[0-9]+)*)?" attribute="Float" context="#stay"/>
+        <RegExpr String="\.[0-9]+(_[0-9]+)*([eE][+-]?[0-9]+(_[0-9]+)*)?" attribute="Float" context="#stay"/>
+        <RegExpr String="\b[0-9]+(_[0-9]+)*[eE][+-]?[0-9]+(_[0-9]+)*\b" attribute="Float" context="#stay"/>
+        <RegExpr String="\b[0-9]+(_[0-9]+)*\b" attribute="DecVal" context="#stay"/>
         <keyword String="kernels" attribute="Kernel" context="#stay"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
       </context>
@@ -60,6 +66,9 @@
       <itemData name="String"        defStyleNum="dsString"/>
       <itemData name="Escape"        defStyleNum="dsSpecialChar"/>
       <itemData name="Error"         defStyleNum="dsError"/>
+      <itemData name="BaseN"         defStyleNum="dsBaseN"/>
+      <itemData name="DecVal"        defStyleNum="dsDecVal"/>
+      <itemData name="Float"         defStyleNum="dsFloat"/>
     </itemDatas>
   </highlighting>
   <general>

@@ -31,9 +31,9 @@ assert '<span class="st">' 'string -> st'
 assert '<span class="sc">' 'valid escape -> sc'
 assert '<span class="er">' 'invalid escape -> er'
 # Task 4
-#assert '<span class="bn">' 'hex integer -> bn'
-#assert '<span class="fl">' 'float -> fl'
-#assert '<span class="dv">' 'decimal integer -> dv'
+assert '<span class="bn">' 'hex integer -> bn'
+assert '<span class="fl">' 'float -> fl'
+assert '<span class="dv">' 'decimal integer -> dv'
 # Task 5
 #assert '<span class="kw">fn</span>' 'special-operation fn -> kw'
 #assert '<span class="bu">iid</span>' 'combinator iid -> bu'
