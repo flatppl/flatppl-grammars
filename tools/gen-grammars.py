@@ -42,6 +42,9 @@ def check_or_update_textmate(categories, *, check):
         key = cat["tm_key"]
         suffix = cat.get("tm_suffix", "")
         expected = _tm_match(cat["words"], suffix)
+        if key not in repo:
+            print(f"ERROR: textmate repository entry '{key}' not found", file=sys.stderr)
+            sys.exit(2)
         actual = repo[key]["match"]
         if actual == expected:
             continue
@@ -79,7 +82,9 @@ def _kate_items(words):
 def check_or_update_kate(categories, *, check):
     """Return list of drifted list names. Write fixes unless check=True."""
     path = ROOT / "kate" / "flatppl.xml"
-    text = path.read_text().replace("\r\n", "\n")
+    raw = path.read_text()
+    text = raw.replace("\r\n", "\n")
+    crlf = "\r\n" in raw
     drifted = []
 
     for cat in categories:
@@ -101,7 +106,7 @@ def check_or_update_kate(categories, *, check):
             text = text[: m.start()] + replacement + text[m.end() :]
 
     if not check and drifted:
-        path.write_text(text)
+        path.write_text(text.replace("\n", "\r\n") if crlf else text)
     return drifted
 
 
