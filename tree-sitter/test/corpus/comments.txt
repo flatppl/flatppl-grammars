@@ -1,0 +1,60 @@
+==================
+Line comment alone
+==================
+
+# plain comment
+
+---
+
+(module
+  (line_comment))
+
+==================
+Doc line alone
+==================
+
+% inline doc
+
+---
+
+(module
+  (doc_line))
+
+==================
+Mixed comments and statement
+==================
+
+# before
+x
+# after
+
+---
+
+(module
+  (line_comment)
+  (identifier)
+  (line_comment))
+
+==================
+Trailing line comment after statement
+==================
+
+x # trailing
+
+---
+
+(module
+  (identifier)
+  (line_comment))
+
+==================
+Trailing doc line after statement
+==================
+
+x % trailing doc
+
+---
+
+(module
+  (identifier)
+  (doc_line))
