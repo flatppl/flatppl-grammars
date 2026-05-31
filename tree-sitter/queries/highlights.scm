@@ -55,19 +55,14 @@
 ";" @punctuation.delimiter
 "." @punctuation.delimiter
 
-; Axis names
-(axis_name (identifier) @property)
-
-; Keyword-argument names
-(keyword_argument . (identifier) @variable.parameter)
-
 ; ── Capture ordering: tree-sitter uses LAST-match-wins, so more-specific
 ;    captures must appear AFTER less-specific ones.
-;      1. @variable          — most generic fallback
-;      2. @variable.member   — field access overrides plain variable
-;      3. @function.call     — call-position identifier overrides plain variable
-;      4. GEN keyword blocks — known keyword names override @function.call
-;      5. placeholder/_hole_ patterns — always last (most specific)
+;      1. @variable                    — most generic fallback
+;      2. @variable.member             — field access overrides plain variable
+;      3. @function.call               — call-position identifier overrides plain variable
+;      4. GEN keyword blocks           — known keyword names override @function.call
+;      5. axis_name / keyword_argument — position-specific labels override keyword scope
+;      6. placeholder/_hole_ patterns  — always last (most specific)
 ; ──────────────────────────────────────────────────────────────────────────────
 
 ; Variables (generic fallback — must come BEFORE @variable.member, @function.call, and keyword blocks)
@@ -129,6 +124,12 @@
 ((identifier) @variable.builtin
  (#match? @variable.builtin "^(self|base|flatppl_compat)$"))
 ; GEN:reserved-end
+
+; Axis names (position-specific: a `.name` axis label, overrides keyword scope)
+(axis_name (identifier) @property)
+
+; Keyword-argument names (position-specific: a kwarg label, even if it matches a builtin name)
+(keyword_argument . (identifier) @variable.parameter)
 
 ; Placeholder _name_
 ((identifier) @variable.parameter
