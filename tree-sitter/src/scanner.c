@@ -58,6 +58,12 @@ static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 static inline bool is_hws(int32_t c) { return c == ' ' || c == '\t'; }
 static inline bool is_newline(int32_t c) { return c == '\n' || c == '\r'; }
 
+// Advance past a single newline, consuming a CRLF pair as one.
+static inline void advance_newline(TSLexer *lexer) {
+  if (lexer->lookahead == '\r') { advance(lexer); if (lexer->lookahead == '\n') advance(lexer); }
+  else { advance(lexer); }
+}
+
 // Scan a fenced block: the opening fence line has already been recognized up to
 // (but not including) its terminating newline. We must consume through the
 // closing fence line's terminating newline.
@@ -76,12 +82,7 @@ static bool scan_fenced(TSLexer *lexer, const char *fence) {
     return false; // opener never terminated by a newline; not a fenced block
   }
   // consume newline (handle CRLF)
-  if (lexer->lookahead == '\r') {
-    advance(lexer);
-    if (lexer->lookahead == '\n') advance(lexer);
-  } else {
-    advance(lexer);
-  }
+  advance_newline(lexer);
 
   // Now scan lines until we find a closer line: HWS* fence HWS* Newline (or EOF).
   for (;;) {
@@ -111,12 +112,7 @@ static bool scan_fenced(TSLexer *lexer, const char *fence) {
         return true;
       }
       if (is_newline(lexer->lookahead)) {
-        if (lexer->lookahead == '\r') {
-          advance(lexer);
-          if (lexer->lookahead == '\n') advance(lexer);
-        } else {
-          advance(lexer);
-        }
+        advance_newline(lexer);
         lexer->mark_end(lexer);
         return true;
       }
@@ -130,12 +126,7 @@ static bool scan_fenced(TSLexer *lexer, const char *fence) {
     if (lexer->eof(lexer)) {
       return false;
     }
-    if (lexer->lookahead == '\r') {
-      advance(lexer);
-      if (lexer->lookahead == '\n') advance(lexer);
-    } else {
-      advance(lexer);
-    }
+    advance_newline(lexer);
   }
 }
 
@@ -232,12 +223,7 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       }
       if (valid_symbols[NEWLINE]) {
         // Consume this newline (and collapse trailing CR of CRLF) as the token.
-        if (c == '\r') {
-          advance(lexer);
-          if (lexer->lookahead == '\n') advance(lexer);
-        } else {
-          advance(lexer);
-        }
+        advance_newline(lexer);
         lexer->result_symbol = NEWLINE;
         lexer->mark_end(lexer);
         return true;

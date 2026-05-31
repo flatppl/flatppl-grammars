@@ -4,6 +4,7 @@
       "kate_list": "specialops",
       "tm_key": "special-operation",
       "tm_suffix": "",
+      "ts_scope": "keyword.other",
       "words": ["draw", "lawof", "functionof", "kernelof", "fn", "elementof",
                 "external", "valueset", "load_module", "standard_module", "load_data"]
     },
@@ -11,6 +12,7 @@
       "kate_list": "kernels",
       "tm_key": "kernel",
       "tm_suffix": "",
+      "ts_scope": "type",
       "words": ["Uniform", "Normal", "GeneralizedNormal", "Cauchy", "StudentT",
                 "Logistic", "LogNormal", "Exponential", "Gamma", "Weibull",
                 "InverseGamma", "Beta", "ChiSquared", "VonMises", "Laplace",
@@ -24,6 +26,7 @@
       "kate_list": "combinators",
       "tm_key": "measure-combinator",
       "tm_suffix": "",
+      "ts_scope": "function",
       "words": ["weighted", "logweighted", "normalize", "totalmass", "superpose",
                 "joint", "jointchain", "kchain", "iid", "truncate", "pushfwd"]
     },
@@ -31,6 +34,7 @@
       "kate_list": "analysis",
       "tm_key": "analysis-operation",
       "tm_suffix": "",
+      "ts_scope": "function",
       "words": ["likelihoodof", "joint_likelihood", "densityof", "logdensityof",
                 "bayesupdate", "disintegrate", "restrict"]
     },
@@ -38,6 +42,7 @@
       "kate_list": "higherorder",
       "tm_key": "higher-order",
       "tm_suffix": "",
+      "ts_scope": "function",
       "words": ["broadcast", "broadcasted", "reduce", "scan", "fchain",
                 "bijection", "aggregate"]
     },
@@ -45,12 +50,14 @@
       "kate_list": "setctors",
       "tm_key": "set-constructor",
       "tm_suffix": "",
+      "ts_scope": "function",
       "words": ["interval", "cartprod", "cartpow", "stdsimplex"]
     },
     {
       "kate_list": "builtins",
       "tm_key": "builtin-function",
       "tm_suffix": "(?=\\s*\\()",
+      "ts_scope": "function.builtin",
       "words": [
         "identity", "vector", "array", "fill", "zeros", "ones", "eye", "onehot",
         "linspace", "extlinspace", "get", "get0", "cat", "rowstack", "colstack",
@@ -84,12 +91,14 @@
       "kate_list": "constants",
       "tm_key": "constant",
       "tm_suffix": "",
+      "ts_scope": "constant.builtin",
       "words": ["true", "false", "inf", "pi", "im"]
     },
     {
       "kate_list": "predefsets",
       "tm_key": "predefined-set",
       "tm_suffix": "",
+      "ts_scope": "constant",
       "words": ["reals", "posreals", "nonnegreals", "unitinterval",
                 "posintegers", "nonnegintegers", "integers", "booleans",
                 "complexes", "rngstates", "anything"]
@@ -98,6 +107,7 @@
       "kate_list": "reserved",
       "tm_key": "reserved-name",
       "tm_suffix": "",
+      "ts_scope": "variable.builtin",
       "words": ["self", "base", "flatppl_compat"]
     }
   ]

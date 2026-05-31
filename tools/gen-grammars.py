@@ -31,7 +31,13 @@ def _tm_match(words, suffix):
 
 
 def check_or_update_textmate(categories, *, check):
-    """Return list of drifted category keys. Write fixes unless check=True."""
+    """Return list of drifted category keys. Write fixes unless check=True.
+
+    NOTE: We update the JSON via a surgical regex splice rather than
+    json.load + json.dump on purpose. The grammar file is hand-curated and a
+    full parse-and-reformat would reflow every key/string and destroy the diff
+    quality, so we replace only the affected "match" value in place.
+    """
     path = ROOT / "textmate" / "flatppl.tmLanguage.json"
     text = path.read_text()
     data = json.loads(text)
@@ -43,7 +49,12 @@ def check_or_update_textmate(categories, *, check):
         suffix = cat.get("tm_suffix", "")
         expected = _tm_match(cat["words"], suffix)
         if key not in repo:
-            print(f"ERROR: textmate repository entry '{key}' not found", file=sys.stderr)
+            print(
+                f"ERROR: textmate repository entry '{key}' not found"
+                f" — add an empty \"{key}\" entry under \"repository\" in"
+                f" textmate/flatppl.tmLanguage.json before re-running",
+                file=sys.stderr,
+            )
             sys.exit(2)
         actual = repo[key]["match"]
         if actual == expected:
@@ -58,7 +69,12 @@ def check_or_update_textmate(categories, *, check):
             )
             m = entry_re.search(text)
             if m is None:
-                print(f"ERROR: textmate entry '{key}' not found", file=sys.stderr)
+                print(
+                    f"ERROR: textmate entry '{key}' not found"
+                    f" — add an empty \"{key}\" entry under \"repository\" in"
+                    f" textmate/flatppl.tmLanguage.json before re-running",
+                    file=sys.stderr,
+                )
                 sys.exit(2)
             old_val = json.dumps(actual)    # JSON-escaped, with surrounding quotes
             new_val = json.dumps(expected)
@@ -80,7 +96,13 @@ def _kate_items(words):
 
 
 def check_or_update_kate(categories, *, check):
-    """Return list of drifted list names. Write fixes unless check=True."""
+    """Return list of drifted list names. Write fixes unless check=True.
+
+    NOTE: We rewrite the <list> contents via a surgical regex splice rather
+    than xml.etree parse + serialize on purpose. Re-serializing this
+    hand-curated XML would reflow attribute order/whitespace across the whole
+    file and ruin the diff, so we replace only the affected list body in place.
+    """
     path = ROOT / "kate" / "flatppl.xml"
     raw = path.read_text()
     text = raw.replace("\r\n", "\n")
@@ -96,7 +118,12 @@ def check_or_update_kate(categories, *, check):
         )
         m = list_re.search(text)
         if m is None:
-            print(f"ERROR: kate list '{name}' not found in flatppl.xml", file=sys.stderr)
+            print(
+                f"ERROR: kate list '{name}' not found in flatppl.xml"
+                f" — add a '<list name=\"{name}\"> ... </list>' block in"
+                f" kate/flatppl.xml before re-running",
+                file=sys.stderr,
+            )
             sys.exit(2)
         if m.group(2) == expected_inner:
             continue
@@ -116,22 +143,6 @@ def _ts_pattern(words):
     return "^(" + "|".join(re.escape(w) for w in words) + ")$"
 
 
-def _ts_scope(kate_list_name):
-    _map = {
-        "specialops":  "keyword.other",
-        "kernels":     "type",
-        "combinators": "function",
-        "analysis":    "function",
-        "higherorder": "function",
-        "setctors":    "function",
-        "builtins":    "function.builtin",
-        "constants":   "constant.builtin",
-        "predefsets":  "constant",
-        "reserved":    "variable.builtin",
-    }
-    return _map.get(kate_list_name, "variable")
-
-
 def check_or_update_tree_sitter(categories, *, check):
     """Return list of drifted GEN markers. Write fixes unless check=True."""
     path = ROOT / "tree-sitter" / "queries" / "highlights.scm"
@@ -141,7 +152,7 @@ def check_or_update_tree_sitter(categories, *, check):
     drifted = []
     for cat in categories:
         name = cat["kate_list"]
-        scope = _ts_scope(name)
+        scope = cat["ts_scope"]
         pattern = _ts_pattern(cat["words"])
         # Canonical block body, reproduced byte-for-byte from the JSON. Covers
         # BOTH the `((identifier) @scope` line and the `(#match? @scope "...")`
@@ -154,7 +165,9 @@ def check_or_update_tree_sitter(categories, *, check):
         m = marker_re.search(text)
         if m is None:
             drifted.append(
-                f"  tree-sitter: queries/highlights.scm GEN:{name} (marker not found)"
+                f"  tree-sitter: queries/highlights.scm GEN:{name} (marker not found"
+                f"; add a '; GEN:{name}-start' / '; GEN:{name}-end' block to"
+                f" tree-sitter/queries/highlights.scm before re-running)"
             )
             continue
         if m.group(2) == canonical:

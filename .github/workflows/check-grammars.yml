@@ -20,6 +20,11 @@ jobs:
       - name: Check keyword lists in sync
         run: pixi run check-grammars
 
+      - name: Generator is idempotent (no uncommitted drift)
+        run: |
+          pixi run gen-grammars
+          git diff --exit-code
+
       - name: Test Kate highlighting
         run: pixi run test-kate
 
