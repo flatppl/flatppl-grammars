@@ -44,7 +44,68 @@ module.exports = grammar({
     // statement separator: one or more newlines/semicolons
     _sep: $ => repeat1(choice($._newline, ';')),
 
-    _statement: $ => $.identifier,   // stub — replaced in later task
+    _statement: $ => $._expression,
+
+    _expression: $ => choice(
+      $._literal,
+      $.identifier,
+      // expanded in later tasks (operators, calls, lambda, etc.)
+    ),
+
+    _literal: $ => choice(
+      $.integer,
+      $.float,
+      $.string,
+      $.boolean,
+      $.array_literal,
+      $.tuple_literal,
+    ),
+
+    integer: _ => token(choice(
+      /0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*/,
+      /[0-9]+(_[0-9]+)*/,
+    )),
+
+    // Float: NO trailing \b on the dotted form (spec §05: `1./x` must munch `1.` as float).
+    // tree-sitter's regex engine has no look-ahead; greedy longest-match already
+    // ensures `1.5` munches its fraction rather than stopping at `1.`.
+    float: _ => token(choice(
+      /[0-9]+(_[0-9]+)*\.([0-9]+(_[0-9]+)*)?([eE][+-]?[0-9]+(_[0-9]+)*)?/,
+      /\.[0-9]+(_[0-9]+)*([eE][+-]?[0-9]+(_[0-9]+)*)?/,
+      /[0-9]+(_[0-9]+)*[eE][+-]?[0-9]+(_[0-9]+)*/,
+    )),
+
+    string: $ => seq(
+      '"',
+      repeat(choice(
+        $.escape_sequence,
+        $.invalid_escape,
+        /[^"\\]+/,
+      )),
+      '"',
+    ),
+    escape_sequence: _ => /\\[\\"nrt0]/,
+    invalid_escape: _ => /\\./,
+
+    boolean: _ => token(choice('true', 'false')),
+
+    array_literal: $ => seq(
+      $._lbracket,
+      optional(seq(
+        $._expression,
+        repeat(seq(',', $._expression)),
+        optional(','),
+      )),
+      $._rbracket,
+    ),
+
+    tuple_literal: $ => seq(
+      $._lparen,
+      $._expression, ',', $._expression,
+      repeat(seq(',', $._expression)),
+      optional(','),
+      $._rparen,
+    ),
 
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
     line_comment: _ => token(seq('#', /[^\n;]*/)),

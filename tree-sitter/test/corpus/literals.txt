@@ -1,0 +1,171 @@
+==============
+Decimal integer
+==============
+
+42
+
+---
+
+(module (integer))
+
+==============
+Hex integer
+==============
+
+0xFF_00
+
+---
+
+(module (integer))
+
+==============
+Decimal float with exponent
+==============
+
+1_000.5e-3
+
+---
+
+(module (float))
+
+==============
+Leading-dot float
+==============
+
+.5
+
+---
+
+(module (float))
+
+==============
+Trailing-dot float
+==============
+
+1.
+
+---
+
+(module (float))
+
+==============
+Integer with exponent
+==============
+
+1e7
+
+---
+
+(module (float))
+
+==============
+String with escapes
+==============
+
+"hi\n\tthere"
+
+---
+
+(module
+  (string
+    (escape_sequence)
+    (escape_sequence)))
+
+==============
+String with invalid escape
+==============
+
+"oops\q"
+
+---
+
+(module
+  (string
+    (invalid_escape)))
+
+==============
+Boolean true
+==============
+
+true
+
+---
+
+(module (boolean))
+
+==============
+Boolean false
+==============
+
+false
+
+---
+
+(module (boolean))
+
+==============
+Array literal
+==============
+
+[1, 2, 3]
+
+---
+
+(module
+  (array_literal
+    (integer)
+    (integer)
+    (integer)))
+
+==============
+Array literal multiline trailing comma
+==============
+
+[
+  1,
+  2,
+]
+
+---
+
+(module
+  (array_literal
+    (integer)
+    (integer)))
+
+==============
+Empty array
+==============
+
+[]
+
+---
+
+(module (array_literal))
+
+==============
+Tuple literal
+==============
+
+(a, b)
+
+---
+
+(module
+  (tuple_literal
+    (identifier)
+    (identifier)))
+
+==============
+Tuple three elements
+==============
+
+(a, b, c)
+
+---
+
+(module
+  (tuple_literal
+    (identifier)
+    (identifier)
+    (identifier)))
