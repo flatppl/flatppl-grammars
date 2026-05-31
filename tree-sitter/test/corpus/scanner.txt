@@ -1,0 +1,44 @@
+==================
+Newline separates statements
+==================
+
+x
+y
+
+---
+
+(module (identifier) (identifier))
+
+==================
+Semicolon separates statements
+==================
+
+x; y
+
+---
+
+(module (identifier) (identifier))
+
+==================
+Block comment fenced
+==================
+
+###
+inner
+###
+
+---
+
+(module (block_comment))
+
+==================
+Doc block fenced with tag
+==================
+
+%%%md
+inner
+%%%
+
+---
+
+(module (doc_block))

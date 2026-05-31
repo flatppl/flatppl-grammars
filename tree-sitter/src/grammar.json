@@ -42,20 +42,20 @@
                       }
                     ]
                   }
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_sep"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 }
               ]
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_sep"
             },
             {
               "type": "BLANK"
@@ -65,12 +65,20 @@
       ]
     },
     "_sep": {
-      "type": "PATTERN",
-      "value": "[\\n;]+"
-    },
-    "_nl": {
-      "type": "PATTERN",
-      "value": "[\\n;]*"
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_newline"
+          },
+          {
+            "type": "STRING",
+            "value": ";"
+          }
+        ]
+      }
     },
     "_statement": {
       "type": "SYMBOL",
@@ -116,7 +124,7 @@
   "extras": [
     {
       "type": "PATTERN",
-      "value": "[ \\t\\r]"
+      "value": "[ \\t\\r\\n]"
     },
     {
       "type": "SYMBOL",
@@ -125,11 +133,48 @@
     {
       "type": "SYMBOL",
       "name": "doc_line"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "block_comment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "doc_block"
     }
   ],
   "conflicts": [],
   "precedences": [],
-  "externals": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "_newline"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "block_comment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "doc_block"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_lparen"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_rparen"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_lbracket"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_rbracket"
+    }
+  ],
   "inline": [],
   "supertypes": []
 }

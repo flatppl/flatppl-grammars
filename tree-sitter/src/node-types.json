@@ -15,6 +15,18 @@
     }
   },
   {
+    "type": ";",
+    "named": false
+  },
+  {
+    "type": "block_comment",
+    "named": true
+  },
+  {
+    "type": "doc_block",
+    "named": true
+  },
+  {
     "type": "doc_line",
     "named": true
   },
