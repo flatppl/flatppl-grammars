@@ -156,7 +156,7 @@ def check_or_update_tree_sitter(categories, *, check):
         drifted.append(f"  tree-sitter: queries/highlights.scm GEN:{name}")
         if not check:
             expected_match = f'(#match? @{_ts_scope(name)} "{expected_pattern}")'
-            new_block = re.sub(r'\(#match\? @\S+ "[^"]+"\)', expected_match, m.group(2))
+            new_block = re.sub(r'\(#match\? @\S+ "[^"]+"\)', expected_match, m.group(2), count=1)
             text = text[: m.start()] + m.group(1) + new_block + m.group(3) + text[m.end():]
     if not check and drifted:
         path.write_text(text)

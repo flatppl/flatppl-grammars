@@ -58,17 +58,26 @@
 ; Axis names
 (axis_name (identifier) @property)
 
-; Field access member
-(field_access (identifier) @variable.member)
-
-; Function calls — generic (the callee identifier of a call)
-(call_expression (identifier) @function.call)
-
 ; Keyword-argument names
 (keyword_argument (identifier) @variable.parameter)
 
-; Variables (generic fallback — keep BEFORE the keyword #match blocks so those override)
+; ── Capture ordering: tree-sitter uses LAST-match-wins, so more-specific
+;    captures must appear AFTER less-specific ones.
+;      1. @variable          — most generic fallback
+;      2. @variable.member   — field access overrides plain variable
+;      3. @function.call     — call-position identifier overrides plain variable
+;      4. GEN keyword blocks — known keyword names override @function.call
+;      5. placeholder/_hole_ patterns — always last (most specific)
+; ──────────────────────────────────────────────────────────────────────────────
+
+; Variables (generic fallback — must come BEFORE @variable.member, @function.call, and keyword blocks)
 (identifier) @variable
+
+; Field access member (overrides @variable for `r.field`'s field component)
+(field_access (identifier) @variable.member)
+
+; Function calls — generic callee (overrides @variable; overridden by GEN keyword blocks)
+(call_expression (identifier) @function.call)
 
 ; ── Keyword categories — SYNCED from keyword-lists.json via gen-grammars.py ──
 ; GEN:specialops-start
