@@ -40,6 +40,16 @@ module.exports = grammar({
     // lambda/parenthesized_expression conflicts are subsumed and reported as
     // unnecessary by tree-sitter). GLR + the operator precedences resolve it.
     [$.lambda, $._expression],
+
+    // `identifier _lbracket` begins both an index_expression (`A[i]`, where the
+    // identifier reduces to _expression first) and the LHS of an
+    // aggregate_binding (`C[.i] := e`, where the identifier is kept bare). The
+    // parser cannot decide whether to reduce `identifier` to `_expression`
+    // until it sees whether the first bracket arg is an axis_name (`.i`, only
+    // legal in aggregate_binding) or an index arg. GLR explores both; the
+    // leading `.` of axis_name disambiguates, so they never collide on real
+    // input.
+    [$._expression, $.aggregate_binding],
   ],
 
   rules: {
@@ -55,7 +65,46 @@ module.exports = grammar({
     // statement separator: one or more newlines/semicolons
     _sep: $ => repeat1(choice($._newline, ';')),
 
-    _statement: $ => $._expression,
+    // Spec §05 says statements are binding-only, but the existing corpus (and
+    // real-world highlighting of code fragments) treats bare expressions as
+    // module statements. Keep the expression alternative so fragments still
+    // parse and prior tests stay green.
+    _statement: $ => choice(
+      $.binding,
+      $.tilde_binding,
+      $.decomposition,
+      $.tilde_decomposition,
+      $.aggregate_binding,
+      $._expression,
+    ),
+
+    binding: $ => seq($.identifier, '=', $._expression),
+    tilde_binding: $ => seq($.identifier, '~', $._expression),
+
+    decomposition: $ => seq(
+      $.identifier,
+      repeat1(seq(',', $.identifier)),
+      '=',
+      $._expression,
+    ),
+    tilde_decomposition: $ => seq(
+      $.identifier,
+      repeat1(seq(',', $.identifier)),
+      '~',
+      $._expression,
+    ),
+
+    aggregate_binding: $ => seq(
+      $.identifier,
+      $._lbracket,
+      $.axis_name,
+      repeat(seq(',', $.axis_name)),
+      $._rbracket,
+      ':=',
+      $._expression,
+    ),
+
+    axis_name: $ => seq('.', $.identifier),
 
     _expression: $ => choice(
       $.lambda,

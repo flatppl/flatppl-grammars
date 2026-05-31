@@ -1,0 +1,106 @@
+====================
+Simple binding
+====================
+
+x = 42
+
+---
+
+(module (binding (identifier) (integer)))
+
+====================
+Tilde binding
+====================
+
+x ~ Normal(0, 1)
+
+---
+
+(module
+  (tilde_binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list (integer) (integer)))))
+
+====================
+Decomposition
+====================
+
+a, b, c = expr
+
+---
+
+(module
+  (decomposition
+    (identifier) (identifier) (identifier) (identifier)))
+
+====================
+Tilde decomposition
+====================
+
+a, b ~ MvNormal(mu, cov)
+
+---
+
+(module
+  (tilde_decomposition
+    (identifier) (identifier)
+    (call_expression
+      (identifier)
+      (argument_list (identifier) (identifier)))))
+
+====================
+Aggregate binding
+====================
+
+C[.i, .k] := expr
+
+---
+
+(module
+  (aggregate_binding
+    (identifier)
+    (axis_name (identifier))
+    (axis_name (identifier))
+    (identifier)))
+
+====================
+Decomposition with hole
+====================
+
+value, _ = rand(rstate, m)
+
+---
+
+(module
+  (decomposition
+    (identifier) (identifier)
+    (call_expression
+      (identifier)
+      (argument_list (identifier) (identifier)))))
+
+====================
+Two statements newline
+====================
+
+x = 1
+y = 2
+
+---
+
+(module
+  (binding (identifier) (integer))
+  (binding (identifier) (integer)))
+
+====================
+Two statements semicolon
+====================
+
+x = 1; y = 2
+
+---
+
+(module
+  (binding (identifier) (integer))
+  (binding (identifier) (integer)))
