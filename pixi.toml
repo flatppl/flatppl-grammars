@@ -12,8 +12,8 @@ nodejs = ">=20,<21"
 gen-grammars = "python tools/gen-grammars.py"
 check-grammars = "python tools/gen-grammars.py --check"
 test-kate = "bash kate/test/check.sh"
-npm-install       = "npm --prefix tree-sitter install"
-gen-tree-sitter   = { cmd = "npm --prefix tree-sitter run generate", depends-on = ["npm-install"] }
-test-tree-sitter  = { cmd = "npm --prefix tree-sitter test", depends-on = ["gen-tree-sitter"] }
-check-tree-sitter = { cmd = "npm --prefix tree-sitter test", depends-on = ["gen-tree-sitter"] }
+npm-install       = { cmd = "npm install", cwd = "tree-sitter" }
+gen-tree-sitter   = { cmd = "npx tree-sitter generate", cwd = "tree-sitter", depends-on = ["npm-install"] }
+test-tree-sitter  = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
+check-tree-sitter = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
 check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }
