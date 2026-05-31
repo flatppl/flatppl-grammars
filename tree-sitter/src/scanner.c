@@ -1,4 +1,5 @@
 #include "tree_sitter/parser.h"
+#include "tree_sitter/alloc.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -20,13 +21,12 @@ typedef struct {
 } Scanner;
 
 void *tree_sitter_flatppl_external_scanner_create(void) {
-  Scanner *s = (Scanner *)malloc(sizeof(Scanner));
-  s->bracket_depth = 0;
+  Scanner *s = (Scanner *)ts_calloc(1, sizeof(Scanner));
   return s;
 }
 
 void tree_sitter_flatppl_external_scanner_destroy(void *payload) {
-  free(payload);
+  ts_free(payload);
 }
 
 unsigned tree_sitter_flatppl_external_scanner_serialize(void *payload, char *buffer) {
@@ -161,6 +161,15 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
   //
   //  - On `###` / `%%%` fence openers: emit the fenced comment token.
 
+  // Whether the scanner is positioned at the start of a line (only leading
+  // indentation, if any, between the start of the line and the current
+  // position). `get_column` counts codepoints since the last newline, so it is
+  // 0 at the true start of any line, including indented lines (indentation
+  // begins at column 0). The HWS-skip below does NOT change this flag, so it
+  // stays true while skipping leading indentation; it is reset to true only
+  // after the scanner itself consumes a newline.
+  bool at_line_start = lexer->get_column(lexer) == 0;
+
   for (;;) {
     // Skip horizontal whitespace.
     while (is_hws(lexer->lookahead)) {
@@ -217,6 +226,7 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
         // to, producing an ERROR node. Skipping here keeps every parse stack
         // consistent: no stack ever sees a NEWLINE token inside brackets.
         skip(lexer);
+        at_line_start = true;
         continue;
       }
       if (valid_symbols[NEWLINE]) {
@@ -233,11 +243,17 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       }
       // NEWLINE not valid in this state: skip it so we don't block the parse.
       skip(lexer);
+      at_line_start = true;
       continue;
     }
 
-    // Fenced comments. They only open at a line position (we've skipped HWS).
-    if (c == '#' && valid_symbols[BLOCK_COMMENT]) {
+    // Fenced comments. A fence opener must be the FIRST non-whitespace on its
+    // line (leading indentation is allowed): per spec §05
+    // `BlockComment ::= HWS* "###" HWS* Newline` and the Kate reference
+    // `^[ \t]*###[ \t]*$`. When not at line start (other tokens preceded `###`
+    // / `%%%` on this line) we fall through (return false) so the
+    // line_comment / doc_line regex handles it.
+    if (c == '#' && valid_symbols[BLOCK_COMMENT] && at_line_start) {
       // Need exactly "###" then HWS* then newline/EOF to be a fence opener.
       // Peek by advancing; if it's not a fence, we still must let the line
       // comment regex handle a single '#'. So only commit if "###" + EOL.
@@ -261,7 +277,7 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       return false;
     }
 
-    if (c == '%' && valid_symbols[DOC_BLOCK]) {
+    if (c == '%' && valid_symbols[DOC_BLOCK] && at_line_start) {
       advance(lexer);
       if (lexer->lookahead == '%') {
         advance(lexer);

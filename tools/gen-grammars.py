@@ -136,28 +136,32 @@ def check_or_update_tree_sitter(categories, *, check):
     """Return list of drifted GEN markers. Write fixes unless check=True."""
     path = ROOT / "tree-sitter" / "queries" / "highlights.scm"
     if not path.exists():
-        return []
+        return [f"  tree-sitter: queries/highlights.scm MISSING"]
     text = path.read_text()
     drifted = []
     for cat in categories:
         name = cat["kate_list"]
-        expected_pattern = _ts_pattern(cat["words"])
+        scope = _ts_scope(name)
+        pattern = _ts_pattern(cat["words"])
+        # Canonical block body, reproduced byte-for-byte from the JSON. Covers
+        # BOTH the `((identifier) @scope` line and the `(#match? @scope "...")`
+        # line so that a change to either drifts/updates the whole block.
+        canonical = f'((identifier) @{scope}\n (#match? @{scope} "{pattern}"))\n'
         marker_re = re.compile(
             rf'(; GEN:{re.escape(name)}-start\n)(.*?)(; GEN:{re.escape(name)}-end)',
             re.DOTALL,
         )
         m = marker_re.search(text)
         if m is None:
+            drifted.append(
+                f"  tree-sitter: queries/highlights.scm GEN:{name} (marker not found)"
+            )
             continue
-        match_re = re.compile(r'\(#match\? @\S+ "([^"]+)"\)')
-        existing = match_re.search(m.group(2))
-        if existing and existing.group(1) == expected_pattern:
+        if m.group(2) == canonical:
             continue
         drifted.append(f"  tree-sitter: queries/highlights.scm GEN:{name}")
         if not check:
-            expected_match = f'(#match? @{_ts_scope(name)} "{expected_pattern}")'
-            new_block = re.sub(r'\(#match\? @\S+ "[^"]+"\)', expected_match, m.group(2), count=1)
-            text = text[: m.start()] + m.group(1) + new_block + m.group(3) + text[m.end():]
+            text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
     if not check and drifted:
         path.write_text(text)
     return drifted

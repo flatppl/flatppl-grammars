@@ -18,5 +18,5 @@ test-kate = "bash kate/test/check.sh"
 npm-install       = { cmd = "npm install --ignore-scripts && npm rebuild tree-sitter-cli", cwd = "tree-sitter" }
 gen-tree-sitter   = { cmd = "npx tree-sitter generate", cwd = "tree-sitter", depends-on = ["npm-install"] }
 test-tree-sitter  = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
-check-tree-sitter = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
+check-tree-sitter = { depends-on = ["test-tree-sitter"] }
 check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }

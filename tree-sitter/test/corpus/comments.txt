@@ -82,3 +82,34 @@ Semicolon terminates doc line
 (module
   (doc_line)
   (identifier))
+
+==================
+Inline triple-hash after statement is not a block fence
+==================
+
+x = 1 ###
+y = 2
+
+---
+
+(module
+  (binding
+    (identifier)
+    (integer))
+  (line_comment)
+  (binding
+    (identifier)
+    (integer)))
+
+==================
+Column-0 triple-hash still opens a block fence
+==================
+
+###
+this is a block
+###
+
+---
+
+(module
+  (block_comment))
