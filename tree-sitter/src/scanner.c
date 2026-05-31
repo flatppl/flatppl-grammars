@@ -1,6 +1,5 @@
 #include "tree_sitter/parser.h"
 
-#include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -268,25 +267,48 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
         advance(lexer);
         if (lexer->lookahead == '%') {
           advance(lexer);
-          // optional markup tag: md | typ (immediately, no space)
+          // Optional markup tag: per spec §05, MarkupTag ::= "md" | "typ".
+          // The opener is `%%%` optionally followed IMMEDIATELY by exactly
+          // `md` or exactly `typ`, then optional HWS, then EOL. A partial or
+          // unexpected tag (`%%%m`, `%%%ty`, `%%%mdx`, `%%%xyz`) is NOT a valid
+          // opener: we must decline so it falls back to the `%`-doc_line regex.
+          bool tag_ok = true;
           if (lexer->lookahead == 'm') {
             advance(lexer);
-            if (lexer->lookahead == 'd') advance(lexer);
+            if (lexer->lookahead == 'd') {
+              advance(lexer);
+            } else {
+              tag_ok = false; // `%%%m...` without the `d`
+            }
           } else if (lexer->lookahead == 't') {
             advance(lexer);
             if (lexer->lookahead == 'y') {
               advance(lexer);
-              if (lexer->lookahead == 'p') advance(lexer);
+              if (lexer->lookahead == 'p') {
+                advance(lexer);
+              } else {
+                tag_ok = false; // `%%%ty...`
+              }
+            } else {
+              tag_ok = false; // `%%%t...`
             }
           }
-          while (is_hws(lexer->lookahead)) advance(lexer);
-          if (is_newline(lexer->lookahead) || lexer->eof(lexer)) {
-            if (scan_fenced(lexer, "%%%")) {
-              lexer->result_symbol = DOC_BLOCK;
-              return true;
+          if (tag_ok) {
+            // After the (possibly empty) tag, only HWS then newline/EOF makes
+            // this a valid opener. Anything else (e.g. trailing `x` in
+            // `%%%mdx`) means the tag is not exactly `md`/`typ`.
+            while (is_hws(lexer->lookahead)) advance(lexer);
+            if (is_newline(lexer->lookahead) || lexer->eof(lexer)) {
+              if (scan_fenced(lexer, "%%%")) {
+                lexer->result_symbol = DOC_BLOCK;
+                return true;
+              }
+              return false;
             }
-            return false;
           }
+          // Not a valid doc-block opener (`%%%`, `%%%md`, `%%%typ` + HWS* EOL):
+          // decline so the `%`-doc_line regex handles the line.
+          return false;
         }
       }
       // Not a doc fence -> let doc_line regex handle it.
