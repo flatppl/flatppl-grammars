@@ -110,6 +110,59 @@ def check_or_update_kate(categories, *, check):
     return drifted
 
 
+# ── tree-sitter ─────────────────────────────────────────────────────────────
+
+def _ts_pattern(words):
+    return "^(" + "|".join(re.escape(w) for w in words) + ")$"
+
+
+def _ts_scope(kate_list_name):
+    _map = {
+        "specialops":  "keyword.other",
+        "kernels":     "type",
+        "combinators": "function",
+        "analysis":    "function",
+        "higherorder": "function",
+        "setctors":    "function",
+        "builtins":    "function.builtin",
+        "constants":   "constant.builtin",
+        "predefsets":  "constant",
+        "reserved":    "variable.builtin",
+    }
+    return _map.get(kate_list_name, "variable")
+
+
+def check_or_update_tree_sitter(categories, *, check):
+    """Return list of drifted GEN markers. Write fixes unless check=True."""
+    path = ROOT / "tree-sitter" / "queries" / "highlights.scm"
+    if not path.exists():
+        return []
+    text = path.read_text()
+    drifted = []
+    for cat in categories:
+        name = cat["kate_list"]
+        expected_pattern = _ts_pattern(cat["words"])
+        marker_re = re.compile(
+            rf'(; GEN:{re.escape(name)}-start\n)(.*?)(; GEN:{re.escape(name)}-end)',
+            re.DOTALL,
+        )
+        m = marker_re.search(text)
+        if m is None:
+            continue
+        match_re = re.compile(r'\(#match\? @\S+ "([^"]+)"\)')
+        existing = match_re.search(m.group(2))
+        if existing and existing.group(1) == expected_pattern:
+            continue
+        drifted.append(f"  tree-sitter: queries/highlights.scm GEN:{name}")
+        if not check:
+            expected_match = f'(#match? @{_ts_scope(name)} "{expected_pattern}")'
+            new_block = re.sub(r'\(#match\? @\S+ "[^"]+"\)', expected_match, m.group(2))
+            text = text[: m.start()] + m.group(1) + new_block + m.group(3) + text[m.end():]
+    if not check and drifted:
+        path.write_text(text)
+    return drifted
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -125,6 +178,7 @@ def main():
     drifted = []
     drifted += check_or_update_textmate(categories, check=args.check)
     drifted += check_or_update_kate(categories, check=args.check)
+    drifted += check_or_update_tree_sitter(categories, check=args.check)
 
     if drifted:
         if args.check:
