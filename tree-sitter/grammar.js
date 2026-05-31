@@ -20,7 +20,7 @@ module.exports = grammar({
     ),
 
     _sep: _ => /[\n;]+/,
-    _nl: _ => /[\n;]*/,
+    _nl: _ => /[\n;]*/, // reserved for external scanner (Task 1b); unused in skeleton
 
     _statement: $ => $.identifier,   // stub — replaced in later task
 
