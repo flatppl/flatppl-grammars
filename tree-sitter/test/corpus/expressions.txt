@@ -1,0 +1,151 @@
+=================
+Unary minus
+=================
+
+-x
+
+---
+
+(module (unary_expression (identifier)))
+
+=================
+Precedence plus before exponent
+=================
+
+a + b ^ c
+
+---
+
+(module
+  (binary_expression
+    (identifier)
+    (exponential_expression (identifier) (identifier))))
+
+=================
+Multiplicative before additive
+=================
+
+a + b * c
+
+---
+
+(module
+  (binary_expression
+    (identifier)
+    (binary_expression (identifier) (identifier))))
+
+=================
+Chained comparison
+=================
+
+a < b <= c
+
+---
+
+(module
+  (comparison_expression
+    (identifier)
+    (comparison_expression (identifier) (identifier))))
+
+=================
+Logical and
+=================
+
+a && b
+
+---
+
+(module (binary_expression (identifier) (identifier)))
+
+=================
+Broadcast add
+=================
+
+a .+ b
+
+---
+
+(module (binary_expression (identifier) (identifier)))
+
+=================
+Membership in
+=================
+
+x in reals
+
+---
+
+(module (comparison_expression (identifier) (identifier)))
+
+=================
+Exponent right associative
+=================
+
+a ^ b ^ c
+
+---
+
+(module
+  (exponential_expression
+    (identifier)
+    (exponential_expression (identifier) (identifier))))
+
+=================
+Lambda single arg
+=================
+
+x -> x
+
+---
+
+(module (lambda (identifier) (identifier)))
+
+=================
+Lambda multi arg
+=================
+
+(a, b) -> a + b
+
+---
+
+(module
+  (lambda
+    (identifier)
+    (identifier)
+    (binary_expression (identifier) (identifier))))
+
+=================
+Lambda body extends right
+=================
+
+a -> b + c
+
+---
+
+(module
+  (lambda
+    (identifier)
+    (binary_expression (identifier) (identifier))))
+
+=================
+Parenthesised expression
+=================
+
+(a + b)
+
+---
+
+(module
+  (parenthesized_expression
+    (binary_expression (identifier) (identifier))))
+
+=================
+Trailing-dot float divided
+=================
+
+1./x
+
+---
+
+(module
+  (binary_expression (float) (identifier)))

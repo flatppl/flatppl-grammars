@@ -31,6 +31,17 @@ module.exports = grammar({
     $.doc_block,
   ],
 
+  conflicts: $ => [
+    // After `( identifier`, the parser cannot yet decide whether the `(` opens a
+    // lambda parameter list, a tuple_literal, or a parenthesized_expression — all
+    // three begin `_lparen identifier`. tuple_literal and parenthesized_expression
+    // are both reachable via `_expression`, so a single conflict between `lambda`
+    // and `_expression` covers all of them (the narrower lambda/tuple_literal and
+    // lambda/parenthesized_expression conflicts are subsumed and reported as
+    // unnecessary by tree-sitter). GLR + the operator precedences resolve it.
+    [$.lambda, $._expression],
+  ],
+
   rules: {
     module: $ => seq(
       optional($._sep),
@@ -47,10 +58,64 @@ module.exports = grammar({
     _statement: $ => $._expression,
 
     _expression: $ => choice(
+      $.lambda,
+      $.binary_expression,
+      $.comparison_expression,
+      $.unary_expression,
+      $.exponential_expression,
+      $.parenthesized_expression,
       $._literal,
       $.identifier,
-      // expanded in later tasks (operators, calls, lambda, etc.)
+      // Postfix forms (call/index/field/dot-call) added in Task 5
     ),
+
+    // Lambda: lowest precedence, body extends right.
+    lambda: $ => prec.right(0, seq(
+      choice(
+        $.identifier,
+        seq(
+          $._lparen,
+          $.identifier,
+          repeat1(seq(',', $.identifier)),
+          optional(','),
+          $._rparen,
+        ),
+      ),
+      '->',
+      $._expression,
+    )),
+
+    // Precedence: OR=1, AND=2, comparison=3, additive=4, multiplicative=5, unary=6, exponential=7.
+    binary_expression: $ => choice(
+      prec.left(1, seq($._expression, choice('||', '.||'), $._expression)),
+      prec.left(2, seq($._expression, choice('&&', '.&&'), $._expression)),
+      prec.left(4, seq($._expression, choice('+', '-', '.+', '.-'), $._expression)),
+      prec.left(5, seq($._expression, choice('*', '/', '.*', './'), $._expression)),
+    ),
+
+    // `in` is a CompOp per EBNF — included here, NOT in binary_expression.
+    comparison_expression: $ => prec.left(3, seq(
+      $._expression,
+      repeat1(seq(
+        choice('<', '>', '==', '!=', '<=', '>=', 'in',
+               '.<', '.>', '.==', '.!=', '.<=', '.>='),
+        $._expression,
+      )),
+    )),
+
+    unary_expression: $ => prec.right(6, seq(
+      choice('-', '!', '.-', '.!'),
+      $._expression,
+    )),
+
+    // `^`/`.^` is ONLY here (not in binary_expression), right-assoc, prec 7.
+    exponential_expression: $ => prec.right(7, seq(
+      $._expression,
+      choice('^', '.^'),
+      $._expression,
+    )),
+
+    parenthesized_expression: $ => seq($._lparen, $._expression, $._rparen),
 
     _literal: $ => choice(
       $.integer,
