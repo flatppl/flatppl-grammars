@@ -12,7 +12,10 @@ nodejs = ">=20,<21"
 gen-grammars = "python tools/gen-grammars.py"
 check-grammars = "python tools/gen-grammars.py --check"
 test-kate = "bash kate/test/check.sh"
-npm-install       = { cmd = "npm install --ignore-scripts", cwd = "tree-sitter" }
+# --ignore-scripts skips the package's own native binding build (not needed for
+# generate/test), but also skips tree-sitter-cli's postinstall binary download;
+# `npm rebuild` re-runs that one package's install script to fetch the binary.
+npm-install       = { cmd = "npm install --ignore-scripts && npm rebuild tree-sitter-cli", cwd = "tree-sitter" }
 gen-tree-sitter   = { cmd = "npx tree-sitter generate", cwd = "tree-sitter", depends-on = ["npm-install"] }
 test-tree-sitter  = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
 check-tree-sitter = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
