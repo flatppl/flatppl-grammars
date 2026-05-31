@@ -209,11 +209,16 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
 
     if (is_newline(c)) {
       if (s->bracket_depth > 0) {
-        // Inside unclosed ( or [ : implicit line continuation. Decline without
-        // consuming so tree-sitter's own extras lexer eats the newline as
-        // ordinary whitespace (newline is in the `extras` regex). This keeps
-        // every parse stack consistent: no stack sees a NEWLINE token here.
-        return false;
+        // Inside unclosed ( or [ : implicit line continuation. The scanner
+        // itself skips the newline as ordinary whitespace and keeps scanning,
+        // rather than declining and leaving the `\n` for tree-sitter's extras
+        // lexer. Deferring to extras breaks when a newline sits immediately
+        // before a closing bracket (e.g. `(x\n)` / `[x\n]`): the external-only
+        // closing-bracket token is not valid in the state the parser resyncs
+        // to, producing an ERROR node. Skipping here keeps every parse stack
+        // consistent: no stack ever sees a NEWLINE token inside brackets.
+        skip(lexer);
+        continue;
       }
       if (valid_symbols[NEWLINE]) {
         // Consume this newline (and collapse trailing CR of CRLF) as the token.
