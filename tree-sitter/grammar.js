@@ -47,7 +47,7 @@ module.exports = grammar({
     _statement: $ => $.identifier,   // stub — replaced in later task
 
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
-    line_comment: _ => token(seq('#', /.*/)),
-    doc_line: _ => token(seq('%', /.*/)),
+    line_comment: _ => token(seq('#', /[^\n;]*/)),
+    doc_line: _ => token(seq('%', /[^\n;]*/)),
   },
 });

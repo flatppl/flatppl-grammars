@@ -99,7 +99,7 @@
           },
           {
             "type": "PATTERN",
-            "value": ".*"
+            "value": "[^\\n;]*"
           }
         ]
       }
@@ -115,7 +115,7 @@
           },
           {
             "type": "PATTERN",
-            "value": ".*"
+            "value": "[^\\n;]*"
           }
         ]
       }

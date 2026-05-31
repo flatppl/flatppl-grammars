@@ -58,3 +58,27 @@ x % trailing doc
 (module
   (identifier)
   (doc_line))
+
+==================
+Semicolon terminates line comment
+==================
+
+# a; b
+
+---
+
+(module
+  (line_comment)
+  (identifier))
+
+==================
+Semicolon terminates doc line
+==================
+
+% a; b
+
+---
+
+(module
+  (doc_line)
+  (identifier))
