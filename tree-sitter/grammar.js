@@ -170,6 +170,7 @@ module.exports = grammar({
       $.all_selector,
       $.only_selector,
       $.singleton_selector,
+      $.axis_name,
       $._expression,
     ),
 

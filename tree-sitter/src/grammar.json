@@ -540,6 +540,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "axis_name"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_expression"
         }
       ]

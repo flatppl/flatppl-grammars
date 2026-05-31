@@ -19,6 +19,7 @@ probabilistic models.
   language), plus injections: `flatppl-markdown` (fenced ` ```flatppl `
   code blocks), `flatppl-python` (`flatppl(r"""…""")`),
   `flatppl-julia` (`flatppl"""…"""`).
+* [tree-sitter grammar](tree-sitter) — hand-written `grammar.js` + external scanner, with `queries/highlights.scm`; keyword lists synced from `keyword-lists.json` via `tools/gen-grammars.py` (same source as TextMate/Kate). Corpus tests under `tree-sitter/test/`.
 * [Kate / skylighting definition](kate) — `flatppl.xml`, consumed by
   Pandoc via `--syntax-definition=flatppl.xml` to highlight fenced
   ` ```flatppl ` blocks in HTML/LaTeX output. Hand-ported from the

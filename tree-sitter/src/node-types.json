@@ -916,6 +916,10 @@
           "named": true
         },
         {
+          "type": "axis_name",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },

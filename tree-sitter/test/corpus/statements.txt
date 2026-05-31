@@ -104,3 +104,21 @@ x = 1; y = 2
 (module
   (binding (identifier) (integer))
   (binding (identifier) (integer)))
+
+====================
+Aggregate binding with axis-name index args in body
+====================
+
+C[.i, .k] := A[.i, .k]
+
+---
+
+(module
+  (aggregate_binding
+    (identifier)
+    (axis_name (identifier))
+    (axis_name (identifier))
+    (index_expression
+      (identifier)
+      (axis_name (identifier))
+      (axis_name (identifier)))))
