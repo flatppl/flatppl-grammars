@@ -6,9 +6,14 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 python = ">=3.11,<4"
 pandoc = ">=3.9,<4"
 pre-commit = ">=4,<5"
+nodejs = ">=20,<21"
 
 [tasks]
 gen-grammars = "python tools/gen-grammars.py"
 check-grammars = "python tools/gen-grammars.py --check"
 test-kate = "bash kate/test/check.sh"
-check = { depends-on = ["check-grammars", "test-kate"] }
+npm-install       = "npm --prefix tree-sitter install"
+gen-tree-sitter   = { cmd = "npm --prefix tree-sitter run generate", depends-on = ["npm-install"] }
+test-tree-sitter  = { cmd = "npm --prefix tree-sitter test", depends-on = ["gen-tree-sitter"] }
+check-tree-sitter = { cmd = "npm --prefix tree-sitter test", depends-on = ["gen-tree-sitter"] }
+check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }
