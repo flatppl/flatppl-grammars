@@ -94,6 +94,11 @@ module.exports = grammar({
     ),
 
     // `in` is a CompOp per EBNF — included here, NOT in binary_expression.
+    // NOTE: although the rule looks like a flat repeat1 chain, the parser produces
+    // RIGHT-NESTED trees for `a < b <= c` (i.e. comparison_expression(a,
+    // comparison_expression(b, c))) because the right operand is a full _expression;
+    // downstream consumers must walk the nesting to recover chained-comparison
+    // semantics (a<b ∧ b<=c).
     comparison_expression: $ => prec.left(3, seq(
       $._expression,
       repeat1(seq(
