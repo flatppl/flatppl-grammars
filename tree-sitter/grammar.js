@@ -67,7 +67,72 @@ module.exports = grammar({
       $._literal,
       $.identifier,
       // Postfix forms (call/index/field/dot-call) added in Task 5
+      $.call_expression,
+      $.index_expression,
+      $.field_access,
+      $.dot_call,
     ),
+
+    // Postfix: left-recursive, highest binding (prec 8).
+    call_expression: $ => prec.left(8, seq(
+      $._expression,
+      $._lparen,
+      optional($.argument_list),
+      $._rparen,
+    )),
+
+    argument_list: $ => seq(
+      $._argument,
+      repeat(seq(',', $._argument)),
+      optional(','),
+    ),
+
+    _argument: $ => choice(
+      $.keyword_argument,
+      $._expression,
+    ),
+
+    keyword_argument: $ => seq($.identifier, '=', $._expression),
+
+    field_access: $ => prec.left(8, seq(
+      $._expression,
+      '.',
+      $.identifier,
+    )),
+
+    dot_call: $ => prec.left(8, seq(
+      $._expression,
+      '.',
+      $._lparen,
+      optional($.argument_list),
+      $._rparen,
+    )),
+
+    index_expression: $ => prec.left(8, seq(
+      $._expression,
+      $._lbracket,
+      $._index_arg,
+      repeat(seq(',', $._index_arg)),
+      $._rbracket,
+    )),
+
+    _index_arg: $ => choice(
+      $.slice_selector,
+      $.all_selector,
+      $.only_selector,
+      $.singleton_selector,
+      $._expression,
+    ),
+
+    slice_selector: _ => ':',
+    all_selector:   _ => 'all',
+    only_selector:  _ => 'only',
+
+    // Singleton selector: a bare '!' as an index argument. NO regex lookahead
+    // (unsupported). Disambiguated from unary-not (!expr) by GLR: when '!' is
+    // followed by ',' or ']' there is no operand, so only singleton_selector
+    // parses; when followed by an expression, unary_expression wins.
+    singleton_selector: _ => '!',
 
     // Lambda: lowest precedence, body extends right.
     lambda: $ => prec.right(0, seq(

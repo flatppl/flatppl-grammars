@@ -1,0 +1,192 @@
+=====================
+Positional call
+=====================
+
+f(x, y)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list (identifier) (identifier))))
+
+=====================
+Keyword call
+=====================
+
+f(a = 1, b = 2)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list
+      (keyword_argument (identifier) (integer))
+      (keyword_argument (identifier) (integer)))))
+
+=====================
+Mixed call
+=====================
+
+f(x, a = 1)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (keyword_argument (identifier) (integer)))))
+
+=====================
+Multiline call
+=====================
+
+f(
+  x,
+  y,
+)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list (identifier) (identifier))))
+
+=====================
+Field access
+=====================
+
+r.field
+
+---
+
+(module
+  (field_access (identifier) (identifier)))
+
+=====================
+Dot-call broadcast
+=====================
+
+v.(x, y)
+
+---
+
+(module
+  (dot_call
+    (identifier)
+    (argument_list (identifier) (identifier))))
+
+=====================
+Index simple
+=====================
+
+A[i]
+
+---
+
+(module
+  (index_expression (identifier) (identifier)))
+
+=====================
+Index multi-dim
+=====================
+
+A[i, j]
+
+---
+
+(module
+  (index_expression (identifier) (identifier) (identifier)))
+
+=====================
+Index slice colon
+=====================
+
+A[:, j]
+
+---
+
+(module
+  (index_expression
+    (identifier)
+    (slice_selector)
+    (identifier)))
+
+=====================
+Index all keyword
+=====================
+
+A[all, j]
+
+---
+
+(module
+  (index_expression
+    (identifier)
+    (all_selector)
+    (identifier)))
+
+=====================
+Index only keyword
+=====================
+
+A[only, j]
+
+---
+
+(module
+  (index_expression
+    (identifier)
+    (only_selector)
+    (identifier)))
+
+=====================
+Index singleton bang
+=====================
+
+A[!]
+
+---
+
+(module
+  (index_expression
+    (identifier)
+    (singleton_selector)))
+
+=====================
+Index bang with axes
+=====================
+
+v[all, only, :, !]
+
+---
+
+(module
+  (index_expression
+    (identifier)
+    (all_selector)
+    (only_selector)
+    (slice_selector)
+    (singleton_selector)))
+
+=====================
+Chained postfix
+=====================
+
+f(x).field[0]
+
+---
+
+(module
+  (index_expression
+    (field_access
+      (call_expression
+        (identifier)
+        (argument_list (identifier)))
+      (identifier))
+    (integer)))
