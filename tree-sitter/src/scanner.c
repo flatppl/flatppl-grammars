@@ -152,12 +152,13 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
   //    bracket exactly once, so the depth counter is reliable.
   //
   //  - On a NEWLINE: if `bracket_depth > 0` we are inside an unclosed `(`/`[`,
-  //    so the newline is implicit line continuation: decline (return false)
-  //    WITHOUT consuming, letting tree-sitter's own extras lexer absorb the
-  //    `\n` as ordinary whitespace (`\n` is in the grammar's `extras` regex).
-  //    Declining instead of skipping keeps every GLR parse stack consistent --
-  //    no stack ever sees a NEWLINE token inside brackets. Otherwise (depth ==
-  //    0) emit NEWLINE when it is in `valid_symbols`; if not valid, skip it.
+  //    so the newline is implicit line continuation: the scanner itself SKIPS
+  //    the `\n` as whitespace (`skip(lexer)`) and keeps scanning. Skipping here
+  //    keeps every GLR parse stack consistent -- no stack ever sees a NEWLINE
+  //    token inside brackets. Deferring to tree-sitter's extras lexer was
+  //    rejected because it breaks a newline immediately before a closing
+  //    bracket (e.g. `(x\n)` / `[x\n]`). Otherwise (depth == 0) emit NEWLINE
+  //    when it is in `valid_symbols`; if not valid, skip it.
   //
   //  - On `###` / `%%%` fence openers: emit the fenced comment token.
 

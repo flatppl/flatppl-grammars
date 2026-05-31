@@ -59,7 +59,7 @@
 (axis_name (identifier) @property)
 
 ; Keyword-argument names
-(keyword_argument (identifier) @variable.parameter)
+(keyword_argument . (identifier) @variable.parameter)
 
 ; ── Capture ordering: tree-sitter uses LAST-match-wins, so more-specific
 ;    captures must appear AFTER less-specific ones.
@@ -74,7 +74,7 @@
 (identifier) @variable
 
 ; Field access member (overrides @variable for `r.field`'s field component)
-(field_access (identifier) @variable.member)
+(field_access (identifier) @variable.member .)
 
 ; Function calls — generic callee (overrides @variable; overridden by GEN keyword blocks)
 (call_expression (identifier) @function.call)
