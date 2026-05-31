@@ -6,7 +6,7 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 python = ">=3.11,<4"
 pandoc = ">=3.9,<4"
 pre-commit = ">=4,<5"
-nodejs = ">=20,<21"
+nodejs = ">=24,<25"
 
 [tasks]
 gen-grammars = "python tools/gen-grammars.py"
