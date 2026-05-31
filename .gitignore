@@ -3,6 +3,7 @@
 *.swp
 *~
 .vscode/
+pixi.lock
 
 # Future tree-sitter build artifacts (parser.c is checked in deliberately,
 # but build/ and node_modules/ are generated and not tracked)
