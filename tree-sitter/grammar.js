@@ -151,15 +151,22 @@ module.exports = grammar({
       $._rparen,
     )),
 
+    // §05 CallArgs: PositionalArgs | KeywordArgs | MixedArgs. A keyword arg may
+    // only FOLLOW positionals — `f(a = 1, x)` (keyword before positional) is
+    // rejected. Two branches: all-keyword, or positionals-then-(optional)-keywords.
     argument_list: $ => seq(
-      $._argument,
-      repeat(seq(',', $._argument)),
+      choice(
+        seq(
+          $.keyword_argument,
+          repeat(seq(',', $.keyword_argument)),
+        ),
+        seq(
+          $._expression,
+          repeat(seq(',', $._expression)),
+          repeat(seq(',', $.keyword_argument)),
+        ),
+      ),
       optional(','),
-    ),
-
-    _argument: $ => choice(
-      $.keyword_argument,
-      $._expression,
     ),
 
     keyword_argument: $ => seq($.identifier, '=', $._expression),
