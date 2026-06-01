@@ -9,6 +9,15 @@ The spec lives in a SEPARATE repo (flatppl-design). If the docs directory is
 absent (e.g. in flatppl-grammars CI, where that repo is not checked out) the
 check SKIPS with exit 0 so it never breaks an isolated build.
 
+SCOPE / LIMITATIONS (this is a completeness tripwire, not a full validator):
+  * Presence-only. A name is "covered" if it appears in ANY category. It does
+    NOT verify the name landed in the CORRECT category (e.g. a builtin filed
+    under predefsets still passes).
+  * First-cell-only extraction. doc_function_names() reads the first backticked
+    token of each table row; names in a non-first column, or multiple names in
+    one row, are not seen. Tables in 07-functions.md must put the function name
+    in the first column for it to be checked.
+
 Usage:
     check-spec-keywords.py [--docs-dir DIR]
 Env:

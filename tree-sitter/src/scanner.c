@@ -142,6 +142,10 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
   // (a missing `)`/`]`), letting statements after the unclosed bracket re-parse
   // instead of merging. On VALID input this is never true, so multi-line and
   // blank-line-in-brackets continuation (spec §05) is completely unaffected.
+  //
+  // FRAGILE: this relies on tree-sitter's undocumented "all external symbols
+  // valid during error recovery" behavior. Verified on CLI 0.26.9; the
+  // scanner.txt corpus tests guard it. RE-VERIFY ON ANY tree-sitter CLI BUMP.
   bool error_recovery =
       valid_symbols[NEWLINE] && valid_symbols[BLOCK_COMMENT] &&
       valid_symbols[DOC_BLOCK] && valid_symbols[LPAREN] &&
@@ -243,6 +247,9 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
         continue;
       }
       if (s->bracket_depth > 0) {
+        // Reached only when error_recovery is true: the `!error_recovery` branch
+        // above already `continue`d for the balanced/continuation case, so a
+        // depth>0 newline that falls through to here means we are in recovery.
         // error_recovery && depth>0: the input is UNBALANCED (a missing `)`/`]`),
         // so this newline is a real statement separator that depth-suppression
         // would otherwise swallow, merging every later statement (review M3). We

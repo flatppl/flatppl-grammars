@@ -196,7 +196,7 @@
           "match": "\\bin\\b"
         },
         {
-          "comment": "Axis selectors (spec §07). Both the keywords `all`/`only` and the surface symbols `:` (always a slice marker in FlatPPL) and `!` (when immediately followed by `,` or `]` inside `[...]`) share the same scope so they're visually distinguishable from arithmetic / logical operators. The `!(?=[,\\]])` lookahead matches the singleton-axis usage; bare `!` (logical NOT) is handled by the logical-operator pattern above.",
+          "comment": "Axis-selector surface symbols `:` (always a slice marker in FlatPPL) and `!` (when immediately followed by `,` or `]` inside `[...]`). Scoped distinctly from arithmetic / logical operators. The keywords `all`/`only` are NOT matched here -- they resolve via the `#selector-keyword` rule under `keyword.other.selector.flatppl`. The `!(?=[,\\]])` lookahead matches the singleton-axis usage; bare `!` (logical NOT) is handled by the logical-operator pattern above.",
           "name": "keyword.operator.selector.flatppl",
           "match": ":|!(?=[,\\]])"
         }
