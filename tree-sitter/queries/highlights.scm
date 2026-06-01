@@ -141,8 +141,10 @@
 ; Axis names (position-specific: a `.name` axis label, overrides keyword scope)
 (axis_name (axis_id) @property)
 
-; Axis variance markers (`^` upper / `_` lower)
-(variance_marker) @keyword.operator
+; Axis variance markers (`^` upper / `_` lower). Coloured as @property to match
+; the axis name (axis_id above) so `.sigma^` reads as one unit, NOT as an
+; operator -- the marker is part of the axis label, not arithmetic `^`.
+(variance_marker) @property
 
 ; Metric-sum binding metric-prefix colon (`metric: result[...] := expr`)
 (metricsum_binding ":" @keyword.operator)

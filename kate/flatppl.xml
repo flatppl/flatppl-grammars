@@ -99,8 +99,11 @@
       </context>
 
       <!-- Reached right after an axis/field name: colour a trailing variance
-           marker ('^'/'_') then pop; otherwise pop immediately (plain field
-           access). The empty fallback RegExpr never consumes input. -->
+           marker ('^'/'_') with the SAME style as the axis name (Variance ->
+           dsAttribute) so '.sigma^' reads as one unit and the '^' is not
+           mistaken for arithmetic exponentiation; then pop. Otherwise pop
+           immediately (plain field access). The empty fallback RegExpr never
+           consumes input. -->
       <context name="AxisMaybeVariance" attribute="Normal Text" lineEndContext="#pop" fallthrough="true" fallthroughContext="#pop">
         <RegExpr String="[\^_]" attribute="Variance" context="#pop"/>
       </context>
@@ -133,7 +136,7 @@
       <itemData name="Reserved"      defStyleNum="dsVariable"/>
       <itemData name="Member"        defStyleNum="dsAttribute"/>
       <itemData name="Operator"      defStyleNum="dsOperator"/>
-      <itemData name="Variance"      defStyleNum="dsOperator"/>
+      <itemData name="Variance"      defStyleNum="dsAttribute"/>
       <itemData name="Placeholder"   defStyleNum="dsAnnotation"/>
       <itemData name="Hole"          defStyleNum="dsRegionMarker"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>
