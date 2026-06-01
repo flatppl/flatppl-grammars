@@ -1,0 +1,1 @@
+g: C[.mu^, .nu_] := L1[.alpha^, .beta_] * L2[.beta^, .gamma_]

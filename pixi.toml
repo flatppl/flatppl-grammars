@@ -33,5 +33,11 @@ test-tree-sitter   = { cmd = "bash test/run-capped.sh bash test/run-corpus.sh", 
 # Stress harness (500MB cap). Depends on test-tree-sitter so the two NEVER run
 # concurrently — tests are serialized end to end (gen -> corpus -> stress).
 stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitter", depends-on = ["test-tree-sitter"] }
-check-tree-sitter  = { depends-on = ["stress-tree-sitter"] }
+# Highlight-scope regression check via `tree-sitter query` (~6MB), NOT
+# `tree-sitter test` — the latter's highlight-assertion phase balloons RSS
+# (180MB -> 735MB from a few assertions, past the CI cap). Chained AFTER stress
+# so all tree-sitter runs stay serialized (never concurrent -> never OOM).
+# Asserts §05 axis variance markers ^/_ are captured as @property, not operators.
+test-highlight-query = { cmd = "bash test/run-capped.sh bash test/query/check.sh", cwd = "tree-sitter", depends-on = ["stress-tree-sitter"] }
+check-tree-sitter  = { depends-on = ["test-highlight-query"] }
 check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }
