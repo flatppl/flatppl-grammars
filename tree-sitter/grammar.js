@@ -103,8 +103,11 @@ module.exports = grammar({
     aggregate_binding: $ => seq(
       $.identifier,
       $._lbracket,
-      $.axis_name,
-      repeat(seq(',', $.axis_name)),
+      // §05: the axis list may be empty (`x[] := expr`) for full reduction to a scalar.
+      optional(seq(
+        $.axis_name,
+        repeat(seq(',', $.axis_name)),
+      )),
       $._rbracket,
       ':=',
       $._expression,
