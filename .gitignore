@@ -11,6 +11,9 @@ node_modules/
 build/
 docs/
 
-# Python bytecode cache
+# Python bytecode & tool caches
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

@@ -1,84 +1,39 @@
 # FlatPPL Grammars
 
-Editor grammar definitions for FlatPPL, the Flat Portable Probabilistic
-Language.
+Editor grammar definitions for FlatPPL — the Flat Portable Probabilistic
+Language, a minimal, inference-agnostic language for specifying probabilistic
+models.
 
-There is one canonical FlatPPL surface syntax. The grammars also
-provide **injection** grammars for FlatPPL embedded in host languages
-— `flatppl(r"""…""")` in Python and `flatppl"""…"""` in Julia — so
-editors highlight the embedded model with the FlatPPL grammar.
+They also provide **injection** grammars so editors highlight FlatPPL embedded
+in host languages: `flatppl(r"""…""")` in Python, `flatppl"""…"""` in Julia, and
+` ```flatppl ` fenced blocks in Markdown.
 
-## About FlatPPL
+## Grammars
 
-FlatPPL is a minimal, inference-agnostic stochastic language for specifying
-probabilistic models.
+| Target | File | Used by |
+| --- | --- | --- |
+| [TextMate](textmate) | `flatppl.tmLanguage.json` | VS Code, GitHub, … |
+| [tree-sitter](tree-sitter) | `grammar.js` + `src/scanner.c` | Neovim, Helix, … |
+| [Kate / skylighting](kate) | `flatppl.xml` | Pandoc highlighting |
 
-## Available grammars
+Keyword lists for all three are single-sourced from `keyword-lists.json`.
 
-* [TextMate grammar](textmate) — `flatppl.tmLanguage.json` (the
-  language), plus injections: `flatppl-markdown` (fenced ` ```flatppl `
-  code blocks), `flatppl-python` (`flatppl(r"""…""")`),
-  `flatppl-julia` (`flatppl"""…"""`).
-* [tree-sitter grammar](tree-sitter) — hand-written `grammar.js` + external scanner, with `queries/highlights.scm`; keyword lists synced from `keyword-lists.json` via `tools/gen-grammars.py` (same source as TextMate/Kate). Corpus tests under `tree-sitter/test/`. The `Makefile` (`tree-sitter/Makefile`) builds a static/shared library from the generated `parser.c` for potential future engine embedding (e.g. Julia/Rust/Python), not just editor use — it is intentional, not leftover scaffold.
-* [Kate / skylighting definition](kate) — `flatppl.xml`, consumed by
-  Pandoc via `--syntax-definition=flatppl.xml` to highlight fenced
-  ` ```flatppl ` blocks in HTML/LaTeX output. Hand-ported from the
-  TextMate grammar; keep the two in sync. Regression harness:
-  `kate/test/check.sh`. Three deliberate divergences from the TextMate
-  grammar, all forced by skylighting/Pandoc: (1) generic function-calls
-  are left un-highlighted (skylighting's `dsOther` emits no HTML class);
-  (2) the lookbehind assertions in the TextMate number/hole/assignment
-  rules are replaced by rule ordering (skylighting lookbehind is
-  unreliable; lookahead is fine); (3) builtin names are matched as a
-  keyword list (no `(?=\s*\()` call-context guard — Kate keyword lists
-  can't take a lookahead), so a builtin name highlights even where it
-  isn't a call. These names are reserved in FlatPPL, so the colouring is
-  semantically correct.
+## Development
 
-## Spell-checker vocabulary
+```sh
+pixi run check         # run all checks (CI runs the same)
+pixi run gen-grammars  # regenerate grammars from keyword-lists.json
+```
 
-[`cspell/flatppl-words.txt`](cspell/flatppl-words.txt) is the canonical
-[Code Spell Checker](https://cspell.org) dictionary of FlatPPL
-builtins / keywords.
+See [CONTRIBUTING.md](CONTRIBUTING.md) to add builtins, operators, brackets, or
+new editor targets.
 
-## Extending the grammars
+## Notes
 
-Concrete steps for common changes. Verify your edits with `pixi run check`
-(CI runs the same).
-
-* **Add a builtin / keyword.** Add the word to the right category in
-  `keyword-lists.json` (each category carries a `ts_scope` that drives
-  tree-sitter highlighting), then run `pixi run gen-grammars`. CI's
-  `pixi run check-grammars` fails if you forget to regenerate.
-* **Add an operator (infix/unary).** Add it to the relevant precedence rule
-  in `tree-sitter/grammar.js` (`binary_expression`, `unary_expression`,
-  `comparison_expression`, or `exponential_expression`), add the operator
-  to the operator token list in `tree-sitter/queries/highlights.scm`, and
-  add a corpus entry under `tree-sitter/test/corpus/`.
-* **Add a postfix form.** Add a left-recursive rule in `grammar.js`
-  analogous to `call_expression` / `field_access` / `dot_call` /
-  `index_expression`; add corpus.
-* **Add a fence-style comment/string.** Add a `TokenType` enum value plus a
-  scan block in `tree-sitter/src/scanner.c` (mirror the `###` / `%%%`
-  blocks), add the token to `externals` in `grammar.js`, and add corpus. If
-  it needs more than `bracket_depth` state, update the serialize/deserialize
-  functions too.
-* **Add a new bracket pair.** Add `_l*` / `_r*` symbols to `externals`, to
-  the scanner's bracket switch, and to the grammar rules; update the
-  bracket-depth serialisation if the pair participates in line continuation.
-* **Add a new editor / publication target.** Add a `check_or_update_<target>`
-  sink in `tools/gen-grammars.py`, register it in `main()`, and add a CI step.
-
-Discipline: land the grammar, the scanner (if touched), the corpus, and the
-highlights in the **same commit** — one feature per commit.
-
-## pixi.lock policy
-
-`pixi.lock` is gitignored deliberately, as an ecosystem-wide FlatPPL policy:
-we favour a lighter VCS footprint and accept conda-forge package drift over a
-strict environment lock. This runs counter to pixi's own default
-recommendation to commit the lockfile, so the temptation to add it is
-expected — please don't.
+- [`cspell/flatppl-words.txt`](cspell/flatppl-words.txt) — canonical spell-check
+  dictionary of FlatPPL builtins / keywords.
+- `pixi.lock` is gitignored deliberately (ecosystem-wide policy: a lighter VCS
+  footprint over a strict environment lock). Please don't add it.
 
 ## License
 
