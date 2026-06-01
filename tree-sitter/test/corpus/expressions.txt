@@ -186,7 +186,7 @@ Trailing-dot float divided
 Illegal lambda: single arg in parens
 =================
 
-(a) -> b
+(single_parenthesized_argument_is_still_an_illegal_lambda) -> b
 
 ---
 
