@@ -259,16 +259,27 @@
   {
     "type": "axis_name",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "axis_id",
+            "named": true
+          }
+        ]
+      },
+      "variance": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "variance_marker",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -1225,6 +1236,114 @@
     }
   },
   {
+    "type": "metricsum_binding",
+    "named": true,
+    "fields": {
+      "metric": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "result": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_name",
+          "named": true
+        },
+        {
+          "type": "binary_expression",
+          "named": true
+        },
+        {
+          "type": "boolean",
+          "named": true
+        },
+        {
+          "type": "call_expression",
+          "named": true
+        },
+        {
+          "type": "comparison_expression",
+          "named": true
+        },
+        {
+          "type": "dot_call",
+          "named": true
+        },
+        {
+          "type": "exponential_expression",
+          "named": true
+        },
+        {
+          "type": "field_access",
+          "named": true
+        },
+        {
+          "type": "float",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "index_expression",
+          "named": true
+        },
+        {
+          "type": "integer",
+          "named": true
+        },
+        {
+          "type": "lambda",
+          "named": true
+        },
+        {
+          "type": "logical_expression",
+          "named": true
+        },
+        {
+          "type": "parenthesized_expression",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        },
+        {
+          "type": "tuple_literal",
+          "named": true
+        },
+        {
+          "type": "unary_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "module",
     "named": true,
     "root": true,
@@ -1299,6 +1418,10 @@
         },
         {
           "type": "logical_expression",
+          "named": true
+        },
+        {
+          "type": "metricsum_binding",
           "named": true
         },
         {
@@ -1415,6 +1538,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "slice_selector",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "string",
@@ -1856,6 +1984,10 @@
     "named": false
   },
   {
+    "type": ":",
+    "named": false
+  },
+  {
     "type": ":=",
     "named": false
   },
@@ -1890,6 +2022,10 @@
   {
     "type": "^",
     "named": false
+  },
+  {
+    "type": "axis_id",
+    "named": true
   },
   {
     "type": "block_comment",
@@ -1940,7 +2076,7 @@
     "extra": true
   },
   {
-    "type": "slice_selector",
+    "type": "variance_marker",
     "named": true
   },
   {

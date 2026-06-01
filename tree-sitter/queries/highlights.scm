@@ -102,7 +102,7 @@
 
 ; GEN:higherorder-start
 ((identifier) @function
- (#match? @function "^(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate)$"))
+ (#match? @function "^(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate|metricsum)$"))
 ; GEN:higherorder-end
 
 ; GEN:setctors-start
@@ -134,7 +134,13 @@
 (axis_name "." @punctuation.special)
 
 ; Axis names (position-specific: a `.name` axis label, overrides keyword scope)
-(axis_name (identifier) @property)
+(axis_name (axis_id) @property)
+
+; Axis variance markers (`^` upper / `_` lower)
+(variance_marker) @keyword.operator
+
+; Metric-sum binding metric-prefix colon (`metric: result[...] := expr`)
+(metricsum_binding ":" @keyword.operator)
 
 ; Keyword-argument names (position-specific: a kwarg label, even if it matches a builtin name)
 (keyword_argument . (identifier) @variable.parameter)

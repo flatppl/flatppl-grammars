@@ -44,7 +44,7 @@
       "tm_suffix": "",
       "ts_scope": "function",
       "words": ["broadcast", "broadcasted", "reduce", "scan", "fchain",
-                "bijection", "aggregate"]
+                "bijection", "aggregate", "metricsum"]
     },
     {
       "kate_list": "setctors",

@@ -61,8 +61,8 @@ C[.i, .k] := expr
 (module
   (aggregate_binding
     (identifier)
-    (axis_name (identifier))
-    (axis_name (identifier))
+    (axis_name (axis_id))
+    (axis_name (axis_id))
     (identifier)))
 
 ====================
@@ -129,9 +129,43 @@ C[.i, .k] := A[.i, .k]
 (module
   (aggregate_binding
     (identifier)
-    (axis_name (identifier))
-    (axis_name (identifier))
+    (axis_name (axis_id))
+    (axis_name (axis_id))
     (index_expression
       (identifier)
-      (axis_name (identifier))
-      (axis_name (identifier)))))
+      (axis_name (axis_id))
+      (axis_name (axis_id)))))
+
+====================
+Metricsum binding
+====================
+
+g: C[.i, .k] := A[.i] * B[.k]
+
+---
+
+(module
+  (metricsum_binding
+    (identifier)
+    (identifier)
+    (axis_name (axis_id))
+    (axis_name (axis_id))
+    (binary_expression
+      (index_expression (identifier) (axis_name (axis_id)))
+      (index_expression (identifier) (axis_name (axis_id))))))
+
+====================
+Metricsum binding with variance markers
+====================
+
+g: C[.mu^, .nu_] := x
+
+---
+
+(module
+  (metricsum_binding
+    (identifier)
+    (identifier)
+    (axis_name (axis_id) (variance_marker))
+    (axis_name (axis_id) (variance_marker))
+    (identifier)))
