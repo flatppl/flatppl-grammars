@@ -102,7 +102,7 @@
 
 ; GEN:higherorder-start
 ((identifier) @function
- (#match? @function "^(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate)$"))
+ (#match? @function "^(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate|metricsum)$"))
 ; GEN:higherorder-end
 
 ; GEN:setctors-start

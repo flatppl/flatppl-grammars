@@ -26,7 +26,7 @@
       <item>likelihoodof</item><item>joint_likelihood</item><item>densityof</item><item>logdensityof</item><item>bayesupdate</item><item>disintegrate</item><item>restrict</item>
     </list>
     <list name="higherorder">
-      <item>broadcast</item><item>broadcasted</item><item>reduce</item><item>scan</item><item>fchain</item><item>bijection</item><item>aggregate</item>
+      <item>broadcast</item><item>broadcasted</item><item>reduce</item><item>scan</item><item>fchain</item><item>bijection</item><item>aggregate</item><item>metricsum</item>
     </list>
     <list name="setctors">
       <item>interval</item><item>cartprod</item><item>cartpow</item><item>stdsimplex</item>

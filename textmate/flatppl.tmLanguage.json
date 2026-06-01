@@ -127,7 +127,7 @@
     },
     "higher-order": {
       "comment": "Higher-order callables and function annotations. `aggregate` (spec §04 §sec:aggregate) is the multi-axis tensor contraction; axis labels `.name` inside its body are picked up by the dot-access pattern.",
-      "match": "\\b(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate)\\b",
+      "match": "\\b(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate|metricsum)\\b",
       "name": "entity.name.function.higher-order.flatppl"
     },
     "set-constructor": {
