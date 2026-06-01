@@ -1,0 +1,2 @@
+y = A[a, b, c, d, e, f, g, h, i, j, k, l, m, n]
+C[.i, .j, .k, .l, .m, .n, .o, .p] := a + b + c + d

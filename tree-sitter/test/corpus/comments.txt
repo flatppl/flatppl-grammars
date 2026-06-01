@@ -1,0 +1,115 @@
+==================
+Line comment alone
+==================
+
+# plain comment
+
+---
+
+(module
+  (line_comment))
+
+==================
+Doc line alone
+==================
+
+% inline doc
+
+---
+
+(module
+  (doc_line))
+
+==================
+Mixed comments and statement
+==================
+
+# before
+x
+# after
+
+---
+
+(module
+  (line_comment)
+  (identifier)
+  (line_comment))
+
+==================
+Trailing line comment after statement
+==================
+
+x # trailing
+
+---
+
+(module
+  (identifier)
+  (line_comment))
+
+==================
+Trailing doc line after statement
+==================
+
+x % trailing doc
+
+---
+
+(module
+  (identifier)
+  (doc_line))
+
+==================
+Semicolon terminates line comment
+==================
+
+# a; b
+
+---
+
+(module
+  (line_comment)
+  (identifier))
+
+==================
+Semicolon terminates doc line
+==================
+
+% a; b
+
+---
+
+(module
+  (doc_line)
+  (identifier))
+
+==================
+Inline triple-hash after statement is not a block fence
+==================
+
+x = 1 ###
+y = 2
+
+---
+
+(module
+  (binding
+    (identifier)
+    (integer))
+  (line_comment)
+  (binding
+    (identifier)
+    (integer)))
+
+==================
+Column-0 triple-hash still opens a block fence
+==================
+
+###
+this is a block
+###
+
+---
+
+(module
+  (block_comment))

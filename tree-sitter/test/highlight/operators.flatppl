@@ -1,0 +1,36 @@
+# Highlight-assertion tests for operator / punctuation scopes.
+# (`#` is the FlatPPL line comment; `;` is a statement separator, so headers use `#`.)
+
+# --- sampling / binder operator ~ ---
+x ~ Normal(0, 1)
+# <- variable
+# ^ keyword.operator
+
+# --- plain binding = (must stay @operator, NOT keyword.operator) ---
+y = 2
+# <- variable
+# ^ operator
+
+# --- arithmetic * (must be @operator, proving it differs from ~) ---
+z = x * y
+#     ^ operator
+
+# --- aggregate binding := ---
+C[.i] := x
+#     ^ keyword.operator
+
+# --- axis sigil . (inside axis_name, distinct from list punctuation) ---
+C[.i] := x
+# ^ punctuation.special
+
+# --- axis name identifier ---
+C[.i] := x
+#  ^ property
+
+# --- slice selector : ---
+A[:, j]
+# ^ punctuation.special
+
+# --- only selector ! ---
+B[!]
+# ^ punctuation.special

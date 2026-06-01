@@ -20,5 +20,16 @@ jobs:
       - name: Check keyword lists in sync
         run: pixi run check-grammars
 
+      - name: Generator is idempotent (no uncommitted drift)
+        run: |
+          pixi run gen-grammars
+          git diff --exit-code
+
       - name: Test Kate highlighting
         run: pixi run test-kate
+
+      - name: Test tree-sitter grammar
+        run: pixi run check-tree-sitter
+
+      - name: tree-sitter parser is up to date (no stale committed src)
+        run: git diff --exit-code tree-sitter/src

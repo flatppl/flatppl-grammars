@@ -1,0 +1,92 @@
+==================
+Newline separates statements
+==================
+
+x
+y
+
+---
+
+(module (identifier) (identifier))
+
+==================
+Semicolon separates statements
+==================
+
+x; y
+
+---
+
+(module (identifier) (identifier))
+
+==================
+Block comment fenced
+==================
+
+###
+inner
+###
+
+---
+
+(module (block_comment))
+
+==================
+Doc block fenced with tag
+==================
+
+%%%md
+inner
+%%%
+
+---
+
+(module (doc_block))
+
+==================
+Doc block fenced with typ tag
+==================
+
+%%%typ
+inner
+%%%
+
+---
+
+(module (doc_block))
+
+==================
+Doc block opener tightening: partial tag is not a fence
+==================
+
+%%%m
+
+---
+
+(module (doc_line))
+
+==================
+Doc block opener tightening: unknown tag suffix is not a fence
+==================
+
+%%%mdx
+
+---
+
+(module (doc_line))
+
+==================
+Unterminated doc-block opener does not crash the parser
+==================
+
+%%%md
+inner no close
+
+---
+
+(module
+  (doc_line)
+  (identifier)
+  (ERROR
+    (identifier)
+    (identifier)))

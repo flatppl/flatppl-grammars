@@ -6,9 +6,23 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 python = ">=3.11,<4"
 pandoc = ">=3.9,<4"
 pre-commit = ">=4,<5"
+nodejs = ">=24,<25"
 
 [tasks]
 gen-grammars = "python tools/gen-grammars.py"
 check-grammars = "python tools/gen-grammars.py --check"
 test-kate = "bash kate/test/check.sh"
-check = { depends-on = ["check-grammars", "test-kate"] }
+# `npm ci` (not `npm install`) installs EXACTLY the package-lock pins and wipes any
+# stale node_modules, preventing tree-sitter-cli version skew — a stale CLI loading
+# a newer committed parser.c was the root cause of a multi-GB OOM in the
+# `tree-sitter test` runner. --ignore-scripts skips the package's own native binding
+# build (not needed for generate/test) and tree-sitter-cli's postinstall binary
+# download; `npm rebuild` re-runs that one package's install script to fetch it.
+npm-install       = { cmd = "npm ci --ignore-scripts && npm rebuild tree-sitter-cli", cwd = "tree-sitter" }
+# Fail fast (with a clear "run npm ci" message) if the installed CLI cannot load
+# the committed parser due to LANGUAGE_VERSION/ABI skew, BEFORE running anything heavy.
+check-toolchain   = { cmd = "bash test/check-toolchain.sh", cwd = "tree-sitter", depends-on = ["npm-install"] }
+gen-tree-sitter   = { cmd = "npx tree-sitter generate", cwd = "tree-sitter", depends-on = ["check-toolchain"] }
+test-tree-sitter  = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
+check-tree-sitter = { depends-on = ["test-tree-sitter"] }
+check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }

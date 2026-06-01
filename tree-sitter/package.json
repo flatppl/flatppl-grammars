@@ -1,0 +1,23 @@
+{
+  "name": "tree-sitter-flatppl",
+  "version": "0.1.0",
+  "description": "FlatPPL grammar for tree-sitter",
+  "keywords": [
+    "parser",
+    "tree-sitter"
+  ],
+  "files": [
+    "grammar.js",
+    "tree-sitter.json",
+    "queries/*",
+    "src/**",
+    "*.wasm"
+  ],
+  "devDependencies": {
+    "tree-sitter-cli": "0.26.9"
+  },
+  "scripts": {
+    "prestart": "tree-sitter build --wasm",
+    "start": "tree-sitter playground"
+  }
+}
