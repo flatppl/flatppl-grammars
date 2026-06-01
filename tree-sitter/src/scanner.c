@@ -208,6 +208,12 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
     }
 
     if (is_newline(c)) {
+      // KNOWN LIMITATION (review M3): on UNBALANCED input (more `(`/`[` than
+      // `)`/`]`), bracket_depth stays > 0 through EOF, so every remaining newline is
+      // suppressed as implicit line-continuation and statements after the unclosed
+      // bracket are merged. This is a bounded uint32_t (no memory risk) and acceptable
+      // for a syntax-highlighting grammar; full statement recovery on unbalanced input
+      // is out of scope. Balanced input is unaffected.
       if (s->bracket_depth > 0) {
         // Inside unclosed ( or [ : implicit line continuation. The scanner
         // itself skips the newline as ordinary whitespace and keeps scanning,
