@@ -18,6 +18,7 @@
     { "include": "#constant" },
     { "include": "#predefined-set" },
     { "include": "#reserved-name" },
+    { "include": "#selector-keyword" },
     { "include": "#operator" },
     { "include": "#assignment" },
     { "include": "#function-call" },
@@ -150,6 +151,11 @@
       "match": "\\b(reals|posreals|nonnegreals|unitinterval|posintegers|nonnegintegers|integers|booleans|complexes|rngstates|anything)\\b",
       "name": "constant.other.set.flatppl"
     },
+    "selector-keyword": {
+      "comment": "Axis selector keywords all/only (spec §05 reserved words, §07 selectors). Match string is synced from keyword-lists.json by gen-grammars.py.",
+      "match": "\\b(all|only)\\b",
+      "name": "keyword.other.selector.flatppl"
+    },
     "reserved-name": {
       "comment": "Reserved module references and special bindings",
       "match": "\\b(self|base|flatppl_compat)\\b",
@@ -192,7 +198,7 @@
         {
           "comment": "Axis selectors (spec §07). Both the keywords `all`/`only` and the surface symbols `:` (always a slice marker in FlatPPL) and `!` (when immediately followed by `,` or `]` inside `[...]`) share the same scope so they're visually distinguishable from arithmetic / logical operators. The `!(?=[,\\]])` lookahead matches the singleton-axis usage; bare `!` (logical NOT) is handled by the logical-operator pattern above.",
           "name": "keyword.operator.selector.flatppl",
-          "match": ":|!(?=[,\\]])|\\b(all|only)\\b"
+          "match": ":|!(?=[,\\]])"
         }
       ]
     },

@@ -107,6 +107,13 @@
                 "complexes", "rngstates", "anything"]
     },
     {
+      "kate_list": "selectors",
+      "tm_key": "selector-keyword",
+      "tm_suffix": "",
+      "ts_scope": "keyword",
+      "words": ["all", "only"]
+    },
+    {
       "kate_list": "reserved",
       "tm_key": "reserved-name",
       "tm_suffix": "",

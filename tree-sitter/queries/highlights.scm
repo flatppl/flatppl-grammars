@@ -125,6 +125,11 @@
  (#match? @constant "^(reals|posreals|nonnegreals|unitinterval|posintegers|nonnegintegers|integers|booleans|complexes|rngstates|anything)$"))
 ; GEN:predefsets-end
 
+; GEN:selectors-start
+((identifier) @keyword
+ (#match? @keyword "^(all|only)$"))
+; GEN:selectors-end
+
 ; GEN:reserved-start
 ((identifier) @variable.builtin
  (#match? @variable.builtin "^(self|base|flatppl_compat)$"))

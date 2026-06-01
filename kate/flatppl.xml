@@ -40,6 +40,9 @@
     <list name="predefsets">
       <item>reals</item><item>posreals</item><item>nonnegreals</item><item>unitinterval</item><item>posintegers</item><item>nonnegintegers</item><item>integers</item><item>booleans</item><item>complexes</item><item>rngstates</item><item>anything</item>
     </list>
+    <list name="selectors">
+      <item>all</item><item>only</item>
+    </list>
     <list name="reserved">
       <item>self</item><item>base</item><item>flatppl_compat</item>
     </list>
@@ -82,7 +85,8 @@
         <RegExpr String="\^" attribute="Operator" context="#stay"/>
         <AnyChar String="+-*/" attribute="Operator" context="#stay"/>
         <RegExpr String="\bin\b" attribute="Operator" context="#stay"/>
-        <RegExpr String=":|!(?=[,\]])|\b(all|only)\b" attribute="Operator" context="#stay"/>
+        <keyword String="selectors" attribute="Operator" context="#stay"/>
+        <RegExpr String=":|!(?=[,\]])" attribute="Operator" context="#stay"/>
         <RegExpr String="(=|~)(?!=)" attribute="Operator" context="#stay"/>
         <!-- Members, identifiers (must be last). NB: skylighting's dsOther emits
              no HTML class, so generic function-calls are intentionally left
