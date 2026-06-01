@@ -85,7 +85,7 @@ v.(x, y)
 Index simple
 =====================
 
-A[i]
+long_indexed_array[long_index_variable]
 
 ---
 
