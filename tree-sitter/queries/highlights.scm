@@ -32,22 +32,28 @@
   "<" ">" "==" "!=" "<=" ">="
   ".<" ".>" ".==" ".!=" ".<=" ".>="
   "&&" "||" ".&&" ".||"
-  "!" ".!"
+  ".!"
   "in"
 ] @operator
 
+; Unary logical-not `!` — captured contextually so it does NOT collide with the
+; `only_selector` `!` inside `[...]` (that one is @punctuation.special). A bare
+; anonymous `"!"` in the list above would also match the selector token and, being
+; a leaf capture, would win over the (only_selector) node capture.
+(unary_expression "!" @operator)
+
 ; Assignment / binding operators
 "=" @operator
-"~" @operator
-":=" @operator
+"~" @keyword.operator
+":=" @keyword.operator
 
 ; Lambda arrow
 "->" @keyword.operator
 
 ; Selectors (§05 IndexExpr: `:` = all-axis, `!` = only).
 ; Bare-word `all`/`only` are plain identifiers and fall through to (identifier) @variable.
-(slice_selector) @operator
-(only_selector)  @operator
+(slice_selector) @punctuation.special
+(only_selector)  @punctuation.special
 
 ; Punctuation (only the anonymous tokens that exist)
 "," @punctuation.delimiter
@@ -123,6 +129,9 @@
 ((identifier) @variable.builtin
  (#match? @variable.builtin "^(self|base|flatppl_compat)$"))
 ; GEN:reserved-end
+
+; Axis sigil `.` (distinct from list/field punctuation)
+(axis_name "." @punctuation.special)
 
 ; Axis names (position-specific: a `.name` axis label, overrides keyword scope)
 (axis_name (identifier) @property)
