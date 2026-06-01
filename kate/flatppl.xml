@@ -87,8 +87,18 @@
         <!-- Members, identifiers (must be last). NB: skylighting's dsOther emits
              no HTML class, so generic function-calls are intentionally left
              un-highlighted (plain identifiers) rather than mapped to a dead style. -->
-        <RegExpr String="\.[a-zA-Z_][a-zA-Z0-9_]*" attribute="Member" context="#stay"/>
+        <!-- Axis/field member. The name must NOT swallow a trailing '_' so that
+             a §05 axis variance marker ('.name^' upper / '.name_' lower) lands in
+             AxisMaybeVariance and is coloured separately. -->
+        <RegExpr String="\.([a-zA-Z_][a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z_])" attribute="Member" context="AxisMaybeVariance"/>
         <RegExpr String="[a-zA-Z_][a-zA-Z0-9_]*" attribute="Normal Text" context="#stay"/>
+      </context>
+
+      <!-- Reached right after an axis/field name: colour a trailing variance
+           marker ('^'/'_') then pop; otherwise pop immediately (plain field
+           access). The empty fallback RegExpr never consumes input. -->
+      <context name="AxisMaybeVariance" attribute="Normal Text" lineEndContext="#pop" fallthrough="true" fallthroughContext="#pop">
+        <RegExpr String="[\^_]" attribute="Variance" context="#pop"/>
       </context>
 
       <context name="DocBlock" attribute="Documentation" lineEndContext="#stay">
@@ -119,6 +129,7 @@
       <itemData name="Reserved"      defStyleNum="dsVariable"/>
       <itemData name="Member"        defStyleNum="dsAttribute"/>
       <itemData name="Operator"      defStyleNum="dsOperator"/>
+      <itemData name="Variance"      defStyleNum="dsOperator"/>
       <itemData name="Placeholder"   defStyleNum="dsAnnotation"/>
       <itemData name="Hole"          defStyleNum="dsRegionMarker"/>
       <itemData name="Comment"       defStyleNum="dsComment"/>

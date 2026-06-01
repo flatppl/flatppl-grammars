@@ -20,6 +20,7 @@ z = reduce(add, v)
 eta = alpha .+ X * beta
 q = invlogit.(eta)
 C[.i, .k] := expr
+g = metricsum(C[.mu^, .nu_], r.field)
 dom = reals
 mod1 = self
 ph = _name_
