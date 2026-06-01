@@ -1,6 +1,7 @@
 # Rust artifacts
 target/
 Cargo.toml
+Cargo.lock
 
 # Node artifacts
 build/
