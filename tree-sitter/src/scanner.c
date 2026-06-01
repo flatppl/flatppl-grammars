@@ -133,6 +133,25 @@ static bool scan_fenced(TSLexer *lexer, const char *fence) {
 bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   Scanner *s = (Scanner *)payload;
 
+  // Error-recovery detection (review M3): during error recovery tree-sitter
+  // re-invokes the external scanner with EVERY external symbol marked valid at
+  // once. That combination never occurs in a normal parse state (inside an open
+  // bracket RPAREN is valid but NEWLINE is suppressed; at statement start the
+  // bracket-close tokens are invalid), so it is a reliable "the parse already
+  // failed" signal. We use it to stop suppressing newlines on UNBALANCED input
+  // (a missing `)`/`]`), letting statements after the unclosed bracket re-parse
+  // instead of merging. On VALID input this is never true, so multi-line and
+  // blank-line-in-brackets continuation (spec §05) is completely unaffected.
+  //
+  // FRAGILE: this relies on tree-sitter's undocumented "all external symbols
+  // valid during error recovery" behavior. Verified on CLI 0.26.9; the
+  // scanner.txt corpus tests guard it. RE-VERIFY ON ANY tree-sitter CLI BUMP.
+  bool error_recovery =
+      valid_symbols[NEWLINE] && valid_symbols[BLOCK_COMMENT] &&
+      valid_symbols[DOC_BLOCK] && valid_symbols[LPAREN] &&
+      valid_symbols[RPAREN] && valid_symbols[LBRACKET] &&
+      valid_symbols[RBRACKET];
+
   // Strategy: the external scanner is invoked before each token whenever any of
   // its tokens is in `valid_symbols`. We skip leading horizontal whitespace,
   // then:
@@ -208,13 +227,13 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
     }
 
     if (is_newline(c)) {
-      // KNOWN LIMITATION (review M3): on UNBALANCED input (more `(`/`[` than
-      // `)`/`]`), bracket_depth stays > 0 through EOF, so every remaining newline is
-      // suppressed as implicit line-continuation and statements after the unclosed
-      // bracket are merged. This is a bounded uint32_t (no memory risk) and acceptable
-      // for a syntax-highlighting grammar; full statement recovery on unbalanced input
-      // is out of scope. Balanced input is unaffected.
-      if (s->bracket_depth > 0) {
+      // On UNBALANCED input (more `(`/`[` than `)`/`]`) bracket_depth stays > 0
+      // through EOF, which would suppress every remaining newline and merge all
+      // later statements (review M3). The `!error_recovery` guard below handles
+      // that: once the parse fails, we stop suppressing and emit this newline as
+      // a real separator (see the following block). Balanced input never enters
+      // error recovery, so it keeps the implicit line-continuation behavior.
+      if (s->bracket_depth > 0 && !error_recovery) {
         // Inside unclosed ( or [ : implicit line continuation. The scanner
         // itself skips the newline as ordinary whitespace and keeps scanning,
         // rather than declining and leaving the `\n` for tree-sitter's extras
@@ -226,6 +245,20 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
         skip(lexer);
         at_line_start = true;
         continue;
+      }
+      if (s->bracket_depth > 0) {
+        // Reached only when error_recovery is true: the `!error_recovery` branch
+        // above already `continue`d for the balanced/continuation case, so a
+        // depth>0 newline that falls through to here means we are in recovery.
+        // error_recovery && depth>0: the input is UNBALANCED (a missing `)`/`]`),
+        // so this newline is a real statement separator that depth-suppression
+        // would otherwise swallow, merging every later statement (review M3). We
+        // are at an actual newline (this branch), so emitting NEWLINE is safe --
+        // unlike mid-line recoveries (e.g. an illegal `(a,) -> b`) which never
+        // reach here and so are unaffected. Reset the depth; emitting the token
+        // below triggers serialize so the reset PERSISTS across the per-scan
+        // deserialize, instead of being reloaded as >0 on the next scan.
+        s->bracket_depth = 0;
       }
       if (valid_symbols[NEWLINE]) {
         // Consume this newline (and collapse trailing CR of CRLF) as the token.

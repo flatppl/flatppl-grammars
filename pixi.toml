@@ -11,6 +11,10 @@ nodejs = ">=24,<25"
 [tasks]
 gen-grammars = "python tools/gen-grammars.py"
 check-grammars = "python tools/gen-grammars.py --check"
+# Local-only: verify keyword-lists.json covers every builtin in the spec docs
+# (flatppl-design). Skips with exit 0 when the docs repo is not checked out, so
+# it is intentionally NOT part of the CI `check` aggregate.
+check-spec-keywords = "python tools/check-spec-keywords.py"
 test-kate = "bash kate/test/check.sh"
 # `npm ci` (not `npm install`) installs EXACTLY the package-lock pins and wipes any
 # stale node_modules, preventing tree-sitter-cli version skew — a stale CLI loading
