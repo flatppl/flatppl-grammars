@@ -24,7 +24,32 @@ for f in "$(dirname "$0")"/*.flatppl; do
   { [ "$rc" -eq 2 ] || [ "$rc" -eq 3 ]; } && rc_all="$rc"
 done
 
-# Large generated inputs are added by Task 5 below this line.
+# --- Large generated inputs -------------------------------------------------
+# Exercise each GLR danger class at a scale that would actually OOM an ambiguous
+# grammar (blow-up is super-linear in input length). Generated to a temp dir,
+# parsed under the same cap, then cleaned up.
+gen_dir="$(mktemp -d)"
+trap 'rm -rf "$gen_dir"' EXIT
+N="${STRESS_N:-20000}"
+
+{ printf 'z = a'; for _ in $(seq 1 "$N"); do printf ' < a'; done; printf '\n'; } > "$gen_dir/big_comparison.flatppl"
+{ printf 'z = '; for _ in $(seq 1 "$N"); do printf '('; done; printf 'a'; for _ in $(seq 1 "$N"); do printf ')'; done; printf '\n'; } > "$gen_dir/big_parens.flatppl"
+{ printf 'z = A'; for _ in $(seq 1 "$N"); do printf '[.i]'; done; printf '\n'; } > "$gen_dir/big_index.flatppl"
+{ printf 'z = '; for _ in $(seq 1 "$N"); do printf '!'; done; printf 'a\n'; } > "$gen_dir/big_unary.flatppl"
+{ printf 'z = '; for _ in $(seq 1 "$N"); do printf '('; done; printf 'a\n'; } > "$gen_dir/big_unbalanced.flatppl"
+
+for f in "$gen_dir"/*.flatppl; do
+  name="gen:$(basename "$f")"
+  run_capped "$name" $TS parse --quiet "$f" >/dev/null
+  rc=$?
+  case "$(basename "$f")" in
+    big_unbalanced.flatppl)
+      # parse-error (rc=1) is EXPECTED here; only OOM (2) / timeout (3) are failures.
+      { [ "$rc" -eq 2 ] || [ "$rc" -eq 3 ]; } && rc_all="$rc" ;;
+    *)
+      [ "$rc" -ne 0 ] && rc_all="$rc" ;;
+  esac
+done
 
 echo "---"
 [ "$rc_all" -eq 0 ] && echo "STRESS OK" || echo "STRESS FAILED (rc=$rc_all)"
