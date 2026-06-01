@@ -81,6 +81,7 @@ module.exports = grammar({
       $.decomposition,
       $.tilde_decomposition,
       $.aggregate_binding,
+      $.metricsum_binding,
       $._expression,
     ),
 
@@ -113,7 +114,30 @@ module.exports = grammar({
       $._expression,
     ),
 
-    axis_name: $ => seq('.', $.identifier),
+    // §05 L275: MetricsumBinding ::= Name ":" Name "[" (Axis ("," Axis)*)? "]" ":=" Expression
+    metricsum_binding: $ => seq(
+      field('metric', $.identifier),
+      ':',
+      field('result', $.identifier),
+      $._lbracket,
+      optional(seq($.axis_name, repeat(seq(',', $.axis_name)))),
+      $._rbracket,
+      ':=',
+      $._expression,
+    ),
+
+    // §05: Axis ::= "." AxisName VarianceMarker?  (VarianceMarker = "^" | "_").
+    // AxisName must not start or end with "_" — a trailing "_" is the lower-variance
+    // marker, so the name token deliberately stops before it (and "^" is the upper).
+    axis_name: $ => seq(
+      '.',
+      field('name', $.axis_id),
+      optional(field('variance', $.variance_marker)),
+    ),
+
+    axis_id: $ => token.immediate(/[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z]/),
+
+    variance_marker: $ => token.immediate(choice('^', '_')),
 
     // Precedence hierarchy (mirrors §05 EBNF layering). An expression is a lambda,
     // a logical-or/and chain, a comparison chain, or anything binding tighter than
