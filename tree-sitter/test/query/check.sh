@@ -14,7 +14,9 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."          # -> tree-sitter/
 FIXTURE="test/query/variance.flatppl"
 
-out="$(tree-sitter query queries/highlights.scm "$FIXTURE")"
+# `npx` resolves the local node_modules tree-sitter-cli (bare `tree-sitter` is
+# not on PATH in CI); matches gen-tree-sitter / run-corpus.sh.
+out="$(npx tree-sitter query queries/highlights.scm "$FIXTURE" 2>/dev/null)"
 
 # Capture lines for a standalone single-char `^`/`_` token (the variance markers).
 markers="$(printf '%s\n' "$out" | grep -E 'text: `[\^_]`$' || true)"
