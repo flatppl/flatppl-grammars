@@ -45,7 +45,7 @@ module.exports = grammar({
     // and `_expression` covers all of them (the narrower lambda/tuple_literal and
     // lambda/parenthesized_expression conflicts are subsumed and reported as
     // unnecessary by tree-sitter). GLR + the operator precedences resolve it.
-    [$.lambda, $._expression],
+    [$.lambda, $._comp_operand],
 
     // `identifier _lbracket` begins both an index_expression (`A[i]`, where the
     // identifier reduces to _expression first) and the LHS of an
@@ -55,7 +55,7 @@ module.exports = grammar({
     // legal in aggregate_binding) or an index arg. GLR explores both; the
     // leading `.` of axis_name disambiguates, so they never collide on real
     // input.
-    [$._expression, $.aggregate_binding],
+    [$._comp_operand, $.aggregate_binding],
   ],
 
   rules: {
@@ -112,16 +112,28 @@ module.exports = grammar({
 
     axis_name: $ => seq('.', $.identifier),
 
+    // Precedence hierarchy (mirrors §05 EBNF layering). An expression is a lambda,
+    // a logical-or/and chain, a comparison chain, or anything binding tighter than
+    // comparison (`_comp_operand`). `_expression` DELEGATES to `_comp_operand`
+    // rather than re-listing its leaves — a leaf reduces to exactly one
+    // non-terminal, so no operand ambiguity and the comparison repeat1 chains flat.
     _expression: $ => choice(
       $.lambda,
-      $.binary_expression,
+      $.logical_expression,
       $.comparison_expression,
+      $._comp_operand,
+    ),
+
+    // Everything binding TIGHTER than comparison (its operands per the EBNF). Logical
+    // ||/&& and lambda are looser (in `_expression`); comparison itself is excluded
+    // so the chain stays flat.
+    _comp_operand: $ => choice(
+      $.binary_expression,
       $.unary_expression,
       $.exponential_expression,
       $.parenthesized_expression,
       $._literal,
       $.identifier,
-      // Postfix forms (call/index/field/dot-call) added in Task 5
       $.call_expression,
       $.index_expression,
       $.field_access,
@@ -130,7 +142,7 @@ module.exports = grammar({
 
     // Postfix: left-recursive, highest binding (prec 8).
     call_expression: $ => prec.left(8, seq(
-      $._expression,
+      $._comp_operand,
       $._lparen,
       optional($.argument_list),
       $._rparen,
@@ -150,13 +162,13 @@ module.exports = grammar({
     keyword_argument: $ => seq($.identifier, '=', $._expression),
 
     field_access: $ => prec.left(8, seq(
-      $._expression,
+      $._comp_operand,
       '.',
       $.identifier,
     )),
 
     dot_call: $ => prec.left(8, seq(
-      $._expression,
+      $._comp_operand,
       '.',
       $._lparen,
       optional($.argument_list),
@@ -164,7 +176,7 @@ module.exports = grammar({
     )),
 
     index_expression: $ => prec.left(8, seq(
-      $._expression,
+      $._comp_operand,
       $._lbracket,
       $._index_arg,
       repeat(seq(',', $._index_arg)),
@@ -207,39 +219,46 @@ module.exports = grammar({
       $._expression,
     )),
 
-    // Precedence: OR=1, AND=2, comparison=3, additive=4, multiplicative=5, unary=6, exponential=7.
-    binary_expression: $ => choice(
+    // Logical OR/AND — LOOSER than comparison, so operands are full `_expression`
+    // (they may contain comparisons, e.g. `a < b && c < d`).
+    logical_expression: $ => choice(
       prec.left(1, seq($._expression, choice('||', '.||'), $._expression)),
       prec.left(2, seq($._expression, choice('&&', '.&&'), $._expression)),
-      prec.left(4, seq($._expression, choice('+', '-', '.+', '.-'), $._expression)),
-      prec.left(5, seq($._expression, choice('*', '/', '.*', './'), $._expression)),
     ),
 
-    // `in` is a CompOp per EBNF — included here, NOT in binary_expression.
-    // NOTE: although the rule looks like a flat repeat1 chain, the parser produces
-    // RIGHT-NESTED trees for `a < b <= c` (i.e. comparison_expression(a,
-    // comparison_expression(b, c))) because the right operand is a full _expression;
-    // downstream consumers must walk the nesting to recover chained-comparison
-    // semantics (a<b ∧ b<=c).
+    // Arithmetic — TIGHTER than comparison, so operands are `_comp_operand`.
+    binary_expression: $ => choice(
+      prec.left(4, seq($._comp_operand, choice('+', '-', '.+', '.-'), $._comp_operand)),
+      prec.left(5, seq($._comp_operand, choice('*', '/', '.*', './'), $._comp_operand)),
+    ),
+
+    // §05: `Comparison ::= Additive (CompOp Additive)*` — a FLAT chain.
+    // `a < b <= c` lowers to `land(a < b, b <= c)`: ONE flat node with every
+    // operand and every operator (named `comparison_operator` children, so a
+    // consumer pairs each operator with its operands by position). `in` is a CompOp.
     comparison_expression: $ => prec.left(3, seq(
-      $._expression,
+      $._comp_operand,
       repeat1(seq(
-        choice('<', '>', '==', '!=', '<=', '>=', 'in',
-               '.<', '.>', '.==', '.!=', '.<=', '.>='),
-        $._expression,
+        $.comparison_operator,
+        $._comp_operand,
       )),
     )),
 
+    comparison_operator: _ => choice(
+      '<', '>', '==', '!=', '<=', '>=', 'in',
+      '.<', '.>', '.==', '.!=', '.<=', '.>=',
+    ),
+
     unary_expression: $ => prec.right(6, seq(
       choice('-', '!', '.-', '.!'),
-      $._expression,
+      $._comp_operand,
     )),
 
     // `^`/`.^` is ONLY here (not in binary_expression), right-assoc, prec 7.
     exponential_expression: $ => prec.right(7, seq(
-      $._expression,
+      $._comp_operand,
       choice('^', '.^'),
-      $._expression,
+      $._comp_operand,
     )),
 
     parenthesized_expression: $ => seq($._lparen, $._expression, $._rparen),

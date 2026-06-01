@@ -277,11 +277,24 @@
         },
         {
           "type": "SYMBOL",
-          "name": "binary_expression"
+          "name": "logical_expression"
         },
         {
           "type": "SYMBOL",
           "name": "comparison_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_comp_operand"
+        }
+      ]
+    },
+    "_comp_operand": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "binary_expression"
         },
         {
           "type": "SYMBOL",
@@ -329,7 +342,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           },
           {
             "type": "SYMBOL",
@@ -429,7 +442,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           },
           {
             "type": "STRING",
@@ -450,7 +463,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           },
           {
             "type": "STRING",
@@ -487,7 +500,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           },
           {
             "type": "SYMBOL",
@@ -620,7 +633,7 @@
         ]
       }
     },
-    "binary_expression": {
+    "logical_expression": {
       "type": "CHOICE",
       "members": [
         {
@@ -682,7 +695,12 @@
               }
             ]
           }
-        },
+        }
+      ]
+    },
+    "binary_expression": {
+      "type": "CHOICE",
+      "members": [
         {
           "type": "PREC_LEFT",
           "value": 4,
@@ -691,7 +709,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_expression"
+                "name": "_comp_operand"
               },
               {
                 "type": "CHOICE",
@@ -716,7 +734,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_expression"
+                "name": "_comp_operand"
               }
             ]
           }
@@ -729,7 +747,7 @@
             "members": [
               {
                 "type": "SYMBOL",
-                "name": "_expression"
+                "name": "_comp_operand"
               },
               {
                 "type": "CHOICE",
@@ -754,7 +772,7 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "_expression"
+                "name": "_comp_operand"
               }
             ]
           }
@@ -769,7 +787,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           },
           {
             "type": "REPEAT1",
@@ -777,71 +795,75 @@
               "type": "SEQ",
               "members": [
                 {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "<"
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ">"
-                    },
-                    {
-                      "type": "STRING",
-                      "value": "=="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": "!="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": "<="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ">="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": "in"
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ".<"
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ".>"
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ".=="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ".!="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ".<="
-                    },
-                    {
-                      "type": "STRING",
-                      "value": ".>="
-                    }
-                  ]
+                  "type": "SYMBOL",
+                  "name": "comparison_operator"
                 },
                 {
                   "type": "SYMBOL",
-                  "name": "_expression"
+                  "name": "_comp_operand"
                 }
               ]
             }
           }
         ]
       }
+    },
+    "comparison_operator": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<"
+        },
+        {
+          "type": "STRING",
+          "value": ">"
+        },
+        {
+          "type": "STRING",
+          "value": "=="
+        },
+        {
+          "type": "STRING",
+          "value": "!="
+        },
+        {
+          "type": "STRING",
+          "value": "<="
+        },
+        {
+          "type": "STRING",
+          "value": ">="
+        },
+        {
+          "type": "STRING",
+          "value": "in"
+        },
+        {
+          "type": "STRING",
+          "value": ".<"
+        },
+        {
+          "type": "STRING",
+          "value": ".>"
+        },
+        {
+          "type": "STRING",
+          "value": ".=="
+        },
+        {
+          "type": "STRING",
+          "value": ".!="
+        },
+        {
+          "type": "STRING",
+          "value": ".<="
+        },
+        {
+          "type": "STRING",
+          "value": ".>="
+        }
+      ]
     },
     "unary_expression": {
       "type": "PREC_RIGHT",
@@ -872,7 +894,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           }
         ]
       }
@@ -885,7 +907,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           },
           {
             "type": "CHOICE",
@@ -902,7 +924,7 @@
           },
           {
             "type": "SYMBOL",
-            "name": "_expression"
+            "name": "_comp_operand"
           }
         ]
       }
@@ -1219,10 +1241,10 @@
   "conflicts": [
     [
       "lambda",
-      "_expression"
+      "_comp_operand"
     ],
     [
-      "_expression",
+      "_comp_operand",
       "aggregate_binding"
     ]
   ],
