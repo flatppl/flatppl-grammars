@@ -19,7 +19,7 @@ probabilistic models.
   language), plus injections: `flatppl-markdown` (fenced ` ```flatppl `
   code blocks), `flatppl-python` (`flatppl(r"""…""")`),
   `flatppl-julia` (`flatppl"""…"""`).
-* [tree-sitter grammar](tree-sitter) — hand-written `grammar.js` + external scanner, with `queries/highlights.scm`; keyword lists synced from `keyword-lists.json` via `tools/gen-grammars.py` (same source as TextMate/Kate). Corpus tests under `tree-sitter/test/`. The C bindings and `Makefile` (`tree-sitter/Makefile`, the C target in `tree-sitter/binding.gyp`, `tree-sitter/bindings/c/`) are kept deliberately for potential future engine embedding (e.g. Julia/Rust/Python via cffi), not just editor use — they are intentional, not leftover scaffold.
+* [tree-sitter grammar](tree-sitter) — hand-written `grammar.js` + external scanner, with `queries/highlights.scm`; keyword lists synced from `keyword-lists.json` via `tools/gen-grammars.py` (same source as TextMate/Kate). Corpus tests under `tree-sitter/test/`. The `Makefile` (`tree-sitter/Makefile`) builds a static/shared library from the generated `parser.c` for potential future engine embedding (e.g. Julia/Rust/Python), not just editor use — it is intentional, not leftover scaffold.
 * [Kate / skylighting definition](kate) — `flatppl.xml`, consumed by
   Pandoc via `--syntax-definition=flatppl.xml` to highlight fenced
   ` ```flatppl ` blocks in HTML/LaTeX output. Hand-ported from the
