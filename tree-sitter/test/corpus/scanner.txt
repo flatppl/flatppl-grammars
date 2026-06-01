@@ -90,3 +90,43 @@ inner no close
   (ERROR
     (identifier)
     (identifier)))
+
+==================
+Line continuation across blank line inside parens (valid; must NOT resync)
+==================
+
+z = f(
+
+    a,
+    b
+)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (identifier)
+        (identifier)))))
+
+==================
+Unbalanced paren recovers later statements (error-recovery resync, M3)
+==================
+
+z = f(a
+2 + 3
+
+---
+
+(module
+  (binding
+    (identifier)
+    (identifier))
+  (ERROR
+    (identifier))
+  (binary_expression
+    (integer)
+    (integer)))
