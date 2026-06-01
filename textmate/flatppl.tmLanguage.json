@@ -215,9 +215,12 @@
       "name": "entity.name.function.call.flatppl"
     },
     "dot-access": {
-      "match": "\\.([a-zA-Z_][a-zA-Z0-9_]*)",
+      "comment": "Matches .name, .name^, or .name_ (§05 axis variance markers). Group 1: dot; group 2: member name (never ends in _ so .nu_ splits as nu + _); group 3: optional variance marker ^ or _. KNOWN LIMITATION: a field whose name legitimately ends in _ (e.g. .foo_) will have its trailing _ coloured as a variance marker — accepted minor edge; axis names per spec cannot end in _.",
+      "match": "(\\.)([a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z])([\\^_])?",
       "captures": {
-        "1": { "name": "variable.other.member.flatppl" }
+        "1": { "name": "punctuation.accessor.flatppl" },
+        "2": { "name": "variable.other.member.flatppl" },
+        "3": { "name": "keyword.operator.variance.flatppl" }
       }
     },
     "identifier": {
