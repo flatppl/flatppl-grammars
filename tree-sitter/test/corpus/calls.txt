@@ -118,7 +118,7 @@ A[:, j]
     (identifier)))
 
 =====================
-Index all keyword
+Index all identifier
 =====================
 
 A[all, j]
@@ -128,11 +128,11 @@ A[all, j]
 (module
   (index_expression
     (identifier)
-    (all_selector)
+    (identifier)
     (identifier)))
 
 =====================
-Index only keyword
+Index only identifier
 =====================
 
 A[only, j]
@@ -142,7 +142,7 @@ A[only, j]
 (module
   (index_expression
     (identifier)
-    (only_selector)
+    (identifier)
     (identifier)))
 
 =====================
@@ -156,7 +156,7 @@ A[!]
 (module
   (index_expression
     (identifier)
-    (singleton_selector)))
+    (only_selector)))
 
 =====================
 Index bang with axes
@@ -169,10 +169,10 @@ v[all, only, :, !]
 (module
   (index_expression
     (identifier)
-    (all_selector)
-    (only_selector)
+    (identifier)
+    (identifier)
     (slice_selector)
-    (singleton_selector)))
+    (only_selector)))
 
 =====================
 Chained postfix

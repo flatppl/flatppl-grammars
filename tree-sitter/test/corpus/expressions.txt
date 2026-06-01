@@ -56,6 +56,21 @@ a < b <= c
       (identifier))))
 
 =================
+Chained comparison nests right
+=================
+
+a < b <= c
+
+---
+
+(module
+  (comparison_expression
+    (identifier)
+    (comparison_expression
+      (identifier)
+      (identifier))))
+
+=================
 Logical and
 =================
 

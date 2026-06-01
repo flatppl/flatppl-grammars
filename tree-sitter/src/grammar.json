@@ -529,15 +529,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "all_selector"
-        },
-        {
-          "type": "SYMBOL",
           "name": "only_selector"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "singleton_selector"
         },
         {
           "type": "SYMBOL",
@@ -553,15 +545,7 @@
       "type": "STRING",
       "value": ":"
     },
-    "all_selector": {
-      "type": "STRING",
-      "value": "all"
-    },
     "only_selector": {
-      "type": "STRING",
-      "value": "only"
-    },
-    "singleton_selector": {
       "type": "STRING",
       "value": "!"
     },
@@ -976,7 +960,7 @@
         "members": [
           {
             "type": "PATTERN",
-            "value": "0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*"
+            "value": "0x[0-9a-fA-F]+(_[0-9a-fA-F]+)*"
           },
           {
             "type": "PATTERN",
@@ -1044,7 +1028,7 @@
     },
     "invalid_escape": {
       "type": "PATTERN",
-      "value": "\\\\."
+      "value": "\\\\[\\s\\S]"
     },
     "boolean": {
       "type": "TOKEN",

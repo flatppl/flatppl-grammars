@@ -23,6 +23,12 @@ module.exports = grammar({
     $._rbracket,
   ],
 
+  // NOTE: `block_comment` and `doc_block` appear in both `externals` and
+  // `extras`. Listing them in `extras` makes doc-comments float as whitespace
+  // anywhere in the token stream. The §04/§05 binding-ATTACHMENT semantics
+  // (i.e. which binding a doc-comment belongs to) are intentionally NOT
+  // represented in this tree — this grammar targets syntax highlighting and
+  // structural AST only, not semantic doc-comment association.
   extras: $ => [
     /[ \t\r\n]/,
     $.line_comment,
@@ -165,24 +171,25 @@ module.exports = grammar({
       $._rbracket,
     )),
 
+    // §05 IndexExpr: `:` is the all-axis selector, `!` is the "only" selector.
+    // Bare words `all`/`only` are NOT surface tokens — they parse as ordinary
+    // identifiers via $._expression. Dedicated `all_selector`/`only_selector`
+    // keyword rules have been removed to match the spec.
     _index_arg: $ => choice(
       $.slice_selector,
-      $.all_selector,
       $.only_selector,
-      $.singleton_selector,
       $.axis_name,
       $._expression,
     ),
 
+    // `:` — all-axis selector (§05 IndexExpr).
     slice_selector: _ => ':',
-    all_selector:   _ => 'all',
-    only_selector:  _ => 'only',
 
-    // Singleton selector: a bare '!' as an index argument. NO regex lookahead
-    // (unsupported). Disambiguated from unary-not (!expr) by GLR: when '!' is
-    // followed by ',' or ']' there is no operand, so only singleton_selector
-    // parses; when followed by an expression, unary_expression wins.
-    singleton_selector: _ => '!',
+    // `!` — "only" selector (§05 IndexExpr). Disambiguated from unary-not
+    // (!expr) by GLR: when '!' is followed by ',' or ']' there is no operand,
+    // so only only_selector parses; when followed by an expression,
+    // unary_expression wins.
+    only_selector: _ => '!',
 
     // Lambda: lowest precedence, body extends right.
     lambda: $ => prec.right(0, seq(
@@ -247,7 +254,7 @@ module.exports = grammar({
     ),
 
     integer: _ => token(choice(
-      /0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*/,
+      /0x[0-9a-fA-F]+(_[0-9a-fA-F]+)*/,
       /[0-9]+(_[0-9]+)*/,
     )),
 
@@ -270,7 +277,7 @@ module.exports = grammar({
       '"',
     ),
     escape_sequence: _ => /\\[\\"nrt0]/,
-    invalid_escape: _ => /\\./,
+    invalid_escape: _ => /\\[\s\S]/,
 
     boolean: _ => token(choice('true', 'false')),
 

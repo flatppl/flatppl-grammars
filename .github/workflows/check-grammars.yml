@@ -30,3 +30,6 @@ jobs:
 
       - name: Test tree-sitter grammar
         run: pixi run check-tree-sitter
+
+      - name: tree-sitter parser is up to date (no stale committed src)
+        run: git diff --exit-code tree-sitter/src

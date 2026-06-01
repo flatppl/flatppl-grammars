@@ -44,11 +44,10 @@
 ; Lambda arrow
 "->" @keyword.operator
 
-; Selectors
-(slice_selector)     @operator
-(singleton_selector) @operator
-(all_selector)       @keyword
-(only_selector)      @keyword
+; Selectors (§05 IndexExpr: `:` = all-axis, `!` = only).
+; Bare-word `all`/`only` are plain identifiers and fall through to (identifier) @variable.
+(slice_selector) @operator
+(only_selector)  @operator
 
 ; Punctuation (only the anonymous tokens that exist)
 "," @punctuation.delimiter

@@ -908,10 +908,6 @@
       "required": true,
       "types": [
         {
-          "type": "all_selector",
-          "named": true
-        },
-        {
           "type": "array_literal",
           "named": true
         },
@@ -973,10 +969,6 @@
         },
         {
           "type": "parenthesized_expression",
-          "named": true
-        },
-        {
-          "type": "singleton_selector",
           "named": true
         },
         {
@@ -1257,6 +1249,11 @@
     }
   },
   {
+    "type": "only_selector",
+    "named": true,
+    "fields": {}
+  },
+  {
     "type": "parenthesized_expression",
     "named": true,
     "fields": {},
@@ -1334,11 +1331,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "singleton_selector",
-    "named": true,
-    "fields": {}
   },
   {
     "type": "string",
@@ -1812,10 +1804,6 @@
     "named": false
   },
   {
-    "type": "all_selector",
-    "named": true
-  },
-  {
     "type": "block_comment",
     "named": true,
     "extra": true
@@ -1862,10 +1850,6 @@
     "type": "line_comment",
     "named": true,
     "extra": true
-  },
-  {
-    "type": "only_selector",
-    "named": true
   },
   {
     "type": "slice_selector",
