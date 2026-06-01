@@ -23,6 +23,11 @@ npm-install       = { cmd = "npm ci --ignore-scripts && npm rebuild tree-sitter-
 # the committed parser due to LANGUAGE_VERSION/ABI skew, BEFORE running anything heavy.
 check-toolchain   = { cmd = "bash test/check-toolchain.sh", cwd = "tree-sitter", depends-on = ["npm-install"] }
 gen-tree-sitter   = { cmd = "npx tree-sitter generate", cwd = "tree-sitter", depends-on = ["check-toolchain"] }
-test-tree-sitter  = { cmd = "npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
-check-tree-sitter = { depends-on = ["test-tree-sitter"] }
+# Corpus runner wrapped in the 700MB RSS cap (see test/run-capped.sh) so the
+# `tree-sitter test` runner can never OOM the machine.
+test-tree-sitter   = { cmd = "bash test/run-capped.sh npx tree-sitter test", cwd = "tree-sitter", depends-on = ["gen-tree-sitter"] }
+# Stress harness (500MB cap). Depends on test-tree-sitter so the two NEVER run
+# concurrently — tests are serialized end to end (gen -> corpus -> stress).
+stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitter", depends-on = ["test-tree-sitter"] }
+check-tree-sitter  = { depends-on = ["stress-tree-sitter"] }
 check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }

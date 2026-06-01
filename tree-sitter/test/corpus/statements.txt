@@ -66,6 +66,19 @@ C[.i, .k] := expr
     (identifier)))
 
 ====================
+Aggregate binding empty axis (full reduction)
+====================
+
+x[] := y
+
+---
+
+(module
+  (aggregate_binding
+    (identifier)
+    (identifier)))
+
+====================
 Decomposition with hole
 ====================
 

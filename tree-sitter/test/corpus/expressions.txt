@@ -41,7 +41,7 @@ a + b * c
       (identifier))))
 
 =================
-Chained comparison
+Chained comparison stays flat
 =================
 
 a < b <= c
@@ -51,24 +51,10 @@ a < b <= c
 (module
   (comparison_expression
     (identifier)
-    (comparison_expression
-      (identifier)
-      (identifier))))
-
-=================
-Chained comparison nests right
-=================
-
-a < b <= c
-
----
-
-(module
-  (comparison_expression
+    (comparison_operator)
     (identifier)
-    (comparison_expression
-      (identifier)
-      (identifier))))
+    (comparison_operator)
+    (identifier)))
 
 =================
 Logical and
@@ -79,7 +65,7 @@ a && b
 ---
 
 (module
-  (binary_expression
+  (logical_expression
     (identifier)
     (identifier)))
 
@@ -107,6 +93,7 @@ x in reals
 (module
   (comparison_expression
     (identifier)
+    (comparison_operator)
     (identifier)))
 
 =================

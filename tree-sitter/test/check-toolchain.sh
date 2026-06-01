@@ -22,6 +22,20 @@ printf 'x = 1\n' > "$tmp"
 out=$("$TS" parse "$tmp" 2>&1); rc=$?
 rm -f "$tmp"
 
+# Structural skew check — numeric ABI comparison (M5).
+# tree-sitter 0.26.9 has no dedicated flag that prints the CLI max ABI; however
+# the `generate --help` output embeds the value as "newest supported version (N)".
+# We extract that number so the check is independent of the "Incompatible language
+# version" error wording (which could change in future CLI releases).
+parser_abi="$(sed -n 's/^#define LANGUAGE_VERSION //p' src/parser.c 2>/dev/null | head -1)"
+cli_max_abi="$("$TS" generate --help 2>&1 | grep -oE 'newest supported version \([0-9]+\)' | grep -oE '[0-9]+')"
+if [ -n "$parser_abi" ] && [ -n "$cli_max_abi" ] \
+   && [ "$parser_abi" -gt "$cli_max_abi" ] 2>/dev/null; then
+  echo "TOOLCHAIN SKEW: committed parser ABI $parser_abi > CLI max ABI $cli_max_abi." >&2
+  echo "Run 'pixi run npm-install' to install the pinned tree-sitter-cli." >&2
+  exit 1
+fi
+
 if printf '%s' "$out" | grep -qi 'Incompatible language version'; then
   echo "ERROR: tree-sitter CLI ($cli) cannot load committed parser (LANGUAGE_VERSION=$want)." >&2
   echo "       Toolchain skew — install the pinned CLI: (cd tree-sitter && npm ci && npm rebuild tree-sitter-cli)" >&2
