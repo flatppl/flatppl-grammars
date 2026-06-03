@@ -16,6 +16,12 @@ check-grammars = "python tools/gen-grammars.py --check"
 # it is intentionally NOT part of the CI `check` aggregate.
 check-spec-keywords = "python tools/check-spec-keywords.py"
 test-kate = "bash kate/test/check.sh"
+# `npm ci` installs EXACTLY the committed package-lock pins for the TextMate
+# scope-regression test (vscode-textmate + vscode-oniguruma).
+npm-install-textmate = { cmd = "npm ci", cwd = "textmate/test" }
+# Tokenize FlatPPL snippets with vscode-textmate (the engine VS Code uses) and
+# assert each category lands on its expected scope. Guards textmate/flatppl.tmLanguage.json.
+test-textmate        = { cmd = "node check.mjs", cwd = "textmate/test", depends-on = ["npm-install-textmate"] }
 # `npm ci` (not `npm install`) installs EXACTLY the package-lock pins and wipes any
 # stale node_modules, preventing tree-sitter-cli version skew — a stale CLI loading
 # a newer committed parser.c was the root cause of a multi-GB OOM in the
@@ -40,4 +46,4 @@ stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitte
 # Asserts §05 axis variance markers ^/_ are captured as @property, not operators.
 test-highlight-query = { cmd = "bash test/run-capped.sh bash test/query/check.sh", cwd = "tree-sitter", depends-on = ["stress-tree-sitter"] }
 check-tree-sitter  = { depends-on = ["test-highlight-query"] }
-check             = { depends-on = ["check-grammars", "test-kate", "check-tree-sitter"] }
+check             = { depends-on = ["check-grammars", "test-kate", "test-textmate", "check-tree-sitter"] }

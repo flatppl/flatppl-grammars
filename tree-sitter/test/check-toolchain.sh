@@ -10,6 +10,10 @@
 set -u
 
 cd "$(dirname "$0")/.." || exit 99   # -> tree-sitter/
+# Point the CLI at a committed config so the toolchain probe `tree-sitter parse`
+# doesn't emit the "You have not configured any parser directories" warning. The
+# grammar is still resolved from the in-project tree-sitter.json.
+export TREE_SITTER_DIR="$PWD/test/ts-config"
 TS="./node_modules/.bin/tree-sitter"
 [ -x "$TS" ] || TS="npx tree-sitter"
 
@@ -45,5 +49,20 @@ if [ "$rc" -ne 0 ]; then
   echo "ERROR: toolchain probe parse failed (rc=$rc):" >&2
   printf '%s\n' "$out" >&2
   exit 1
+fi
+# ── Error-recovery heuristic version canary (review Risk 1) ──────────────────
+# src/scanner.c detects parser error-recovery via tree-sitter's UNDOCUMENTED
+# "all external symbols valid at once" behavior, verified ONLY on the pinned
+# CLI. If the installed CLI differs from the pin in package.json, that
+# assumption may no longer hold — surface it loudly so a human re-verifies the
+# scanner.txt recovery tests against the new CLI.
+verified_cli="$(sed -n 's/.*"tree-sitter-cli"[[:space:]]*:[[:space:]]*"[~^]\{0,1\}\([0-9][0-9.]*\)".*/\1/p' package.json | head -1)"
+installed_cli="$(printf '%s' "$cli" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+if [ -n "$verified_cli" ] && [ -n "$installed_cli" ] && [ "$verified_cli" != "$installed_cli" ]; then
+  echo "WARNING: tree-sitter-cli $installed_cli != pinned/verified $verified_cli." >&2
+  echo "         src/scanner.c's error-recovery heuristic relies on UNDOCUMENTED" >&2
+  echo "         CLI behavior verified only on the pinned $verified_cli. RE-VERIFY the" >&2
+  echo "         'error-recovery resync' tests in test/corpus/scanner.txt, then" >&2
+  echo "         bump the pin in tree-sitter/package.json." >&2
 fi
 echo "toolchain OK"

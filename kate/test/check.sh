@@ -8,7 +8,8 @@ XML="$DIR/../flatppl.xml"
 SAMPLE="$DIR/sample.flatppl"
 MD="$(mktemp -t flatppl.XXXXXX)"; mv "$MD" "$MD.md"; MD="$MD.md"
 OUT="$(mktemp -t flatppl.XXXXXX)"; mv "$OUT" "$OUT.html"; OUT="$OUT.html"
-trap 'rm -f "$MD" "$OUT"' EXIT
+OPS_MD=""; OPS_OUT=""
+trap 'rm -f "$MD" "$OUT" "$OPS_MD" "$OPS_OUT"' EXIT
 { echo '```flatppl'; cat "$SAMPLE"; echo '```'; } > "$MD"
 pandoc --syntax-definition="$XML" --syntax-highlighting=tango "$MD" -o "$OUT"
 
@@ -54,5 +55,32 @@ assert '<span class="at">' 'dot-access member -> at'
 # dsOther emits no HTML class in pandoc, so there is no usable style for them.
 # Task 8
 assert '<span class="op">' 'operators -> op'
+
+# ── Operator coverage (drift guard vs keyword-lists.json "operators") ─────────
+# Render one `a OP b` line per canonical operator and assert the operator span
+# count is at least the number of operators: each line contributes exactly one
+# dsOperator (class="op") span, so a missing/mis-scoped operator drops the count
+# and fails. Source of truth is shared with the tree-sitter @operator block.
+# NOTE: the check is >=, not ==, so if kate ever splits a multi-char op into two
+# spans the count inflates and could mask a sibling regression; an == check would
+# be tighter but depends on pandoc's exact per-context span structure.
+JSON="$DIR/../../keyword-lists.json"
+OPS_MD="$(mktemp -t flatppl-ops.XXXXXX)"; mv "$OPS_MD" "$OPS_MD.md"; OPS_MD="$OPS_MD.md"
+OPS_OUT="$(mktemp -t flatppl-ops.XXXXXX)"; mv "$OPS_OUT" "$OPS_OUT.html"; OPS_OUT="$OPS_OUT.html"
+{
+  echo '```flatppl'
+  python3 -c "import json,sys
+ops=json.load(open(sys.argv[1]))['operators']
+sys.stdout.write(''.join('a %s b\n'%o for o in ops))" "$JSON"
+  echo '```'
+} > "$OPS_MD"
+pandoc --syntax-definition="$XML" --syntax-highlighting=tango "$OPS_MD" -o "$OPS_OUT"
+n_ops="$(python3 -c "import json,sys;print(len(json.load(open(sys.argv[1]))['operators']))" "$JSON")"
+got="$(grep -oE 'class="op"' "$OPS_OUT" | wc -l | tr -d ' ')"
+if [ "$got" -ge "$n_ops" ]; then
+  echo "ok: operator coverage ($got >= $n_ops dsOperator spans)"
+else
+  echo "FAIL: operator coverage — $got dsOperator spans for $n_ops operators (one or more not highlighted as operator in kate/flatppl.xml)"; fail=1
+fi
 
 exit $fail

@@ -130,3 +130,22 @@ z = f(a
   (binary_expression
     (integer)
     (integer)))
+
+==================
+Unbalanced bracket recovers later statements (error-recovery resync, M3)
+==================
+
+z = g[a
+2 + 3
+
+---
+
+(module
+  (binding
+    (identifier)
+    (identifier))
+  (ERROR
+    (identifier))
+  (binary_expression
+    (integer)
+    (integer)))
