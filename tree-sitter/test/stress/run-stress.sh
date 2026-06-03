@@ -10,6 +10,10 @@ TIMEOUT_S="${TIMEOUT_S:-15}" # wall-clock cap per parse
 export CAP_MB TIMEOUT_S
 
 cd "$(dirname "$0")/../.." || exit 99   # -> tree-sitter/
+# Point the CLI at a committed config so `tree-sitter parse` doesn't emit the
+# "You have not configured any parser directories" warning for every fixture.
+# The grammar is still resolved from the in-project tree-sitter.json.
+export TREE_SITTER_DIR="$PWD/test/ts-config"
 . "$(dirname "$0")/../lib/rss-cap.sh"
 TS="./node_modules/.bin/tree-sitter"
 [ -x "$TS" ] || TS="npx tree-sitter"

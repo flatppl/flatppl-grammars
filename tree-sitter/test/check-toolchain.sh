@@ -10,6 +10,10 @@
 set -u
 
 cd "$(dirname "$0")/.." || exit 99   # -> tree-sitter/
+# Point the CLI at a committed config so the toolchain probe `tree-sitter parse`
+# doesn't emit the "You have not configured any parser directories" warning. The
+# grammar is still resolved from the in-project tree-sitter.json.
+export TREE_SITTER_DIR="$PWD/test/ts-config"
 TS="./node_modules/.bin/tree-sitter"
 [ -x "$TS" ] || TS="npx tree-sitter"
 
