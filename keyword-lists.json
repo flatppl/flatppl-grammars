@@ -28,7 +28,8 @@
       "tm_suffix": "",
       "ts_scope": "function",
       "words": ["weighted", "logweighted", "normalize", "totalmass", "superpose",
-                "joint", "jointchain", "kchain", "iid", "truncate", "pushfwd"]
+                "joint", "jointchain", "kchain", "markovchain", "kscan", "iid",
+                "truncate", "pushfwd"]
     },
     {
       "kate_list": "analysis",

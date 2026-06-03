@@ -113,6 +113,7 @@ joint_likelihood
 jointchain
 kchain
 kernelof
+kscan
 l1norm
 l1unit
 l2norm
@@ -147,6 +148,7 @@ lor
 lower_cholesky
 lt
 lxor
+markovchain
 max
 maximum
 mean
