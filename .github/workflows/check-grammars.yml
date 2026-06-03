@@ -28,6 +28,9 @@ jobs:
       - name: Test Kate highlighting
         run: pixi run test-kate
 
+      - name: Test TextMate highlighting
+        run: pixi run test-textmate
+
       - name: Test tree-sitter grammar
         run: pixi run check-tree-sitter
 

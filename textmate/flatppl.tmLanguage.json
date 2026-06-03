@@ -19,8 +19,8 @@
     { "include": "#predefined-set" },
     { "include": "#reserved-name" },
     { "include": "#selector-keyword" },
-    { "include": "#operator" },
     { "include": "#assignment" },
+    { "include": "#operator" },
     { "include": "#function-call" },
     { "include": "#dot-access" },
     { "include": "#identifier" }
