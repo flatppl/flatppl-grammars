@@ -12,8 +12,11 @@ commit** — one feature per commit.
   if you forget to regenerate.
 - **Add an operator (infix/unary).** Add it to the relevant precedence rule in
   `tree-sitter/grammar.js` (`binary_expression`, `unary_expression`,
-  `comparison_expression`, `exponential_expression`), add it to the operator
-  token list in `tree-sitter/queries/highlights.scm`, and add a corpus entry.
+  `comparison_expression`, `exponential_expression`), add it to the
+  `"operators"` array in `keyword-lists.json` (the tree-sitter `@operator`
+  block in `highlights.scm` is generated from there — hand-edits get
+  overwritten), then run `pixi run gen-grammars`. CI's `check-grammars` fails
+  if you forget to regenerate. Add a corpus entry.
 - **Add a postfix form.** Add a left-recursive rule in `grammar.js` analogous to
   `call_expression` / `field_access` / `dot_call` / `index_expression`; add
   corpus.

@@ -5,8 +5,12 @@ Usage:
     gen-grammars.py           -- update both grammars in-place
     gen-grammars.py --check   -- exit 1 if any grammar drifts from the JSON
 
-Only the keyword list content is rewritten. All other grammar content
-(patterns, contexts, operator rules, comments) is preserved exactly.
+Keyword list content is rewritten in all three grammar targets. The
+tree-sitter `@operator` block (between the `; GEN:operators-start` /
+`; GEN:operators-end` markers in `highlights.scm`) is also generated from
+the `"operators"` array in `keyword-lists.json`. All other grammar content
+(patterns, contexts, comments) is preserved exactly; the engine-specific
+operator regexes in kate/textmate remain hand-maintained.
 """
 import argparse
 import json
