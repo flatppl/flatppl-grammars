@@ -25,16 +25,15 @@
 ; Booleans
 (boolean) @boolean
 
-; Operators (anonymous tokens — NO field syntax, NO brackets)
+; Operators (anonymous tokens — NO field syntax, NO brackets).
+; SYNCED from keyword-lists.json "operators" via gen-grammars.py — do not hand-edit
+; between the GEN markers. The special-scoped operators (= ~ := -> contextual !,
+; : selector) are NOT here; they stay hand-maintained below.
+; GEN:operators-start
 [
-  "+" "-" "*" "/" "^"
-  ".+" ".-" ".*" "./" ".^"
-  "<" ">" "==" "!=" "<=" ">="
-  ".<" ".>" ".==" ".!=" ".<=" ".>="
-  "&&" "||" ".&&" ".||"
-  ".!"
-  "in"
+  "+" "-" "*" "/" "^" ".+" ".-" ".*" "./" ".^" "<" ">" "==" "!=" "<=" ">=" ".<" ".>" ".==" ".!=" ".<=" ".>=" "&&" "||" ".&&" ".||" ".!" "in"
 ] @operator
+; GEN:operators-end
 
 ; Unary logical-not `!` — captured contextually so it does NOT collide with the
 ; `only_selector` `!` inside `[...]` (that one is @punctuation.special). A bare

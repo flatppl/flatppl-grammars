@@ -17,8 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def load_categories():
-    return json.loads((ROOT / "keyword-lists.json").read_text())["categories"]
+def load_keyword_lists():
+    return json.loads((ROOT / "keyword-lists.json").read_text())
 
 
 # ── TextMate ──────────────────────────────────────────────────────────────────
@@ -180,6 +180,43 @@ def check_or_update_tree_sitter(categories, *, check):
     return drifted
 
 
+def _ts_operator_block(operators):
+    """Canonical body for the GEN:operators block: a bracketed anonymous-token
+    list captured as @operator, one space-separated line, reproduced
+    byte-for-byte so any change drifts/updates the whole block."""
+    toks = " ".join(json.dumps(op) for op in operators)
+    return f"[\n  {toks}\n] @operator\n"
+
+
+def check_or_update_tree_sitter_operators(operators, *, check):
+    """Return list of drifted markers for the flat @operator block. Write fixes
+    unless check=True. Only the engine-neutral flat-@operator tokens live here;
+    the special-scoped operators (=, ~, :=, ->, contextual !, : selector) stay
+    hand-maintained OUTSIDE the GEN markers."""
+    path = ROOT / "tree-sitter" / "queries" / "highlights.scm"
+    if not path.exists():
+        return ["  tree-sitter: queries/highlights.scm MISSING"]
+    text = path.read_text()
+    canonical = _ts_operator_block(operators)
+    marker_re = re.compile(
+        r'(; GEN:operators-start\n)(.*?)(; GEN:operators-end)',
+        re.DOTALL,
+    )
+    m = marker_re.search(text)
+    if m is None:
+        return [
+            "  tree-sitter: queries/highlights.scm GEN:operators (marker not found"
+            "; add a '; GEN:operators-start' / '; GEN:operators-end' block to"
+            " tree-sitter/queries/highlights.scm before re-running)"
+        ]
+    if m.group(2) == canonical:
+        return []
+    if not check:
+        new_text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
+        path.write_text(new_text)
+    return ["  tree-sitter: queries/highlights.scm GEN:operators"]
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -191,11 +228,17 @@ def main():
     )
     args = parser.parse_args()
 
-    categories = load_categories()
+    data = load_keyword_lists()
+    categories = data["categories"]
+    operators = data.get("operators")
+    if operators is None:
+        print('ERROR: "operators" key missing from keyword-lists.json', file=sys.stderr)
+        sys.exit(2)
     drifted = []
     drifted += check_or_update_textmate(categories, check=args.check)
     drifted += check_or_update_kate(categories, check=args.check)
     drifted += check_or_update_tree_sitter(categories, check=args.check)
+    drifted += check_or_update_tree_sitter_operators(operators, check=args.check)
 
     if drifted:
         if args.check:
