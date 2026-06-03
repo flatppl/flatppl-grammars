@@ -1,0 +1,46 @@
+version: 2
+updates:
+  # Workflow action versions (e.g. setup-pixi, checkout).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+    cooldown:
+      # github-actions has no semver-level cooldown; only default-days is valid.
+      default-days: 7
+
+  # tree-sitter test toolchain. NOTE: a tree-sitter-cli bump changes the parser
+  # ABI and the undocumented behavior the error-recovery scanner relies on — the
+  # CI toolchain canary (tree-sitter/test/check-toolchain.sh) will flag it for
+  # re-verification against tree-sitter/test/corpus/scanner.txt.
+  - package-ecosystem: npm
+    directory: /tree-sitter
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: build
+    groups:
+      tree-sitter:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
+
+  # TextMate scope-regression harness (vscode-textmate, vscode-oniguruma).
+  - package-ecosystem: npm
+    directory: /textmate/test
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: build
+    groups:
+      textmate-test:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
