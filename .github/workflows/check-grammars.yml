@@ -14,11 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v6.0.2
 
+      - name: Check out flatppl-design (spec source)
+        uses: actions/checkout@v6.0.2
+        with:
+          repository: flatppl/flatppl-design
+          ref: main
+          path: .design
+
       - name: Install pixi
         uses: prefix-dev/setup-pixi@v0.9.6
 
       - name: Check keyword lists in sync
         run: pixi run check-grammars
+
+      - name: Spec builtins/combinators/kernels are mirrored in keyword-lists
+        env:
+          FLATPPL_DOCS_DIR: ${{ github.workspace }}/.design/docs
+        run: pixi run check-spec-keywords
 
       - name: Generator is idempotent (no uncommitted drift)
         run: |
