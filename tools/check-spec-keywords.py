@@ -90,7 +90,7 @@ def main():
     missing = [n for n in spec_keyword_names(docs)
                if n not in listed and n not in INTENTIONAL_EXCLUSIONS]
     if missing:
-        print("Spec builtins missing from keyword-lists.json:")
+        print("Spec builtins/combinators/kernels missing from keyword-lists.json:")
         for n in missing:
             print(f"  {n}")
         print("Fix: add them to the appropriate category in keyword-lists.json,"
