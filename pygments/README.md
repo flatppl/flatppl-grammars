@@ -2,7 +2,8 @@
 
 A [Pygments](https://pygments.org) lexer for FlatPPL. The keyword/operator word
 lists are generated from `../keyword-lists.json` by `tools/gen-grammars.py`, so
-this lexer always matches the other FlatPPL grammars.
+its keyword/operator lists stay in lockstep with the other FlatPPL grammars.
+(The token rules and states are hand-maintained — see `flatppl_lexer.py`.)
 
 **Not published to PyPI** — install from a checkout or vendor `flatppl_lexer.py`.
 

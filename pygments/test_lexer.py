@@ -60,9 +60,13 @@ check("index = 1", Name, "index", "identifier 'index' is NOT split by 'in' opera
 check("a .!= b", Operator, ".!=", "broadcast .!= -> Operator (longest match beats .!)")
 # Hole `_` (single underscore, not a placeholder _name_) -> Name.Variable.
 check("f(_, x)", Name.Variable, "_", "hole _ -> Name.Variable")
-# Axis variance markers ^/_ captured as @property, not operators (spec §05).
+# Axis variance markers ^/_ captured as Name.Attribute, not operators (spec §05).
 check("C[.i^]", Name.Attribute, "^", "axis variance marker ^ -> Name.Attribute")
 check("C[.j_]", Name.Attribute, "_", "axis variance marker _ -> Name.Attribute")
+# Builtins are scoped only in call position (matches the other grammars); a bare
+# builtin name used as an ordinary identifier stays Name (spec §05: not reserved).
+check("real(0)", Name.Builtin, "real", "builtin in call position -> Name.Builtin")
+check("real = 1", Name, "real", "bare builtin (no call) -> Name, not Name.Builtin")
 # Bad string escape -> Error (good escapes are String.Escape).
 check('"a\\q"', Error, "\\q", "invalid string escape -> Error")
 check('"a\\n"', String.Escape, "\\n", "valid string escape -> String.Escape")
@@ -95,6 +99,12 @@ _kw_path = os.path.join(os.path.dirname(__file__), "..", "keyword-lists.json")
 with open(_kw_path) as f:
     _kw = json.load(f)
 
+# Categories scoped only in call position (lexer uses `\b(?=\s*\()`), so their
+# coverage words must be tested followed by `(`, not bare.
+CALL_ONLY = {"builtins"}
+
+# `kate_list` is the canonical, cross-grammar category id (not Kate-specific);
+# all grammar targets key on it. See tools/gen-grammars.py.
 for cat in _kw["categories"]:
     name = cat["kate_list"]
     ttype = CATEGORY_TOKEN.get(name)
@@ -104,7 +114,8 @@ for cat in _kw["categories"]:
               f"test_lexer.py CATEGORY_TOKEN (add it to match the lexer rule)")
         continue
     for word in cat["words"]:
-        check(word, ttype, word, f"coverage: {name}/{word} -> {ttype}")
+        src = f"{word}(" if name in CALL_ONLY else word
+        check(src, ttype, word, f"coverage: {name}/{word} -> {ttype}")
 
 # Every operator in the JSON lexes to Operator (symbolic + the alphabetic `in`).
 for op in _kw["operators"]:

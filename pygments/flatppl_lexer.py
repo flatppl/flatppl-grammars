@@ -71,7 +71,7 @@ class FlatPPLLexer(RegexLexer):
             # Strings.
             (r'"', String, "string"),
             # Numbers.
-            (r"0[xX][0-9a-fA-F]+(?:_[0-9a-fA-F]+)*", Number.Hex),
+            (r"0x[0-9a-fA-F]+(?:_[0-9a-fA-F]+)*", Number.Hex),
             (r"[0-9]+(?:_[0-9]+)*\.(?:[0-9]+(?:_[0-9]+)*)?(?:[eE][+-]?[0-9]+(?:_[0-9]+)*)?", Number.Float),
             (r"\.[0-9]+(?:_[0-9]+)*(?:[eE][+-]?[0-9]+(?:_[0-9]+)*)?", Number.Float),
             (r"[0-9]+(?:_[0-9]+)*[eE][+-]?[0-9]+(?:_[0-9]+)*", Number.Float),
@@ -86,17 +86,27 @@ class FlatPPLLexer(RegexLexer):
             (words(ANALYSIS, prefix=r"\b", suffix=r"\b"), Name.Function),
             (words(HIGHERORDER, prefix=r"\b", suffix=r"\b"), Name.Function),
             (words(SETCTORS, prefix=r"\b", suffix=r"\b"), Name.Function),
-            (words(BUILTINS, prefix=r"\b", suffix=r"\b"), Name.Builtin),
+            # Builtins are scoped only in call position (`\b(?=\s*\()`), matching
+            # the `(?=\s*\()` tm_suffix the other FlatPPL grammars use — builtins
+            # are NOT reserved (spec §05), so a bare `real`/`string`/`sum` used as
+            # an ordinary name stays Name, not Name.Builtin.
+            (words(BUILTINS, prefix=r"\b", suffix=r"\b(?=\s*\()"), Name.Builtin),
             (words(CONSTANTS, prefix=r"\b", suffix=r"\b"), Keyword.Constant),
             (words(PREDEFSETS, prefix=r"\b", suffix=r"\b"), Name.Constant),
             (words(SELECTORS, prefix=r"\b", suffix=r"\b"), Keyword),
             (words(RESERVED, prefix=r"\b", suffix=r"\b"), Name.Builtin.Pseudo),
             # Axis name `.name` with optional variance marker ^ / _ (spec §05).
+            # LIMITATION: a regex lexer can't tell an Axis (`.i` in an aggregation)
+            # from field access (`r.field`); both surface as `.name`, so field
+            # access is also scoped Name.Attribute here, and a field name ending in
+            # `_` has its `_` consumed as a variance marker. Disambiguation needs a
+            # parser (spec §05 "Note on parser disambiguation").
             (r"(\.)([a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z])([\^_])?",
              bygroups(Punctuation, Name.Attribute, Name.Attribute)),
-            # Operators. The generated OPERATORS tuple is symbolic; the
-            # alphabetic `in` needs word boundaries so it doesn't match inside
-            # identifiers like `index`, so it is handled separately (like :=, ->).
+            # Operators. OPERATORS is mostly symbolic, but also includes the
+            # alphabetic `in`, which needs word boundaries so it doesn't match
+            # inside identifiers like `index`; so `in` is pulled out and handled
+            # separately (like :=, ->).
             # `:=` and `->` must come BEFORE the `words()` rule because `words()`
             # includes `-` and `>` as single-char operators that would otherwise
             # match first. `words()` escapes each token and prefers the longest
@@ -107,6 +117,9 @@ class FlatPPLLexer(RegexLexer):
             (r"->", Operator),
             (words(tuple(op for op in OPERATORS if op != "in")), Operator),
             (r"[=~]", Operator),
+            # `!` (also the `only` selector in `[...]`) and `:` (also slice-`all`
+            # and the metricsum binding colon) are lookahead-dependent; without a
+            # parser they are uniformly scoped Operator here.
             (r"[:!]", Operator),
             # Identifiers.
             (r"[a-zA-Z_][a-zA-Z0-9_]*", Name),
