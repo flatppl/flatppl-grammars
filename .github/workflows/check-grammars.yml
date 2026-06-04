@@ -25,6 +25,14 @@ jobs:
           pixi run gen-grammars
           git diff --exit-code
 
+      - name: Test Pygments lexer
+        run: pixi run test-pygments
+
+      - name: Pygments entry point resolves (editable install)
+        run: |
+          pixi run pip install -e ./pygments
+          pixi run test-pygments-entrypoint
+
       - name: Test Kate highlighting
         run: pixi run test-kate
 

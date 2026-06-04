@@ -1,0 +1,20 @@
+# Local-only Pygments plugin for FlatPPL. NOT published to PyPI — install from a
+# checkout (`pixi run pip install -e ./pygments`) or vendor flatppl_lexer.py. The
+# entry point registers the `flatppl` lexer so Sphinx (`highlight:: flatppl`),
+# Jupyter, and `pygmentize -l flatppl` discover it automatically.
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flatppl-pygments"
+version = "0.0.0"
+description = "Pygments lexer for FlatPPL (local use only; not published)"
+requires-python = ">=3.11"
+dependencies = ["Pygments>=2.17"]
+
+[project.entry-points."pygments.lexers"]
+flatppl = "flatppl_lexer:FlatPPLLexer"
+
+[tool.setuptools]
+py-modules = ["flatppl_lexer"]

@@ -5,8 +5,10 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 [dependencies]
 python = ">=3.11,<4"
 pandoc = ">=3.9,<4"
+pip = "*"
 pre-commit = ">=4,<5"
 nodejs = ">=24,<25"
+pygments = ">=2.17,<3"
 
 [tasks]
 gen-grammars = "python tools/gen-grammars.py"
@@ -15,6 +17,14 @@ check-grammars = "python tools/gen-grammars.py --check"
 # (flatppl-design). Skips with exit 0 when the docs repo is not checked out, so
 # it is intentionally NOT part of the CI `check` aggregate.
 check-spec-keywords = "python tools/check-spec-keywords.py"
+# Smoke-test the generated Pygments lexer. cwd=pygments so `import flatppl_lexer`
+# resolves; Pygments comes from the pixi env (no install needed).
+test-pygments = { cmd = "python test_lexer.py", cwd = "pygments" }
+# Verify the entry point resolves AFTER `pixi run pip install -e ./pygments`.
+# Run from repo root (no cwd) so only the installed entry point can resolve the
+# lexer. NOT in `check` — that runs without the editable install; CI runs it
+# separately after installing (see .github/workflows/check-grammars.yml).
+test-pygments-entrypoint = "python pygments/test_entrypoint.py"
 test-kate = "bash kate/test/check.sh"
 # `npm ci` installs EXACTLY the committed package-lock pins for the TextMate
 # scope-regression test (vscode-textmate + vscode-oniguruma).
@@ -46,4 +56,4 @@ stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitte
 # Asserts §05 axis variance markers ^/_ are captured as @property, not operators.
 test-highlight-query = { cmd = "bash test/run-capped.sh bash test/query/check.sh", cwd = "tree-sitter", depends-on = ["stress-tree-sitter"] }
 check-tree-sitter  = { depends-on = ["test-highlight-query"] }
-check             = { depends-on = ["check-grammars", "test-kate", "test-textmate", "check-tree-sitter"] }
+check             = { depends-on = ["check-grammars", "test-pygments", "test-kate", "test-textmate", "check-tree-sitter"] }

@@ -30,6 +30,9 @@ commit** — one feature per commit.
 - **Add a new editor / publication target.** Add a `check_or_update_<target>`
   sink in `tools/gen-grammars.py`, register it in `main()`, and add a CI step.
 
+The Pygments lexer (`pygments/flatppl_lexer.py`) word lists are generated the
+same way — edit `keyword-lists.json`, then `pixi run gen-grammars`.
+
 ## Kate grammar divergences
 
 `kate/flatppl.xml` is hand-ported from the TextMate grammar — keep the two in

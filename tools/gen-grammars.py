@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-"""Sync keyword lists in TextMate and Kate grammars from keyword-lists.json.
+"""Sync keyword lists in TextMate, Kate, tree-sitter, and Pygments grammars from keyword-lists.json.
 
 Usage:
-    gen-grammars.py           -- update both grammars in-place
+    gen-grammars.py           -- update all grammars in-place
     gen-grammars.py --check   -- exit 1 if any grammar drifts from the JSON
 
-Keyword list content is rewritten in all three grammar targets. The
+Keyword list content is rewritten in all four grammar targets. The
 tree-sitter `@operator` block (between the `; GEN:operators-start` /
-`; GEN:operators-end` markers in `highlights.scm`) is also generated from
-the `"operators"` array in `keyword-lists.json`. All other grammar content
+`; GEN:operators-end` markers in `highlights.scm`) and the Pygments
+`pygments/flatppl_lexer.py` word-list tuples (between `# GEN:` markers)
+are also generated from `keyword-lists.json`. All other grammar content
 (patterns, contexts, comments) is preserved exactly; the engine-specific
 operator regexes in kate/textmate remain hand-maintained.
 """
@@ -221,6 +222,54 @@ def check_or_update_tree_sitter_operators(operators, *, check):
     return ["  tree-sitter: queries/highlights.scm GEN:operators"]
 
 
+# ── Pygments ─────────────────────────────────────────────────────────────────
+
+# Pygments module-level tuple variable name for each keyword category, keyed by
+# its kate_list (the canonical category id). Operators use OPERATORS.
+def _py_var(name):
+    return name.upper()
+
+
+def _py_tuple(words):
+    # Trailing comma keeps a 1-tuple valid and the multi-element form clean.
+    return "(" + ", ".join(json.dumps(w) for w in words) + ("," if len(words) == 1 else "") + ")"
+
+
+def check_or_update_pygments(categories, operators, *, check):
+    """Return list of drifted GEN markers in pygments/flatppl_lexer.py. Write
+    fixes unless check=True. Splices ONLY the generated word-list tuples between
+    the `# GEN:<name>-start` / `-end` markers; all lexer logic is hand-kept."""
+    path = ROOT / "pygments" / "flatppl_lexer.py"
+    if not path.exists():
+        return ["  pygments: flatppl_lexer.py MISSING"]
+    text = path.read_text()
+    drifted = []
+    blocks = [(cat["kate_list"], cat["words"]) for cat in categories]
+    blocks.append(("operators", operators))
+    for name, words_list in blocks:
+        var = _py_var(name)
+        canonical = f"{var} = {_py_tuple(words_list)}\n"
+        marker_re = re.compile(
+            rf'(# GEN:{re.escape(name)}-start\n)(.*?)(# GEN:{re.escape(name)}-end)',
+            re.DOTALL,
+        )
+        m = marker_re.search(text)
+        if m is None:
+            drifted.append(
+                f"  pygments: flatppl_lexer.py GEN:{name} (marker not found"
+                f"; add a '# GEN:{name}-start' / '# GEN:{name}-end' block before re-running)"
+            )
+            continue
+        if m.group(2) == canonical:
+            continue
+        drifted.append(f"  pygments: flatppl_lexer.py GEN:{name}")
+        if not check:
+            text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
+    if not check and drifted:
+        path.write_text(text)
+    return drifted
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -243,6 +292,7 @@ def main():
     drifted += check_or_update_kate(categories, check=args.check)
     drifted += check_or_update_tree_sitter(categories, check=args.check)
     drifted += check_or_update_tree_sitter_operators(operators, check=args.check)
+    drifted += check_or_update_pygments(categories, operators, check=args.check)
 
     if drifted:
         if args.check:
