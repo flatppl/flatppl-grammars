@@ -29,7 +29,7 @@
       "ts_scope": "function",
       "words": ["weighted", "logweighted", "normalize", "totalmass", "superpose",
                 "joint", "jointchain", "kchain", "markovchain", "kscan", "iid",
-                "truncate", "pushfwd"]
+                "truncate", "pushfwd", "locscale"]
     },
     {
       "kate_list": "analysis",

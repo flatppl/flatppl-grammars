@@ -118,7 +118,7 @@
     },
     "measure-combinator": {
       "comment": "Measure-algebra operations",
-      "match": "\\b(weighted|logweighted|normalize|totalmass|superpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd)\\b",
+      "match": "\\b(weighted|logweighted|normalize|totalmass|superpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd|locscale)\\b",
       "name": "entity.name.function.measure.flatppl"
     },
     "analysis-operation": {
