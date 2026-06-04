@@ -15,8 +15,9 @@ in host languages: `flatppl(r"""…""")` in Python, `flatppl"""…"""` in Julia,
 | [TextMate](textmate) | `flatppl.tmLanguage.json` | VS Code, GitHub, … |
 | [tree-sitter](tree-sitter) | `grammar.js` + `src/scanner.c` | Neovim, Helix, … |
 | [Kate / skylighting](kate) | `flatppl.xml` | Pandoc highlighting |
+| [Pygments](pygments) | `flatppl_lexer.py` | Sphinx, Jupyter, `pygmentize` |
 
-Keyword lists for all three are single-sourced from `keyword-lists.json`.
+Keyword lists for all grammars are single-sourced from `keyword-lists.json`.
 
 ## Development
 
