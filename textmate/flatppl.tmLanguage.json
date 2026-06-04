@@ -72,7 +72,7 @@
         {
           "comment": "Hex integer with optional underscores between digits",
           "name": "constant.numeric.integer.hex.flatppl",
-          "match": "\\b0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*\\b"
+          "match": "\\b0x[0-9a-fA-F]+(_[0-9a-fA-F]+)*\\b"
         },
         {
           "comment": "Decimal float with fractional part and optional exponent",
