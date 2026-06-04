@@ -56,7 +56,7 @@
         <!-- String -->
         <DetectChar char="&quot;" attribute="String" context="String"/>
         <!-- Numbers (spec §05). -->
-        <RegExpr String="\b0[xX][0-9a-fA-F]+(_[0-9a-fA-F]+)*\b" attribute="BaseN" context="#stay"/>
+        <RegExpr String="\b0x[0-9a-fA-F]+(_[0-9a-fA-F]+)*\b" attribute="BaseN" context="#stay"/>
         <RegExpr String="\b[0-9]+(_[0-9]+)*\.([0-9]+(_[0-9]+)*)?([eE][+-]?[0-9]+(_[0-9]+)*)?" attribute="Float" context="#stay"/>
         <RegExpr String="\.[0-9]+(_[0-9]+)*([eE][+-]?[0-9]+(_[0-9]+)*)?" attribute="Float" context="#stay"/>
         <RegExpr String="\b[0-9]+(_[0-9]+)*[eE][+-]?[0-9]+(_[0-9]+)*\b" attribute="Float" context="#stay"/>

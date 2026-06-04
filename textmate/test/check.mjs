@@ -58,6 +58,18 @@ function assertScope(line, text, needle, desc) {
   }
 }
 
+// Assert NO token carries a scope containing `needle` (negative check).
+function refuteAnyScope(line, needle, desc) {
+  const toks = tokenize(line);
+  const hit = toks.find((t) => t.scopes.some((s) => s.includes(needle)));
+  if (!hit) {
+    console.log(`ok: ${desc}`);
+  } else {
+    fail = 1;
+    console.error(`FAIL: ${desc}\n  line: ${JSON.stringify(line)}\n  unexpected scope ~=${JSON.stringify(needle)}\n  got: ${JSON.stringify(toks)}`);
+  }
+}
+
 // Assert SOME token (any text) carries a scope containing `needle`.
 function assertAnyScope(line, needle, desc) {
   const toks = tokenize(line);
@@ -90,6 +102,7 @@ assertAnyScope('"a\\nb"', 'string.quoted.double', 'string');
 assertAnyScope('"a\\nb"', 'constant.character.escape', 'valid escape');
 assertAnyScope('"a\\zb"', 'invalid.illegal.escape', 'invalid escape');
 assertAnyScope('n = 0xFF', 'constant.numeric.integer.hex', 'hex integer');
+refuteAnyScope('n = 0XFF', 'constant.numeric.integer.hex', 'uppercase 0X is NOT a hex literal (spec §05)');
 assertAnyScope('n = 3.14', 'constant.numeric.float', 'float');
 assertAnyScope('n = 42', 'constant.numeric.integer', 'decimal integer');
 
