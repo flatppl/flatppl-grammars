@@ -33,6 +33,11 @@ commit** — one feature per commit.
 The Pygments lexer (`pygments/flatppl_lexer.py`) word lists are generated the
 same way — edit `keyword-lists.json`, then `pixi run gen-grammars`.
 
+The CodeMirror highlighter (`codemirror/textmate-highlight.ts`) reuses the
+TextMate grammar at runtime; it lives here and is vendored into flatppl-js at
+build time. It is not generated — edit it directly, keeping the `tok-*` classes
+in sync with the consumer's editor CSS.
+
 ## Kate grammar divergences
 
 `kate/flatppl.xml` is hand-ported from the TextMate grammar — keep the two in
