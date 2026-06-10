@@ -1,0 +1,168 @@
+%YAML 1.2
+---
+# FlatPPL syntax for Sublime Text / syntect (bat, ranger previews).
+# Keyword categories between `# GEN:<id>` / `# GEN-END:<id>` markers are
+# generated from keyword-lists.json by tools/gen-grammars.py — DO NOT hand-edit
+# those word lists; run `pixi run gen-grammars`. Structural/operator contexts
+# (comments, strings, numbers, operators, dot-access) are hand-maintained and
+# mirror the spec-correct TextMate patterns (flatppl-design docs/05-syntax.md).
+name: FlatPPL
+file_extensions:
+  - flatppl
+scope: source.flatppl
+
+contexts:
+  main:
+    - include: comments
+    - include: strings
+    - include: numbers
+    - include: placeholders
+    - include: keywords
+    - include: operators
+    - include: dot-access
+    - include: identifiers
+
+  comments:
+    # Doc-comment block: %%% on its own line, optional markup tag, closed by %%%.
+    - match: '^[ \t]*%%%(md|typ)?[ \t]*$'
+      push:
+        - meta_scope: comment.block.documentation.flatppl
+        - match: '^[ \t]*%%%[ \t]*$'
+          pop: true
+    # Doc-comment line: % with optional markup tag, to end of line.
+    - match: '%(md|typ)?.*$'
+      scope: comment.line.documentation.flatppl
+    # Plain block comment: ### on its own line, closed by ###.
+    - match: '^[ \t]*###[ \t]*$'
+      push:
+        - meta_scope: comment.block.number-sign.flatppl
+        - match: '^[ \t]*###[ \t]*$'
+          pop: true
+    # Plain line comment: # to end of line.
+    - match: '#.*$'
+      scope: comment.line.number-sign.flatppl
+
+  strings:
+    - match: '"'
+      push:
+        - meta_scope: string.quoted.double.flatppl
+        - match: '\\[\\"nrt0]'
+          scope: constant.character.escape.flatppl
+        - match: '\\.'
+          scope: invalid.illegal.escape.flatppl
+        - match: '"'
+          pop: true
+
+  numbers:
+    # Hex integer with optional underscores between digits.
+    - match: '\b0x[0-9a-fA-F]+(_[0-9a-fA-F]+)*\b'
+      scope: constant.numeric.integer.hex.flatppl
+    # Decimal float with fractional part and optional exponent.
+    - match: '\b[0-9]+(_[0-9]+)*\.([0-9]+(_[0-9]+)*)?([eE][+-]?[0-9]+(_[0-9]+)*)?'
+      scope: constant.numeric.float.flatppl
+    # Leading-dot float (.5, .5e7).
+    - match: '(?<![\w.])\.[0-9]+(_[0-9]+)*([eE][+-]?[0-9]+(_[0-9]+)*)?'
+      scope: constant.numeric.float.flatppl
+    # Decimal integer with exponent (sci notation, e.g. 1e7).
+    - match: '\b[0-9]+(_[0-9]+)*[eE][+-]?[0-9]+(_[0-9]+)*\b'
+      scope: constant.numeric.float.flatppl
+    # Decimal integer with optional underscores between digits.
+    - match: '\b[0-9]+(_[0-9]+)*\b'
+      scope: constant.numeric.integer.flatppl
+
+  placeholders:
+    # Placeholder variables _name_ used inside functionof/kernelof.
+    - match: '\b_[a-zA-Z][a-zA-Z0-9_]*_\b'
+      scope: variable.other.placeholder.flatppl
+    # Hole _ used inside fn(...) or as a discard name.
+    - match: '(?<![a-zA-Z0-9])_(?![a-zA-Z0-9_])'
+      scope: variable.other.hole.flatppl
+
+  keywords:
+    # GEN:specialops
+    - match: '\b(draw|lawof|functionof|kernelof|fn|elementof|external|valueset|load_module|standard_module|load_data)\b'
+      scope: keyword.other.special-operation.flatppl
+    # GEN-END:specialops
+    # GEN:kernels
+    - match: '\b(Uniform|Normal|GeneralizedNormal|Cauchy|StudentT|Logistic|LogNormal|Exponential|Gamma|Weibull|InverseGamma|Beta|ChiSquared|VonMises|Laplace|Bernoulli|Categorical|Categorical0|Binomial|Poisson|Geometric|NegativeBinomial|NegativeBinomial2|MvNormal|Wishart|InverseWishart|LKJ|LKJCholesky|Dirichlet|Multinomial|PoissonProcess|BinnedPoissonProcess|Dirac|Lebesgue|Counting)\b'
+      scope: entity.name.type.kernel.flatppl
+    # GEN-END:kernels
+    # GEN:combinators
+    - match: '\b(weighted|logweighted|normalize|totalmass|superpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd|locscale)\b'
+      scope: entity.name.function.measure.flatppl
+    # GEN-END:combinators
+    # GEN:analysis
+    - match: '\b(likelihoodof|joint_likelihood|densityof|logdensityof|bayesupdate|disintegrate|restrict)\b'
+      scope: entity.name.function.analysis.flatppl
+    # GEN-END:analysis
+    # GEN:higherorder
+    - match: '\b(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate|metricsum)\b'
+      scope: entity.name.function.higher-order.flatppl
+    # GEN-END:higherorder
+    # GEN:setctors
+    - match: '\b(interval|cartprod|cartpow|stdsimplex)\b'
+      scope: entity.name.function.set-constructor.flatppl
+    # GEN-END:setctors
+    # GEN:builtins
+    - match: '\b(identity|vector|array|fill|zeros|ones|eye|onehot|linspace|extlinspace|get|get0|cat|rowstack|colstack|record|table|tuple|partition|reverse|relabel|fixed|tile|splitblocks|joinblocks|addaxes|blockdiagmat|bandedmat|conv|crosscorr|boolean|integer|real|complex|string|imag|exp|expm1|log|log10|log1p|pow|sqrt|abs|abs2|sin|cos|tan|asin|acos|atan|atan2|sinh|cosh|tanh|asinh|acosh|atanh|min|max|floor|ceil|round|div|mod|conj|cis|gamma|loggamma|logit|invlogit|probit|invprobit|add|sub|mul|divide|neg|equal|unequal|lt|le|gt|ge|isfinite|isinf|isnan|iszero|transpose|adjoint|det|logabsdet|inv|trace|linsolve|lower_cholesky|row_gram|col_gram|self_outer|cross|diagmat|qr|diag|quadform|sum|mean|var|std|prod|maximum|minimum|cumsum|cumprod|lengthof|sizeof|indicesof|indicesof0|l1norm|l2norm|l1unit|l2unit|logsumexp|softmax|logsoftmax|land|lor|lnot|lxor|ifelse|filter|selectbins|bincounts|polynomial|bernstein|stepwise|rngstate|rnginit|rand|builtin_logdensityof|builtin_sample|builtin_touniform|builtin_fromuniform|builtin_tonormal|builtin_fromnormal|checked)(?=\s*\()'
+      scope: support.function.builtin.flatppl
+    # GEN-END:builtins
+    # GEN:constants
+    - match: '\b(true|false|inf|pi|im)\b'
+      scope: constant.language.flatppl
+    # GEN-END:constants
+    # GEN:predefsets
+    - match: '\b(reals|posreals|nonnegreals|unitinterval|posintegers|nonnegintegers|integers|booleans|complexes|rngstates|anything)\b'
+      scope: constant.other.set.flatppl
+    # GEN-END:predefsets
+    # GEN:selectors
+    - match: '\b(all|only)\b'
+      scope: keyword.other.selector.flatppl
+    # GEN-END:selectors
+    # GEN:reserved
+    - match: '\b(self|base|flatppl_compat)\b'
+      scope: variable.language.flatppl
+    # GEN-END:reserved
+
+  operators:
+    # Aggregate shorthand `C[.i] := expr`; multi-char `:=` before bare `:`/`=`.
+    - match: ':='
+      scope: keyword.operator.assignment.aggregate.flatppl
+    # Dot-prefixed broadcast operators + dot-call `f.(…)`; before plain ops.
+    - match: '\.(?:==|!=|<=|>=|&&|\|\||\+|\-|\*|/|\^|<|>|!)|\.(?=\()'
+      scope: keyword.operator.broadcast.flatppl
+    # Lambda arrow.
+    - match: '->'
+      scope: keyword.operator.lambda.flatppl
+    # Assignment `=` and tilde-binding `~`.
+    - match: '(?<![=!<>])(=|~)(?!=)'
+      scope: keyword.operator.assignment.flatppl
+    - match: '==|!=|<=|>=|<|>'
+      scope: keyword.operator.comparison.flatppl
+    - match: '&&|\|\||!(?![=,\]])'
+      scope: keyword.operator.logical.flatppl
+    - match: '\^'
+      scope: keyword.operator.exponent.flatppl
+    - match: '[+\-*/]'
+      scope: keyword.operator.arithmetic.flatppl
+    - match: '\bin\b'
+      scope: keyword.operator.membership.flatppl
+    # Axis-selector `:` (slice) and `!` (singleton axis, before , or ]).
+    - match: ':|!(?=[,\]])'
+      scope: keyword.operator.selector.flatppl
+
+  dot-access:
+    # .name, .name^, or .name_ (axis variance markers, spec §05).
+    - match: '(\.)([a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]|[a-zA-Z])([\^_])?'
+      captures:
+        1: punctuation.accessor.flatppl
+        2: variable.other.member.flatppl
+        3: variable.other.member.variance.flatppl
+
+  identifiers:
+    # Function-call head.
+    - match: '\b([a-zA-Z][a-zA-Z0-9_]*)(?=\s*\()'
+      scope: variable.function.flatppl
+    # Plain identifier.
+    - match: '\b[a-zA-Z][a-zA-Z0-9_]*\b'
+      scope: variable.other.flatppl

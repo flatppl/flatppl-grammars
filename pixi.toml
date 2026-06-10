@@ -26,6 +26,10 @@ test-pygments = { cmd = "python test_lexer.py", cwd = "pygments" }
 # separately after installing (see .github/workflows/check-grammars.yml).
 test-pygments-entrypoint = "python pygments/test_entrypoint.py"
 test-kate = "bash kate/test/check.sh"
+# Structural + GEN-marker check for the Sublime/syntect grammar (bat, ranger
+# previews). Pure stdlib — no syntect harness in-tree; tokenisation is verified
+# live via `bat --language=flatppl`. Guards sublime/flatppl.sublime-syntax.
+test-sublime = "python sublime/test/check.py"
 # `npm ci` installs EXACTLY the committed package-lock pins for the TextMate
 # scope-regression test (vscode-textmate + vscode-oniguruma).
 npm-install-textmate = { cmd = "npm ci", cwd = "textmate/test" }
@@ -56,4 +60,4 @@ stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitte
 # Asserts §05 axis variance markers ^/_ are captured as @property, not operators.
 test-highlight-query = { cmd = "bash test/run-capped.sh bash test/query/check.sh", cwd = "tree-sitter", depends-on = ["stress-tree-sitter"] }
 check-tree-sitter  = { depends-on = ["test-highlight-query"] }
-check             = { depends-on = ["check-grammars", "test-pygments", "test-kate", "test-textmate", "check-tree-sitter"] }
+check             = { depends-on = ["check-grammars", "test-pygments", "test-kate", "test-sublime", "test-textmate", "check-tree-sitter"] }
