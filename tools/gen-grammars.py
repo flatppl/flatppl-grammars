@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync keyword lists in TextMate, Kate, tree-sitter, Pygments, and Sublime grammars from keyword-lists.json.
+"""Sync keyword lists in TextMate, Kate, tree-sitter, Pygments, Sublime, and highlight.js grammars from keyword-lists.json.
 
 Usage:
     gen-grammars.py           -- update all grammars in-place
@@ -335,6 +335,49 @@ def check_or_update_sublime(categories, *, check):
     return drifted
 
 
+# ── highlight.js ──────────────────────────────────────────────────────────────
+
+def _hljs_array(words):
+    return "[" + ", ".join(json.dumps(w) for w in words) + "]"
+
+
+def check_or_update_highlightjs(categories, operators, *, check):
+    """Return list of drifted GEN markers in highlightjs/flatppl.js. Write fixes
+    unless check=True. Splices ONLY the generated keyword arrays between the
+    `// GEN:<name>-start` / `-end` markers; the language definition (modes,
+    scope buckets, operator regex assembly) is hand-maintained. Mirrors the
+    Pygments pass — same category ids, JS `const <NAME> = [...]` form."""
+    path = ROOT / "highlightjs" / "flatppl.js"
+    if not path.exists():
+        return ["  highlightjs: flatppl.js MISSING"]
+    text = path.read_text()
+    drifted = []
+    blocks = [(cat["kate_list"], cat["words"]) for cat in categories]
+    blocks.append(("operators", operators))
+    for name, words_list in blocks:
+        var = _py_var(name)
+        canonical = f"const {var} = {_hljs_array(words_list)};\n"
+        marker_re = re.compile(
+            rf'(// GEN:{re.escape(name)}-start\n)(.*?)(// GEN:{re.escape(name)}-end)',
+            re.DOTALL,
+        )
+        m = marker_re.search(text)
+        if m is None:
+            drifted.append(
+                f"  highlightjs: flatppl.js GEN:{name} (marker not found"
+                f"; add a '// GEN:{name}-start' / '// GEN:{name}-end' block before re-running)"
+            )
+            continue
+        if m.group(2) == canonical:
+            continue
+        drifted.append(f"  highlightjs: flatppl.js GEN:{name}")
+        if not check:
+            text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
+    if not check and drifted:
+        path.write_text(text)
+    return drifted
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -359,6 +402,7 @@ def main():
     drifted += check_or_update_tree_sitter_operators(operators, check=args.check)
     drifted += check_or_update_pygments(categories, operators, check=args.check)
     drifted += check_or_update_sublime(categories, check=args.check)
+    drifted += check_or_update_highlightjs(categories, operators, check=args.check)
 
     if drifted:
         if args.check:

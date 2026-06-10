@@ -17,6 +17,7 @@ in host languages: `flatppl(r"""…""")` in Python, `flatppl"""…"""` in Julia,
 | [Kate / skylighting](kate) | `flatppl.xml` | Pandoc highlighting |
 | [Pygments](pygments) | `flatppl_lexer.py` | Sphinx, Jupyter, `pygmentize` |
 | [CodeMirror](codemirror) | `textmate-highlight.ts` | Web editors (e.g. flatppl-js playground) |
+| [highlight.js](highlightjs) | `flatppl.js` | Web docs, static-site toolchains |
 
 Keyword lists for all grammars are single-sourced from `keyword-lists.json`.
 

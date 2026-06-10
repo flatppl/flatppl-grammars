@@ -1,0 +1,10 @@
+{
+  "name": "flatppl-highlightjs-test",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Scope-regression test for highlightjs/flatppl.js via highlight.js.",
+  "devDependencies": {
+    "highlight.js": "11.11.1"
+  }
+}
