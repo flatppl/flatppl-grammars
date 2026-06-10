@@ -21,6 +21,12 @@ Markdown (```` ```flatppl ````).
   (Not committed copied to avoid drift from `textmate/` — the single source.)
 
 ## Status
-**Not verified** — VS Code was not available on the build machine. The manifest
-follows VS Code's documented grammar-contribution format; the underlying
-TextMate grammars are exercised by `pixi run test-textmate`.
+The **embedding** (FlatPPL inside Python/Julia/Markdown) is verified
+engine-level by `pixi run test-embedding`, which loads these grammars into
+vscode-textmate — VS Code's own engine — and asserts the embedded region gets
+FlatPPL token scopes. The main FlatPPL grammar is covered by `test-textmate`.
+
+The `package.json` / `language-configuration.json` manifest follows VS Code's
+documented contribution format but was not loaded in a running VS Code instance
+(none on the build machine); its grammar paths and scopeNames are checked for
+consistency, but the extension activation itself is unverified.

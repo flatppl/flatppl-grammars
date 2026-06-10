@@ -9,7 +9,7 @@ its own README with setup steps.
 | [nvim](nvim/) | tree-sitter | py + jl + md | injection queries verified; not yet rendered in nvim |
 | [zed](zed/) | tree-sitter | md only | ❌ skeleton — Zed not on build machine |
 | [emacs](emacs/) | tree-sitter | none yet | ❌ skeleton — Emacs not on build machine |
-| [vscode](vscode/) | TextMate | py + jl + md | ❌ not rendered; TextMate grammars covered by `test-textmate` |
+| [vscode](vscode/) | TextMate | py + jl + md | ✅ embedding verified via vscode-textmate (`test-embedding`) |
 
 The host-language **injection queries** (FlatPPL embedded in Python/Julia) are
 shared across the tree-sitter editors and use node names verified against the
@@ -18,4 +18,6 @@ code blocks by language name.
 
 These integrations are not part of `pixi run check` (the editors aren't in CI).
 The grammars they point at are: tree-sitter (`check-tree-sitter`), TextMate
-(`test-textmate`).
+(`test-textmate`). The VS Code embedding (FlatPPL in python/julia/markdown) is
+checked engine-level by `test-embedding`, which tokenises the embedding grammars
+with vscode-textmate (VS Code's engine).
