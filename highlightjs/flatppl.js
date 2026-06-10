@@ -103,14 +103,20 @@ export default function flatppl(hljs) {
     contains: [{ scope: 'char.escape', begin: /\\[\\"nrt0]/ }],
   };
 
+  // The `(?<!\w)` guard on the digit-led variants stops a number from starting
+  // in the middle of an identifier: without it the trailing digits of a keyword
+  // (`Categorical0`, `log10`, `NegativeBinomial2`) match the NUMBER begin-mode
+  // and chop the word before keyword-lookup sees it whole. The leading-dot
+  // float variant is letter/dot-led and can't begin inside an identifier, so it
+  // needs no guard.
   const NUMBER = {
     scope: 'number',
     variants: [
-      { begin: /0x[0-9a-fA-F]+(?:_[0-9a-fA-F]+)*/ },
-      { begin: /[0-9]+(?:_[0-9]+)*\.(?:[0-9]+(?:_[0-9]+)*)?(?:[eE][+-]?[0-9]+(?:_[0-9]+)*)?/ },
+      { begin: /(?<!\w)0x[0-9a-fA-F]+(?:_[0-9a-fA-F]+)*/ },
+      { begin: /(?<!\w)[0-9]+(?:_[0-9]+)*\.(?:[0-9]+(?:_[0-9]+)*)?(?:[eE][+-]?[0-9]+(?:_[0-9]+)*)?/ },
       { begin: /\.[0-9]+(?:_[0-9]+)*(?:[eE][+-]?[0-9]+(?:_[0-9]+)*)?/ },
-      { begin: /[0-9]+(?:_[0-9]+)*[eE][+-]?[0-9]+(?:_[0-9]+)*/ },
-      { begin: /[0-9]+(?:_[0-9]+)*/ },
+      { begin: /(?<!\w)[0-9]+(?:_[0-9]+)*[eE][+-]?[0-9]+(?:_[0-9]+)*/ },
+      { begin: /(?<!\w)[0-9]+(?:_[0-9]+)*/ },
     ],
     relevance: 0,
   };

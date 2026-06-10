@@ -13,7 +13,8 @@
 // (textmate/flatppl-{python,julia,markdown}.tmLanguage.json):
 //   - Python : flatppl(r\"\"\"  …  \"\"\")   (optional r/b string prefix, """ or ''')
 //   - Julia  : flatppl\"\"\"  …  \"\"\"       (also the single-quote one-liner flatppl"…")
-//   - Markdown: ```flatppl … ```             (3+ backticks or tildes)
+//   - Markdown: ```flatppl … ```             (3+ backticks or tildes;
+//               case-insensitive, optional info-string suffix)
 //
 // Integration: highlight.js cannot inject into its built-in `python` / `julia`
 // grammars without forking them, so these are for composing custom host
@@ -59,9 +60,20 @@ export function markdownEmbed(/* hljs */) {
     excludeBegin: true,
     excludeEnd: true,
     relevance: 10,
+    // The TextMate trigger is `(`{3,}|~{3,})\s*(?i:(flatppl)(\s+[^`~]*)?$)`:
+    // case-insensitive `flatppl` plus an optional trailing info-string (any text
+    // up to EOL that contains no fence char). We mirror that here.
+    // LIMITATION: highlight.js regexes can't backreference, so begin/end do NOT
+    // enforce a matching delimiter (backtick body can be closed by a tilde fence
+    // and vice versa, and the fence length isn't matched). TextMate's `\3`/`\2`
+    // backrefs do enforce this — these variants are an approximation, not a
+    // fidelity guarantee.
     variants: [
-      { begin: /^[ \t]*`{3,}[ \t]*flatppl[ \t]*$/, end: /^[ \t]*`{3,}[ \t]*$/ },
-      { begin: /^[ \t]*~{3,}[ \t]*flatppl[ \t]*$/, end: /^[ \t]*~{3,}[ \t]*$/ },
+      // Case-insensitivity is spelled out per-letter ([Ff][Ll]…) rather than via
+      // the /i flag: highlight.js concatenates each variant's `begin` source into
+      // one combined regex and discards per-regex flags, so /i would be ignored.
+      { begin: /^[ \t]*`{3,}[ \t]*[Ff][Ll][Aa][Tt][Pp][Pp][Ll](?:[ \t]+[^`~]*)?[ \t]*$/, end: /^[ \t]*`{3,}[ \t]*$/ },
+      { begin: /^[ \t]*~{3,}[ \t]*[Ff][Ll][Aa][Tt][Pp][Pp][Ll](?:[ \t]+[^`~]*)?[ \t]*$/, end: /^[ \t]*~{3,}[ \t]*$/ },
     ],
   };
 }

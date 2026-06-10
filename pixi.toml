@@ -53,6 +53,11 @@ test-highlightjs     = { cmd = "node check.mjs", cwd = "highlightjs/test", depen
 # inside python/julia/markdown host triggers via `subLanguage`. Same dep as
 # test-highlightjs. Guards highlightjs/embed.js.
 test-embedding-highlightjs = { cmd = "node check-embedding.mjs", cwd = "highlightjs/test", depends-on = ["npm-install-highlightjs"] }
+# Manifest regression for highlightjs/package.json: the `exports` map must expose
+# the README-documented `flatppl-highlightjs/embed.js` subpath, and `npm pack`
+# must ship only the published files (never test/). Pure-node checks (no hljs),
+# so no npm-install dep — but it shells out to `npm pack --dry-run`.
+test-package-highlightjs = { cmd = "node check-package.mjs", cwd = "highlightjs/test" }
 # `npm ci` (not `npm install`) installs EXACTLY the package-lock pins and wipes any
 # stale node_modules, preventing tree-sitter-cli version skew — a stale CLI loading
 # a newer committed parser.c was the root cause of a multi-GB OOM in the
@@ -77,7 +82,7 @@ stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitte
 # Asserts §05 axis variance markers ^/_ are captured as @property, not operators.
 test-highlight-query = { cmd = "bash test/run-capped.sh bash test/query/check.sh", cwd = "tree-sitter", depends-on = ["stress-tree-sitter"] }
 check-tree-sitter  = { depends-on = ["test-highlight-query"] }
-check             = { depends-on = ["check-grammars", "test-pygments", "test-kate", "test-sublime", "test-textmate", "test-embedding", "test-highlightjs", "test-embedding-highlightjs", "check-tree-sitter"] }
+check             = { depends-on = ["check-grammars", "test-pygments", "test-kate", "test-sublime", "test-textmate", "test-embedding", "test-highlightjs", "test-embedding-highlightjs", "test-package-highlightjs", "check-tree-sitter"] }
 # Editor-integration verifiers. Need the editor + its prereqs installed (emacs
 # 29+ with tree-sitter + a C compiler; neovim with nvim-treesitter and the
 # python/julia parsers — see editors/{emacs,nvim}/README.md). Each SKIPS with

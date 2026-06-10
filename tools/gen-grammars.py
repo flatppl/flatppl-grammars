@@ -225,10 +225,46 @@ def check_or_update_tree_sitter_operators(operators, *, check):
 
 # ── Pygments ─────────────────────────────────────────────────────────────────
 
-# Pygments module-level tuple variable name for each keyword category, keyed by
-# its kate_list (the canonical category id). Operators use OPERATORS.
-def _py_var(name):
+# Generated module-level variable name for each keyword category, keyed by its
+# kate_list (the canonical category id). Operators use OPERATORS. Shared by the
+# Pygments tuple pass and the highlight.js const-array pass.
+def _gen_var(name):
     return name.upper()
+
+
+def _splice_gen_markers(path, label, comment_prefix, render_line, blocks, *, check):
+    """Shared marker splice/drift/write-back for the Pygments and highlight.js
+    passes. `blocks` is a list of (name, words) pairs; `render_line(var, words)`
+    returns the canonical body (incl. trailing newline) for each block, spliced
+    between `<comment_prefix> GEN:<name>-start` / `-end` markers. `label` is the
+    human-readable "<engine>: <file>" prefix used in drift messages. Returns the
+    list of drifted markers; writes fixes unless check=True."""
+    if not path.exists():
+        return [f"  {label} MISSING"]
+    text = path.read_text()
+    drifted = []
+    for name, words_list in blocks:
+        var = _gen_var(name)
+        canonical = render_line(var, words_list)
+        marker_re = re.compile(
+            rf'({re.escape(comment_prefix)} GEN:{re.escape(name)}-start\n)(.*?)({re.escape(comment_prefix)} GEN:{re.escape(name)}-end)',
+            re.DOTALL,
+        )
+        m = marker_re.search(text)
+        if m is None:
+            drifted.append(
+                f"  {label} GEN:{name} (marker not found"
+                f"; add a '{comment_prefix} GEN:{name}-start' / '{comment_prefix} GEN:{name}-end' block before re-running)"
+            )
+            continue
+        if m.group(2) == canonical:
+            continue
+        drifted.append(f"  {label} GEN:{name}")
+        if not check:
+            text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
+    if not check and drifted:
+        path.write_text(text)
+    return drifted
 
 
 def _py_tuple(words):
@@ -241,34 +277,16 @@ def check_or_update_pygments(categories, operators, *, check):
     fixes unless check=True. Splices ONLY the generated word-list tuples between
     the `# GEN:<name>-start` / `-end` markers; all lexer logic is hand-kept."""
     path = ROOT / "pygments" / "flatppl_lexer.py"
-    if not path.exists():
-        return ["  pygments: flatppl_lexer.py MISSING"]
-    text = path.read_text()
-    drifted = []
     blocks = [(cat["kate_list"], cat["words"]) for cat in categories]
     blocks.append(("operators", operators))
-    for name, words_list in blocks:
-        var = _py_var(name)
-        canonical = f"{var} = {_py_tuple(words_list)}\n"
-        marker_re = re.compile(
-            rf'(# GEN:{re.escape(name)}-start\n)(.*?)(# GEN:{re.escape(name)}-end)',
-            re.DOTALL,
-        )
-        m = marker_re.search(text)
-        if m is None:
-            drifted.append(
-                f"  pygments: flatppl_lexer.py GEN:{name} (marker not found"
-                f"; add a '# GEN:{name}-start' / '# GEN:{name}-end' block before re-running)"
-            )
-            continue
-        if m.group(2) == canonical:
-            continue
-        drifted.append(f"  pygments: flatppl_lexer.py GEN:{name}")
-        if not check:
-            text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
-    if not check and drifted:
-        path.write_text(text)
-    return drifted
+    return _splice_gen_markers(
+        path,
+        "pygments: flatppl_lexer.py",
+        "#",
+        lambda var, words_list: f"{var} = {_py_tuple(words_list)}\n",
+        blocks,
+        check=check,
+    )
 
 
 # ── Sublime / syntect ───────────────────────────────────────────────────────
@@ -348,34 +366,16 @@ def check_or_update_highlightjs(categories, operators, *, check):
     scope buckets, operator regex assembly) is hand-maintained. Mirrors the
     Pygments pass — same category ids, JS `const <NAME> = [...]` form."""
     path = ROOT / "highlightjs" / "flatppl.js"
-    if not path.exists():
-        return ["  highlightjs: flatppl.js MISSING"]
-    text = path.read_text()
-    drifted = []
     blocks = [(cat["kate_list"], cat["words"]) for cat in categories]
     blocks.append(("operators", operators))
-    for name, words_list in blocks:
-        var = _py_var(name)
-        canonical = f"const {var} = {_hljs_array(words_list)};\n"
-        marker_re = re.compile(
-            rf'(// GEN:{re.escape(name)}-start\n)(.*?)(// GEN:{re.escape(name)}-end)',
-            re.DOTALL,
-        )
-        m = marker_re.search(text)
-        if m is None:
-            drifted.append(
-                f"  highlightjs: flatppl.js GEN:{name} (marker not found"
-                f"; add a '// GEN:{name}-start' / '// GEN:{name}-end' block before re-running)"
-            )
-            continue
-        if m.group(2) == canonical:
-            continue
-        drifted.append(f"  highlightjs: flatppl.js GEN:{name}")
-        if not check:
-            text = text[: m.start()] + m.group(1) + canonical + m.group(3) + text[m.end():]
-    if not check and drifted:
-        path.write_text(text)
-    return drifted
+    return _splice_gen_markers(
+        path,
+        "highlightjs: flatppl.js",
+        "//",
+        lambda var, words_list: f"const {var} = {_hljs_array(words_list)};\n",
+        blocks,
+        check=check,
+    )
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────

@@ -65,18 +65,46 @@ function refuteScope(line, text, needle, desc) {
   }
 }
 
-// ── Keyword categories ──────────────────────────────────────────────────────
-assertScope('x ~ Normal(0, 1)', 'Normal', 'type', 'kernel Normal → type');
-assertScope('m = iid(d, 3)', 'iid', 'built_in', 'combinator iid → built_in');
-assertScope('y = likelihoodof(m, d)', 'likelihoodof', 'built_in', 'analysis likelihoodof → built_in');
-assertScope('z = reduce(f, xs)', 'reduce', 'built_in', 'higher-order reduce → built_in');
-assertScope('s = interval(0, 1)', 'interval', 'built_in', 'set-constructor interval → built_in');
-assertScope('fn(x)', 'fn', 'keyword', 'special-operation fn → keyword');
-assertScope('w = all', 'all', 'keyword', 'selector all → keyword');
-assertScope('r = record(a)', 'record', 'built_in', 'builtin record → built_in (call position)');
-assertScope('c = inf', 'inf', 'literal', 'constant inf → literal');
-assertScope('q = reals', 'reals', 'constant_', 'predefined-set reals → variable.constant');
-assertScope('v = self', 'self', 'language_', 'reserved self → variable.language');
+// ── Keyword categories (JSON-driven; shared source of truth) ────────────────
+// Every word in every keyword-lists.json category must highlight onto the
+// hljs class the README scope-map prescribes. A dropped or mis-bucketed word
+// in flatppl.js would otherwise be invisible to the runtime test.
+//
+// `needle` is the substring assertScope matches inside `hljs-…` (the coarsened
+// `variable.constant` / `variable.language` scopes emit `hljs-variable
+// constant_` / `hljs-variable language_`, so we match the trailing token).
+// `call` categories (builtins) only highlight in call position (`name(`),
+// matching the `(?=\s*\()` suffix — assert them as a `word(` form.
+const CATEGORY_SCOPE = {
+  specialops: { needle: 'keyword' },
+  selectors: { needle: 'keyword' },
+  kernels: { needle: 'type' },
+  combinators: { needle: 'built_in' },
+  analysis: { needle: 'built_in' },
+  higherorder: { needle: 'built_in' },
+  setctors: { needle: 'built_in' },
+  builtins: { needle: 'built_in', call: true },
+  constants: { needle: 'literal' },
+  predefsets: { needle: 'constant_' },
+  reserved: { needle: 'language_' },
+};
+// Digit-suffixed names (`Categorical0`, `NegativeBinomial2`, `log10`) must
+// highlight as a single token: the NUMBER mode's `(?<!\w)` guard in flatppl.js
+// stops it from chopping the trailing digit off an identifier. Assert the whole
+// word lands on its class so a regression of that guard fails here.
+for (const cat of keywordLists.categories ?? []) {
+  const name = cat.kate_list;
+  const spec = CATEGORY_SCOPE[name];
+  if (!spec) {
+    fail = 1;
+    console.error(`FAIL: keyword-lists category ${JSON.stringify(name)} has no scope-map entry in the test`);
+    continue;
+  }
+  for (const word of cat.words ?? []) {
+    const line = spec.call ? `${word}(x)` : `q = ${word}`;
+    assertScope(line, word, spec.needle, `${name} ${word} → hljs-…${spec.needle}`);
+  }
+}
 
 // ── Builtins are NOT reserved: bare (non-call) use stays unscoped (spec §05) ──
 refuteScope('real = 1', 'real', 'built_in', 'bare `real` (not a call) is NOT built_in');
@@ -100,11 +128,26 @@ assertScope('r.field', '.field', 'property', 'field member → property');
 assertScope('p = _name_', '_name_', 'variable', 'placeholder _name_ → variable');
 assertScope('h = _', '_', 'variable', 'hole _ → variable');
 
+// ── Selectors (explicit; also covered by the JSON-driven loop above) ────────
+assertScope('w = all', 'all', 'keyword', 'selector all → keyword');
+assertScope('w = only', 'only', 'keyword', 'selector only → keyword');
+
 // ── Assignment / binding / lambda / selector operators ──────────────────────
 assertScope('x = 1', '=', 'operator', 'assignment =');
 assertScope('x ~ d', '~', 'operator', 'tilde ~');
 assertScope('C[.i] := e', ':=', 'operator', 'aggregate :=');
 assertScope('a -> b', '->', 'operator', 'lambda arrow ->');
+// Coarsened single-char operators (README "known coarsening"): `:` (slice-all)
+// and `!` (only-selector / lnot) both collapse onto `operator`.
+assertScope('C[:] = x', ':', 'operator', 'slice-all colon :');
+assertScope('a ! b', '!', 'operator', 'bang !');
+
+// ── Block-comment / doc-block fences (spec §05) ─────────────────────────────
+// The `###` block fence and `%%%md` doc block must be tagged `comment`. The
+// grammar relies on an ordering invariant — fences listed before the `#`/`%`
+// single-char forms — so these guard against a regression in that ordering.
+assertAnyScope('###\nbody\n###', 'comment', 'block-comment fence ###');
+assertAnyScope('%%%md\nbody\n%%%', 'comment', 'doc-block fence %%%md');
 
 // ── Operator coverage (JSON-driven; shared source of truth) ─────────────────
 for (const op of keywordLists.operators ?? []) {

@@ -44,6 +44,26 @@ check('mdhost', markdownEmbed(hljs),
   ['```flatppl', 'alpha ~ Normal(0, 1)', '```'],
   'markdown ```flatppl');
 
+// Markdown fence must be case-insensitive and tolerate an info-string suffix,
+// matching the TextMate trigger `(?i:(flatppl)(\s+[^`~]*)?$)`.
+check('mdhost-case', markdownEmbed(hljs),
+  ['```Flatppl', 'alpha ~ Normal(0, 1)', '```'],
+  'markdown ```Flatppl (case-variant)');
+check('mdhost-info', markdownEmbed(hljs),
+  ['```flatppl title=foo', 'alpha ~ Normal(0, 1)', '```'],
+  'markdown ```flatppl title=foo (info-string)');
+
+// Guards: these already dispatch at runtime — lock them against regression.
+check('jlhost-sq', juliaEmbed(hljs),
+  ['m = flatppl"alpha ~ Normal(0, 1)"'],
+  'julia flatppl"…" one-liner');
+check('mdhost-tilde', markdownEmbed(hljs),
+  ['~~~flatppl', 'alpha ~ Normal(0, 1)', '~~~'],
+  'markdown ~~~flatppl tilde fence');
+check('pyhost-br', pythonEmbed(hljs),
+  ['model = flatppl(br"""', 'alpha ~ Normal(0, 1)', '""")'],
+  'python flatppl(br""" ... """) prefix');
+
 if (bad) {
   console.error(`\n${bad} embedding check(s) failed`);
   process.exit(1);
