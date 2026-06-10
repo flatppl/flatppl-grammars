@@ -54,6 +54,9 @@ jobs:
       - name: Test TextMate highlighting
         run: pixi run test-textmate
 
+      - name: Test embedded-FlatPPL injection (VS Code engine)
+        run: pixi run test-embedding
+
       - name: Test tree-sitter grammar
         run: pixi run check-tree-sitter
 

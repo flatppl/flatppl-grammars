@@ -1,0 +1,46 @@
+{
+  "name": "flatppl",
+  "displayName": "FlatPPL",
+  "description": "FlatPPL syntax highlighting + embedded highlighting in Python, Julia, and Markdown (TextMate grammars).",
+  "version": "0.0.1",
+  "publisher": "flatppl",
+  "private": true,
+  "engines": { "vscode": "^1.75.0" },
+  "categories": ["Programming Languages"],
+  "repository": { "type": "git", "url": "https://github.com/flatppl/flatppl-grammars" },
+  "contributes": {
+    "languages": [
+      {
+        "id": "flatppl",
+        "aliases": ["FlatPPL", "flatppl"],
+        "extensions": [".flatppl"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "flatppl",
+        "scopeName": "source.flatppl",
+        "path": "../../textmate/flatppl.tmLanguage.json"
+      },
+      {
+        "scopeName": "flatppl.embedded.python",
+        "path": "../../textmate/flatppl-python.tmLanguage.json",
+        "injectTo": ["source.python"],
+        "embeddedLanguages": { "meta.embedded.block.flatppl": "flatppl" }
+      },
+      {
+        "scopeName": "flatppl.embedded.julia",
+        "path": "../../textmate/flatppl-julia.tmLanguage.json",
+        "injectTo": ["source.julia"],
+        "embeddedLanguages": { "meta.embedded.block.flatppl": "flatppl" }
+      },
+      {
+        "scopeName": "markdown.flatppl.codeblock",
+        "path": "../../textmate/flatppl-markdown.tmLanguage.json",
+        "injectTo": ["text.html.markdown"],
+        "embeddedLanguages": { "meta.embedded.block.flatppl": "flatppl" }
+      }
+    ]
+  }
+}
