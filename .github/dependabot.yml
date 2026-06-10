@@ -44,3 +44,19 @@ updates:
     cooldown:
       default-days: 7
       semver-major-days: 14
+
+  # Sublime/syntect scope-regression harness (syntect + transitive crates).
+  # syntect is the engine bat/ranger use; a bump can change tokenisation, which
+  # the test-sublime scope assertions (sublime/test/src/main.rs) will catch.
+  - package-ecosystem: cargo
+    directory: /sublime/test
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: build
+    groups:
+      sublime-test:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
+      semver-major-days: 14
