@@ -65,8 +65,13 @@ done
 asserts query captures on the real trees (no rendering):
 
 ```sh
-nvim --headless -l editors/nvim/test/verify.lua
+pixi run verify-nvim         # or: nvim --headless -l editors/nvim/test/verify.lua
 ```
+
+The `pixi run verify-nvim` task (`test/run.sh`) **skips with exit 0** when Neovim
+isn't installed, so it is intentionally NOT in the `check` aggregate / CI (the CI
+runner has no Neovim). When nvim IS present it runs the real check, which still
+asserts the parser/query prereqs below.
 
 Verified: core FlatPPL highlighting (`Normal` → `@type`, numerics) and the
 **Python + Julia** embedding injections (`flatppl` injected tree exists and the

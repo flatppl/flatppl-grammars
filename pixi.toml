@@ -61,3 +61,12 @@ stress-tree-sitter = { cmd = "bash test/stress/run-stress.sh", cwd = "tree-sitte
 test-highlight-query = { cmd = "bash test/run-capped.sh bash test/query/check.sh", cwd = "tree-sitter", depends-on = ["stress-tree-sitter"] }
 check-tree-sitter  = { depends-on = ["test-highlight-query"] }
 check             = { depends-on = ["check-grammars", "test-pygments", "test-kate", "test-textmate", "test-embedding", "check-tree-sitter"] }
+# Editor-integration verifiers. Need the editor + its prereqs installed (emacs
+# 29+ with tree-sitter + a C compiler; neovim with nvim-treesitter and the
+# python/julia parsers — see editors/{emacs,nvim}/README.md). Each SKIPS with
+# exit 0 when its editor is absent, so they are safe to run anywhere — and for
+# that same reason are intentionally NOT in `check`/CI (those runners have no
+# editors and would only ever skip). Run locally: `pixi run verify-editors`.
+verify-emacs   = "bash editors/emacs/test/verify.sh"
+verify-nvim    = "bash editors/nvim/test/run.sh"
+verify-editors = { depends-on = ["verify-emacs", "verify-nvim"] }

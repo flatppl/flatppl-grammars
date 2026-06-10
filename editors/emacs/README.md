@@ -16,14 +16,16 @@ tree-sitter (`treesit`). It consumes the **tree-sitter** target.
 + a C compiler):
 
 ```sh
-./editors/emacs/test/verify.sh
+pixi run verify-emacs        # or: ./editors/emacs/test/verify.sh
 ```
 
 It compiles the FlatPPL grammar as a treesit lib, loads `flatppl-ts-mode`, and
 asserts the grammar loads, the parser produces a tree (root `module`), the
 font-lock **queries compile** (an invalid node name would error), and faces
-apply (call head → function-call, number, comment). Verified on Emacs 30.2. Not
-part of the repo's pixi CI (no Emacs there).
+apply (call head → function-call, number, comment). Verified on Emacs 30.2. The
+`pixi run verify-emacs` task **skips with exit 0** when Emacs isn't installed, so
+it is intentionally NOT in the `check` aggregate / CI (the CI runner has no
+Emacs); run it locally.
 
 ## Limitations
 - Highlights structural nodes (comments, doc-comments, strings, escapes,

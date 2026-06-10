@@ -4,6 +4,18 @@
 # Requires emacs (29+, built with tree-sitter) and a C compiler. Not in the
 # repo's pixi CI.
 set -euo pipefail
+
+# Skip cleanly when prereqs are absent, so this is safe to run anywhere (e.g. via
+# `pixi run verify-emacs`) including CI machines without an editor.
+if ! command -v emacs >/dev/null 2>&1; then
+  echo "skip: emacs not installed — flatppl-ts-mode check not run"
+  exit 0
+fi
+if ! command -v cc >/dev/null 2>&1; then
+  echo "skip: no C compiler (cc) — cannot build the treesit grammar lib"
+  exit 0
+fi
+
 here="$(cd "$(dirname "$0")" && pwd)"
 root="$(cd "$here/../../.." && pwd)"
 ts="$root/tree-sitter"

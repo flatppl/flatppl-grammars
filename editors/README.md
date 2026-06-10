@@ -15,8 +15,13 @@ shared across the tree-sitter editors and use node names verified against the
 respective grammars. Markdown embedding works wherever the editor injects fenced
 code blocks by language name.
 
-These integrations are not part of `pixi run check` (the editors aren't in CI).
-The grammars they point at are: tree-sitter (`check-tree-sitter`), TextMate
-(`test-textmate`). The VS Code embedding (FlatPPL in python/julia/markdown) is
-checked engine-level by `test-embedding`, which tokenises the embedding grammars
-with vscode-textmate (VS Code's engine).
+The Emacs and Neovim checks are wired as `pixi run verify-emacs` / `verify-nvim`
+(or `pixi run verify-editors` for both). Each **skips with exit 0** when its
+editor isn't installed, so they're safe to run anywhere — and for that reason are
+intentionally NOT in `pixi run check` / CI (those runners have no editors and
+would only ever skip); run them locally.
+
+The grammars these integrations point at *are* in `check`: tree-sitter
+(`check-tree-sitter`), TextMate (`test-textmate`). The VS Code embedding (FlatPPL
+in python/julia/markdown) is checked engine-level by `test-embedding`, which
+tokenises the embedding grammars with vscode-textmate (VS Code's engine).
