@@ -20,3 +20,4 @@ __pycache__/
 
 # pip editable-install build cruft
 *.egg-info/
+/sublime/test/target/

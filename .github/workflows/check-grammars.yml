@@ -48,6 +48,9 @@ jobs:
       - name: Test Kate highlighting
         run: pixi run test-kate
 
+      - name: Test Sublime/syntect grammar
+        run: pixi run test-sublime
+
       - name: Test TextMate highlighting
         run: pixi run test-textmate
 
