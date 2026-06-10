@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Sync keyword lists in TextMate, Kate, tree-sitter, and Pygments grammars from keyword-lists.json.
+"""Sync keyword lists in TextMate, Kate, tree-sitter, Pygments, and Sublime grammars from keyword-lists.json.
 
 Usage:
     gen-grammars.py           -- update all grammars in-place
     gen-grammars.py --check   -- exit 1 if any grammar drifts from the JSON
 
-Keyword list content is rewritten in all four grammar targets. The
+Keyword list content is rewritten in all five grammar targets. The
 tree-sitter `@operator` block (between the `; GEN:operators-start` /
 `; GEN:operators-end` markers in `highlights.scm`) and the Pygments
-`pygments/flatppl_lexer.py` word-list tuples (between `# GEN:` markers)
-are also generated from `keyword-lists.json`. All other grammar content
+`pygments/flatppl_lexer.py` word-list tuples and the
+`sublime/flatppl.sublime-syntax` keyword alternations (both between
+`# GEN:` markers) are also generated from `keyword-lists.json`. All other grammar content
 (patterns, contexts, comments) is preserved exactly; the engine-specific
 operator regexes in kate/textmate remain hand-maintained.
 """
@@ -270,6 +271,70 @@ def check_or_update_pygments(categories, operators, *, check):
     return drifted
 
 
+# ── Sublime / syntect ───────────────────────────────────────────────────────
+
+# Sublime-syntax scope for each keyword category, keyed by kate_list. These
+# mirror the TextMate `name` scopes so themes colour the two grammars
+# identically. The match value itself is byte-for-byte `_tm_match(...)`, so the
+# splice below shares the TextMate alternation form.
+SUBLIME_SCOPES = {
+    "specialops":  "keyword.other.special-operation.flatppl",
+    "kernels":     "entity.name.type.kernel.flatppl",
+    "combinators": "entity.name.function.measure.flatppl",
+    "analysis":    "entity.name.function.analysis.flatppl",
+    "higherorder": "entity.name.function.higher-order.flatppl",
+    "setctors":    "entity.name.function.set-constructor.flatppl",
+    "builtins":    "support.function.builtin.flatppl",
+    "constants":   "constant.language.flatppl",
+    "predefsets":  "constant.other.set.flatppl",
+    "selectors":   "keyword.other.selector.flatppl",
+    "reserved":    "variable.language.flatppl",
+}
+
+
+def check_or_update_sublime(categories, *, check):
+    """Sync keyword alternations in sublime/flatppl.sublime-syntax.
+
+    Each category's word list lives between `# GEN:<kate_list>` /
+    `# GEN-END:<kate_list>` markers as a single-quoted YAML `match:` scalar.
+    Single-quoted YAML treats backslashes literally, so the regex is stored
+    verbatim (no escaping); category regexes never contain a single quote.
+    Only the alternation is rewritten — surrounding structural contexts
+    (comments, strings, numbers, operators) are hand-maintained.
+    """
+    path = ROOT / "sublime" / "flatppl.sublime-syntax"
+    if not path.exists():
+        return ["  sublime: flatppl.sublime-syntax MISSING"]
+    text = path.read_text()
+    drifted = []
+
+    for cat in categories:
+        kl = cat["kate_list"]
+        expected = _tm_match(cat["words"], cat.get("tm_suffix", ""))
+        block_re = re.compile(
+            rf"(# GEN:{re.escape(kl)}\n\s*- match: ')([^']*)(')",
+            re.MULTILINE,
+        )
+        m = block_re.search(text)
+        if m is None:
+            print(
+                f"ERROR: sublime GEN marker for '{kl}' not found"
+                f" — add `# GEN:{kl}` / `# GEN-END:{kl}` around the match line in"
+                f" sublime/flatppl.sublime-syntax before re-running",
+                file=sys.stderr,
+            )
+            sys.exit(2)
+        if m.group(2) == expected:
+            continue
+        drifted.append(f"  sublime: GEN:{kl}")
+        if not check:
+            text = text[: m.start()] + m.group(1) + expected + m.group(3) + text[m.end():]
+
+    if not check and drifted:
+        path.write_text(text)
+    return drifted
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -293,6 +358,7 @@ def main():
     drifted += check_or_update_tree_sitter(categories, check=args.check)
     drifted += check_or_update_tree_sitter_operators(operators, check=args.check)
     drifted += check_or_update_pygments(categories, operators, check=args.check)
+    drifted += check_or_update_sublime(categories, check=args.check)
 
     if drifted:
         if args.check:
