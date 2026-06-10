@@ -89,9 +89,16 @@ export default function flatppl(hljs) {
     begin: new RegExp('(?:' + SYM_OPS.join('|') + ')|\\bin\\b'),
   };
 
-  // `.name` (axis or field). Letter-led, so it never collides with the dotted
-  // operators (`.+`, `.<=`) or a leading-dot float (`.5`).
-  const MEMBER = { scope: 'property', begin: /\.[A-Za-z][A-Za-z0-9_]*/ };
+  // `.name` (axis or field) with an optional trailing variance marker `^`/`_`
+  // (spec §05). The axis-id (`[A-Za-z][A-Za-z0-9_]*[A-Za-z0-9]|[A-Za-z]`) never
+  // ends in `_`, so a trailing `_` is read as the sub-variance marker and the
+  // optional `[\^_]` absorbs the super/sub marker into the property token —
+  // `.i^`/`.i_` highlight wholly as property, not property+operator (matching
+  // the tree-sitter/TextMate/Pygments grammars). Letter-led, so it never
+  // collides with the dotted operators (`.+`, `.<=`) or a leading-dot float
+  // (`.5`); the marker is gated behind a letter-led name so the power operator
+  // `^` (e.g. `x^2`) is untouched.
+  const MEMBER = { scope: 'property', begin: /\.(?:[A-Za-z][A-Za-z0-9_]*[A-Za-z0-9]|[A-Za-z])[\^_]?/ };
 
   const PLACEHOLDER = { scope: 'variable', begin: /\b_[A-Za-z][A-Za-z0-9_]*_\b/ };
   const HOLE = { scope: 'variable', begin: /(?<![\w])_(?![\w])/ };

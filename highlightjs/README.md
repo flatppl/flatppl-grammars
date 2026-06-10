@@ -3,6 +3,8 @@
 A [highlight.js](https://highlightjs.org/) (v11+) language definition for
 FlatPPL, for highlighting code blocks on the web and in static-site toolchains.
 
+**Published to npm** as `flatppl-highlightjs`, from this directory.
+
 ```js
 import hljs from 'highlight.js';
 import flatppl from 'flatppl-highlightjs'; // or: './flatppl.js'

@@ -43,6 +43,23 @@ if (exp && typeof exp === 'object' && !Array.isArray(exp) && exp['.']) {
   bad("exports map must keep a '.' main entry", `got exports=${JSON.stringify(exp)}`);
 }
 
+// ── (c) repository metadata — npm publish + registry source link ─────────────
+const repo = pkg.repository;
+if (
+  repo &&
+  typeof repo === 'object' &&
+  repo.type === 'git' &&
+  typeof repo.url === 'string' &&
+  repo.url.includes('flatppl/flatppl-grammars')
+) {
+  ok("repository field is git + points at flatppl/flatppl-grammars");
+} else {
+  bad(
+    'repository must be a git object pointing at flatppl/flatppl-grammars',
+    `got repository=${JSON.stringify(repo)} (npm publish warns + registry has no source link without it)`,
+  );
+}
+
 // ── (b) npm pack allowlist ships only the published files, never test/ ───────
 let listed;
 try {
