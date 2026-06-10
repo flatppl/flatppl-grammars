@@ -1,0 +1,4 @@
+name = "FlatPPL"
+grammar = "flatppl"
+path_suffixes = ["flatppl"]
+line_comments = ["# "]

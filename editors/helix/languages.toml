@@ -1,0 +1,15 @@
+# FlatPPL language + grammar registration for Helix. Merge into your
+# ~/.config/helix/languages.toml. See helix/README.md for full setup.
+[[language]]
+name = "flatppl"
+scope = "source.flatppl"
+file-types = ["flatppl"]
+comment-tokens = ["#"]
+indent = { tab-width = 4, unit = "    " }
+grammar = "flatppl"
+
+[[grammar]]
+name = "flatppl"
+# For local development point at a checkout instead:
+#   source = { path = "/abs/path/to/flatppl-grammars/tree-sitter" }
+source = { git = "https://github.com/flatppl/flatppl-grammars", subpath = "tree-sitter", rev = "REPLACE_WITH_COMMIT_SHA" }
