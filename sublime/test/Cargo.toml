@@ -1,0 +1,21 @@
+[package]
+name = "flatppl-sublime-test"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# Scope-regression test for sublime/flatppl.sublime-syntax. Uses syntect with
+# the Oniguruma regex engine — the SAME engine bat and ranger previews use — so
+# the asserted scopes are exactly what those tools render. Mirrors the
+# per-category coverage of test-textmate / test-pygments / test-kate.
+[dependencies]
+syntect = { version = "5", default-features = false, features = ["parsing", "regex-onig", "yaml-load"] }
+
+[[bin]]
+name = "flatppl-sublime-test"
+path = "src/main.rs"
+
+[profile.dev]
+# Keep the test build cheap — this is a regression check, not a hot path.
+opt-level = 0
+debug = false

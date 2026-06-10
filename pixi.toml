@@ -9,6 +9,7 @@ pip = "*"
 pre-commit = ">=4,<5"
 nodejs = ">=24,<25"
 pygments = ">=2.17,<3"
+rust = ">=1.96.0,<1.97"
 
 [tasks]
 gen-grammars = "python tools/gen-grammars.py"
@@ -26,10 +27,12 @@ test-pygments = { cmd = "python test_lexer.py", cwd = "pygments" }
 # separately after installing (see .github/workflows/check-grammars.yml).
 test-pygments-entrypoint = "python pygments/test_entrypoint.py"
 test-kate = "bash kate/test/check.sh"
-# Structural + GEN-marker check for the Sublime/syntect grammar (bat, ranger
-# previews). Pure stdlib — no syntect harness in-tree; tokenisation is verified
-# live via `bat --language=flatppl`. Guards sublime/flatppl.sublime-syntax.
-test-sublime = "python sublime/test/check.py"
+# Scope-regression test for the Sublime/syntect grammar (bat, ranger previews).
+# Tokenizes snippets with syntect + Oniguruma — the SAME engine bat uses — and
+# asserts each category lands on its expected scope. Behavioural twin of
+# test-textmate/test-pygments/test-kate. Keyword sync + GEN markers are guarded
+# separately by check-grammars (gen-grammars.py --check).
+test-sublime = { cmd = "cargo run --quiet", cwd = "sublime/test" }
 # `npm ci` installs EXACTLY the committed package-lock pins for the TextMate
 # scope-regression test (vscode-textmate + vscode-oniguruma).
 npm-install-textmate = { cmd = "npm ci", cwd = "textmate/test" }
