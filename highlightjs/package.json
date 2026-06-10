@@ -1,0 +1,14 @@
+{
+  "name": "flatppl-highlightjs",
+  "version": "0.0.1",
+  "description": "highlight.js language definition for FlatPPL.",
+  "type": "module",
+  "main": "flatppl.js",
+  "exports": {
+    ".": "./flatppl.js",
+    "./embed.js": "./embed.js"
+  },
+  "files": ["flatppl.js", "embed.js", "README.md"],
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/flatppl/flatppl-grammars", "directory": "highlightjs" }
+}

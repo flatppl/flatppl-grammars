@@ -57,6 +57,15 @@ jobs:
       - name: Test embedded-FlatPPL injection (VS Code engine)
         run: pixi run test-embedding
 
+      - name: Test highlight.js grammar
+        run: pixi run test-highlightjs
+
+      - name: Test highlight.js embed modes
+        run: pixi run test-embedding-highlightjs
+
+      - name: highlight.js package manifest is publishable
+        run: pixi run test-package-highlightjs
+
       - name: Test tree-sitter grammar
         run: pixi run check-tree-sitter
 
