@@ -6,7 +6,7 @@ its own README with setup steps.
 | Editor | Grammar target | Embedded (py/jl/md) | Verified |
 |---|---|---|---|
 | [helix](helix/) | tree-sitter | py + jl + md | ✅ rendered (Helix 25.07.1) |
-| [nvim](nvim/) | tree-sitter | py + jl + md | injection queries verified; not yet rendered in nvim |
+| [nvim](nvim/) | tree-sitter | py + jl + md | ✅ core + py/jl verified (headless `vim.treesitter`, `nvim/test/verify.lua`); md by-eye + via Helix/vscode |
 | [zed](zed/) | tree-sitter | md only | ❌ skeleton — Zed not on build machine |
 | [emacs](emacs/) | tree-sitter | none yet | ❌ skeleton — Emacs not on build machine |
 | [vscode](vscode/) | TextMate | py + jl + md | ✅ embedding verified via vscode-textmate (`test-embedding`) |

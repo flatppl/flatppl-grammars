@@ -59,8 +59,20 @@ done
 - Julia: `flatppl"""<code>"""` / `flatppl"<code>"`.
 - Markdown: ```` ```flatppl ````.
 
-## Verification status
-The injection node names (python `string_content`; julia
-`prefixed_string_literal`) are verified against tree-sitter's python/julia
-grammars and render-verified in Helix, which uses the same grammars and query
-format. Not yet render-verified inside Neovim specifically.
+## Verification
+
+`test/verify.lua` is a headless `vim.treesitter` check — it parses fixtures and
+asserts query captures on the real trees (no rendering):
+
+```sh
+nvim --headless -l editors/nvim/test/verify.lua
+```
+
+Verified: core FlatPPL highlighting (`Normal` → `@type`, numerics) and the
+**Python + Julia** embedding injections (`flatppl` injected tree exists and the
+embedded `Normal` highlights as a kernel). Markdown ` ```flatppl ` is
+nvim-treesitter's generic by-language injection (not a flatppl rule); its
+directive misbehaves under headless `-l`, so it's confirmed visually and via the
+equivalent Helix render + vscode-textmate `test-embedding`. Not part of the
+repo's pixi CI (no Neovim there); run it locally after installing the parser +
+queries above.
