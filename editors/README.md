@@ -7,8 +7,7 @@ its own README with setup steps.
 |---|---|---|---|
 | [helix](helix/) | tree-sitter | py + jl + md | ✅ rendered (Helix 25.07.1) |
 | [nvim](nvim/) | tree-sitter | py + jl + md | ✅ core + py/jl verified (headless `vim.treesitter`, `nvim/test/verify.lua`); md by-eye + via Helix/vscode |
-| [zed](zed/) | tree-sitter | md only | ❌ skeleton — Zed not on build machine |
-| [emacs](emacs/) | tree-sitter | none yet | ❌ skeleton — Emacs not on build machine |
+| [emacs](emacs/) | tree-sitter | none yet | ✅ loads/parses/font-locks verified (headless, `emacs/test/verify.sh`, Emacs 30.2); keyword colouring TODO |
 | [vscode](vscode/) | TextMate | py + jl + md | ✅ embedding verified via vscode-textmate (`test-embedding`) |
 
 The host-language **injection queries** (FlatPPL embedded in Python/Julia) are

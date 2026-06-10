@@ -10,14 +10,28 @@ tree-sitter (`treesit`). It consumes the **tree-sitter** target.
    `treesit-language-source-alist` entry instead of `main` for reproducibility).
 3. Open a `.flatppl` file.
 
-## Status / limitations
-- **Not verified** — Emacs was not available on the build machine.
+## Verification
+
+`test/verify.sh` is a self-contained headless check (Emacs 29+ with tree-sitter
++ a C compiler):
+
+```sh
+./editors/emacs/test/verify.sh
+```
+
+It compiles the FlatPPL grammar as a treesit lib, loads `flatppl-ts-mode`, and
+asserts the grammar loads, the parser produces a tree (root `module`), the
+font-lock **queries compile** (an invalid node name would error), and faces
+apply (call head → function-call, number, comment). Verified on Emacs 30.2. Not
+part of the repo's pixi CI (no Emacs there).
+
+## Limitations
 - Highlights structural nodes (comments, doc-comments, strings, escapes,
   numbers, booleans, axis names, call heads). **Distribution/builtin keyword**
-  highlighting is a TODO: those identifiers are listed in
-  `keyword-lists.json` and adding them here would duplicate the word lists —
-  pull them from there (or generate) rather than hand-copying.
-- `treesit` font-lock references grammar **node names** (not the `.scm`
-  highlight captures), so it can't reuse `tree-sitter/queries/highlights.scm`
-  directly; the rules here are written against the node names in `grammar.js`.
+  highlighting is a TODO: those identifiers are in `keyword-lists.json`, and
+  adding them here would duplicate the word lists — pull them from there (or
+  generate) rather than hand-copying.
+- `treesit` font-lock references grammar **node names** (not the `.scm` highlight
+  captures), so it can't reuse `tree-sitter/queries/highlights.scm` directly; the
+  rules here are written against the node names in `grammar.js`.
 - No host-language embedding (Python/Julia/Markdown) wired for Emacs yet.
