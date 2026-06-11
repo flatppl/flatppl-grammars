@@ -84,7 +84,7 @@ contexts:
       scope: keyword.other.special-operation.flatppl
     # GEN-END:specialops
     # GEN:kernels
-    - match: '\b(Uniform|Normal|GeneralizedNormal|Cauchy|StudentT|Logistic|LogNormal|Exponential|Gamma|Weibull|InverseGamma|Beta|ChiSquared|VonMises|Laplace|Bernoulli|Categorical|Categorical0|Binomial|Poisson|Geometric|NegativeBinomial|NegativeBinomial2|MvNormal|Wishart|InverseWishart|LKJ|LKJCholesky|Dirichlet|Multinomial|PoissonProcess|BinnedPoissonProcess|Dirac|Lebesgue|Counting)\b'
+    - match: '\b(Uniform|Normal|GeneralizedNormal|Cauchy|StudentT|Logistic|LogNormal|Exponential|Gamma|Weibull|Pareto|InverseGamma|Beta|ChiSquared|VonMises|Laplace|Bernoulli|Categorical|Categorical0|Binomial|Poisson|Geometric|NegativeBinomial|NegativeBinomial2|MvNormal|Wishart|InverseWishart|LKJ|LKJCholesky|Dirichlet|Multinomial|PoissonProcess|BinnedPoissonProcess|Dirac|Lebesgue|Counting)\b'
       scope: entity.name.type.kernel.flatppl
     # GEN-END:kernels
     # GEN:combinators

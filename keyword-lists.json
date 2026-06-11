@@ -15,7 +15,7 @@
       "ts_scope": "type",
       "words": ["Uniform", "Normal", "GeneralizedNormal", "Cauchy", "StudentT",
                 "Logistic", "LogNormal", "Exponential", "Gamma", "Weibull",
-                "InverseGamma", "Beta", "ChiSquared", "VonMises", "Laplace",
+                "Pareto", "InverseGamma", "Beta", "ChiSquared", "VonMises", "Laplace",
                 "Bernoulli", "Categorical", "Categorical0", "Binomial", "Poisson",
                 "Geometric", "NegativeBinomial", "NegativeBinomial2", "MvNormal",
                 "Wishart", "InverseWishart", "LKJ", "LKJCholesky", "Dirichlet",
