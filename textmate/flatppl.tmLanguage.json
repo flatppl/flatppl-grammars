@@ -113,7 +113,7 @@
     },
     "kernel": {
       "comment": "Built-in distribution constructors and fundamental measures",
-      "match": "\\b(Uniform|Normal|GeneralizedNormal|Cauchy|StudentT|Logistic|LogNormal|Exponential|Gamma|Weibull|InverseGamma|Beta|ChiSquared|VonMises|Laplace|Bernoulli|Categorical|Categorical0|Binomial|Poisson|Geometric|NegativeBinomial|NegativeBinomial2|MvNormal|Wishart|InverseWishart|LKJ|LKJCholesky|Dirichlet|Multinomial|PoissonProcess|BinnedPoissonProcess|Dirac|Lebesgue|Counting)\\b",
+      "match": "\\b(Uniform|Normal|GeneralizedNormal|Cauchy|StudentT|Logistic|LogNormal|Exponential|Gamma|Weibull|Pareto|InverseGamma|Beta|ChiSquared|VonMises|Laplace|Bernoulli|Categorical|Categorical0|Binomial|Poisson|Geometric|NegativeBinomial|NegativeBinomial2|MvNormal|Wishart|InverseWishart|LKJ|LKJCholesky|Dirichlet|Multinomial|PoissonProcess|BinnedPoissonProcess|Dirac|Lebesgue|Counting)\\b",
       "name": "entity.name.type.kernel.flatppl"
     },
     "measure-combinator": {
