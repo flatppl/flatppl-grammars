@@ -169,3 +169,84 @@ g: C[.mu^, .nu_] := x
     (axis_name (axis_id) (variance_marker))
     (axis_name (axis_id) (variance_marker))
     (identifier)))
+
+====================
+Function definition (multi-argument)
+====================
+
+f(x, y) = x^2 * y^2
+
+---
+
+(module
+  (function_definition
+    (identifier)
+    (identifier)
+    (identifier)
+    (binary_expression
+      (exponential_expression
+        (identifier)
+        (integer))
+      (exponential_expression
+        (identifier)
+        (integer)))))
+
+====================
+Function definition (single argument)
+====================
+
+g(x) = x + 1
+
+---
+
+(module
+  (function_definition
+    (identifier)
+    (identifier)
+    (binary_expression
+      (identifier)
+      (integer))))
+
+====================
+Function definition (record body, multi-output)
+====================
+
+g(x, y, z) = record(p = x + y, q = y * z)
+
+---
+
+(module
+  (function_definition
+    (identifier)
+    (identifier)
+    (identifier)
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (keyword_argument
+          (identifier)
+          (binary_expression (identifier) (identifier)))
+        (keyword_argument
+          (identifier)
+          (binary_expression (identifier) (identifier)))))))
+
+====================
+Function-call statement is not a function definition
+====================
+
+c = f(a, b)
+k(x = a)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list (identifier) (identifier))))
+  (call_expression
+    (identifier)
+    (argument_list
+      (keyword_argument (identifier) (identifier)))))

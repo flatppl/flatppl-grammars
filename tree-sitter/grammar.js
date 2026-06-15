@@ -56,6 +56,13 @@ module.exports = grammar({
     // leading `.` of axis_name disambiguates, so they never collide on real
     // input.
     [$._comp_operand, $.aggregate_binding],
+
+    // `identifier _lparen` begins both a call_expression (`f(x, y)`, where the
+    // identifier reduces to _comp_operand first) and the LHS of a
+    // function_definition (`f(x, y) = e`, identifier kept bare). The parser
+    // cannot decide until it sees whether the closing `)` is followed by `=`.
+    // GLR explores both; the trailing `=` (or its absence) disambiguates.
+    [$._comp_operand, $.function_definition],
   ],
 
   rules: {
@@ -80,12 +87,28 @@ module.exports = grammar({
       $.tilde_binding,
       $.decomposition,
       $.tilde_decomposition,
+      $.function_definition,
       $.aggregate_binding,
       $.metricsum_binding,
       $._expression,
     ),
 
     binding: $ => seq($.identifier, '=', $._expression),
+
+    // §05 "Function definition syntax": FunctionDefinition ::= Name "(" Name
+    // ("," Name)* ")" "=" Expression. Sugar for `f = (args) -> expr`; the
+    // parameter list is bare Names (≥1, no nullary) and must be followed by
+    // `=` — a `=` inside the parens (`f(x = a)`) is a keyword_argument, i.e. a
+    // call_expression, not a definition.
+    function_definition: $ => seq(
+      $.identifier,
+      $._lparen,
+      $.identifier,
+      repeat(seq(',', $.identifier)),
+      $._rparen,
+      '=',
+      $._expression,
+    ),
     tilde_binding: $ => seq($.identifier, '~', $._expression),
 
     decomposition: $ => seq(
