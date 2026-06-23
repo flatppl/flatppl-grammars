@@ -25,3 +25,33 @@ The grammars these integrations point at *are* in `check`: tree-sitter
 (`check-tree-sitter`), TextMate (`test-textmate`). The VS Code embedding (FlatPPL
 in python/julia/markdown) is checked engine-level by `test-embedding`, which
 tokenises the embedding grammars with vscode-textmate (VS Code's engine).
+
+## Textobjects queries
+
+Tree-sitter textobjects (select / move by function, parameter, comment) for
+editors that support them. The canonical query is
+`../tree-sitter/queries/textobjects.scm` (canonical; nvim uses .inner/.outer, Helix uses .inside/.around); the install
+copies below are GENERATED from it (`pixi run gen-grammars`) — do not hand-edit
+them. Nothing here installs itself — copy or symlink the file you need.
+
+### Neovim (nvim-treesitter)
+
+Place `nvim/queries/flatppl/textobjects.scm` on the runtime path under
+`queries/flatppl/`, e.g.:
+
+    mkdir -p ~/.config/nvim/queries/flatppl
+    ln -s "$PWD/nvim/queries/flatppl/textobjects.scm" \
+      ~/.config/nvim/queries/flatppl/textobjects.scm
+
+Provides `@function`, `@parameter`, `@comment` (inner/outer).
+
+### Helix
+
+Place `helix/queries/flatppl/textobjects.scm` under the Helix runtime
+`queries/flatppl/`, e.g.:
+
+    mkdir -p ~/.config/helix/runtime/queries/flatppl
+    ln -s "$PWD/helix/queries/flatppl/textobjects.scm" \
+      ~/.config/helix/runtime/queries/flatppl/textobjects.scm
+
+Provides function / parameter / comment textobjects (`.inside` / `.around`).

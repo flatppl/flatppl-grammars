@@ -378,6 +378,53 @@ def check_or_update_highlightjs(categories, operators, *, check):
     )
 
 
+# ── textobjects (editor copies) ────────────────────────────────────────────
+
+TEXTOBJECTS_SRC = ROOT / "tree-sitter" / "queries" / "textobjects.scm"
+TEXTOBJECTS_NVIM = ROOT / "editors" / "nvim" / "queries" / "flatppl" / "textobjects.scm"
+TEXTOBJECTS_HELIX = ROOT / "editors" / "helix" / "queries" / "flatppl" / "textobjects.scm"
+
+# Deterministic banner so `--check` is a pure function of the canonical file.
+TEXTOBJECTS_BANNER = (
+    "; GENERATED from tree-sitter/queries/textobjects.scm by tools/gen-grammars.py.\n"
+    "; Do not edit by hand — run: pixi run gen-grammars\n\n"
+)
+
+
+def _helix_textobjects(text):
+    """Translate the nvim capture suffixes to the Helix dialect. Object names
+    are single segments (function/parameter/comment), so `@<name>.inner` /
+    `@<name>.outer` map unambiguously; prose mentioning 'inner'/'outer' without
+    an `@<name>.` prefix is untouched."""
+    text = re.sub(r"@(\w+)\.inner\b", r"@\1.inside", text)
+    text = re.sub(r"@(\w+)\.outer\b", r"@\1.around", text)
+    return text
+
+
+def check_or_update_textobjects(*, check):
+    """Return list of drifted editor copies. Write fixes unless check=True.
+
+    Both copies are pure derivations of the canonical query: nvim is identical
+    (banner + body), Helix is the suffix-translated body."""
+    if not TEXTOBJECTS_SRC.exists():
+        return ["  textobjects: tree-sitter/queries/textobjects.scm MISSING"]
+    canonical = TEXTOBJECTS_SRC.read_text()
+    expected = {
+        TEXTOBJECTS_NVIM: TEXTOBJECTS_BANNER + canonical,
+        TEXTOBJECTS_HELIX: TEXTOBJECTS_BANNER + _helix_textobjects(canonical),
+    }
+    drifted = []
+    for path, want in expected.items():
+        have = path.read_text() if path.exists() else None
+        if have == want:
+            continue
+        drifted.append(f"  textobjects: {path.relative_to(ROOT)}")
+        if not check:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(want)
+    return drifted
+
+
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -403,6 +450,7 @@ def main():
     drifted += check_or_update_pygments(categories, operators, check=args.check)
     drifted += check_or_update_sublime(categories, check=args.check)
     drifted += check_or_update_highlightjs(categories, operators, check=args.check)
+    drifted += check_or_update_textobjects(check=args.check)
 
     if drifted:
         if args.check:
