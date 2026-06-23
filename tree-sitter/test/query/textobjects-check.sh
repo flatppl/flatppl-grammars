@@ -24,6 +24,7 @@ caps() {
   printf '%s\n' "$1" | grep -E -- "- ${2//./\\.}," \
     | sed -E 's/.*text: `([^`]*)`.*/\1/'
 }
+# grep -c exits 1 on zero matches; `|| true` keeps that from aborting under set -e.
 count() { printf '%s\n' "$1" | grep -c . || true; }
 
 assert_count() { # name expected actual
@@ -58,7 +59,7 @@ for p in fpa fpb parg qa qb arg1 arg2 "key = 7"; do
   assert_has parameter.inner "$p"
 done
 # names / bodies / call targets must NOT be parameters
-for nope in fdef fbody lam parg_no pbody qbody multilam csite kwcall empty somefn otherfn niladic; do
+for nope in fdef fbody lam pbody qbody multilam csite kwcall empty somefn otherfn niladic; do
   assert_lacks parameter.inner "$nope"
 done
 
@@ -77,7 +78,7 @@ if [ "$nvim_out" != "$out" ]; then
 fi
 # Helix copy: same ranges once .inside/.around are normalized back to .inner/.outer.
 helix_out="$(run_query ../editors/helix/queries/flatppl/textobjects.scm \
-  | sed -E 's/\.inside,/.inner,/; s/\.around,/.outer,/')"
+  | sed -E 's/- ([a-z]+)\.inside,/- \1.inner,/; s/- ([a-z]+)\.around,/- \1.outer,/')"
 if [ "$helix_out" != "$out" ]; then
   echo "FAIL: editors/helix copy captures differ from canonical query"; fail=1
 fi

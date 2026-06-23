@@ -1,7 +1,9 @@
 ; GENERATED from tree-sitter/queries/textobjects.scm by tools/gen-grammars.py.
 ; Do not edit by hand — run: pixi run gen-grammars
 
-; FlatPPL textobjects — selection/movement query (nvim-treesitter dialect).
+; FlatPPL textobjects — selection/movement query. This canonical file uses the
+; nvim-treesitter suffixes (.inner/.outer); the generated Helix copy uses
+; .inside/.around. See editors/README.md.
 ;
 ; This is the CANONICAL source. The install copies under editors/nvim and
 ; editors/helix are GENERATED from this file by tools/gen-grammars.py

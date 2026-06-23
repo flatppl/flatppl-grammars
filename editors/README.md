@@ -30,7 +30,7 @@ tokenises the embedding grammars with vscode-textmate (VS Code's engine).
 
 Tree-sitter textobjects (select / move by function, parameter, comment) for
 editors that support them. The canonical query is
-`../tree-sitter/queries/textobjects.scm` (nvim-treesitter dialect); the install
+`../tree-sitter/queries/textobjects.scm` (canonical; nvim uses .inner/.outer, Helix uses .inside/.around); the install
 copies below are GENERATED from it (`pixi run gen-grammars`) — do not hand-edit
 them. Nothing here installs itself — copy or symlink the file you need.
 
