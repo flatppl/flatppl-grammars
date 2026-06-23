@@ -69,5 +69,18 @@ list="$co"
 assert_has comment.outer "# line comment text"
 assert_has comment.outer "% doc comment text"
 
+# --- editor copies: identical capture ranges (modulo dialect suffix) ---
+# nvim copy must produce byte-identical query output to the canonical file.
+nvim_out="$(run_query ../editors/nvim/queries/flatppl/textobjects.scm)"
+if [ "$nvim_out" != "$out" ]; then
+  echo "FAIL: editors/nvim copy captures differ from canonical query"; fail=1
+fi
+# Helix copy: same ranges once .inside/.around are normalized back to .inner/.outer.
+helix_out="$(run_query ../editors/helix/queries/flatppl/textobjects.scm \
+  | sed -E 's/\.inside,/.inner,/; s/\.around,/.outer,/')"
+if [ "$helix_out" != "$out" ]; then
+  echo "FAIL: editors/helix copy captures differ from canonical query"; fail=1
+fi
+
 [ "$fail" -eq 0 ] && echo "ok: textobjects captures verified"
 exit "$fail"
