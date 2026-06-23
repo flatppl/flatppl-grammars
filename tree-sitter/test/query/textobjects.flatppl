@@ -1,0 +1,8 @@
+fdef(fpa, fpb) = fbody
+lam = parg -> pbody
+multilam = (qa, qb) -> qbody
+csite = somefn(arg1, arg2)
+kwcall = otherfn(key = 7)
+empty = niladic()
+# line comment text
+% doc comment text
