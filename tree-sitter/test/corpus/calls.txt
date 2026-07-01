@@ -205,3 +205,18 @@ f(x).field[0]
         (argument_list (identifier)))
       (identifier))
     (integer)))
+
+=====================
+Module member call
+=====================
+
+pp.Landau(loc = 0.0, scale = 1.0)
+
+---
+
+(module
+  (call_expression
+    (field_access (identifier) (identifier))
+    (argument_list
+      (keyword_argument (identifier) (float))
+      (keyword_argument (identifier) (float)))))
