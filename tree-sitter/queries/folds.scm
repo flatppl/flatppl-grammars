@@ -5,6 +5,7 @@
   (dot_call)
   (index_expression)
   (array_literal)
+  (axis_list)
   (tuple_literal)
   (parenthesized_expression)
   (block_comment)

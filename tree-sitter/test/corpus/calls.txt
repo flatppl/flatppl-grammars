@@ -220,3 +220,65 @@ pp.Landau(loc = 0.0, scale = 1.0)
     (argument_list
       (keyword_argument (identifier) (float))
       (keyword_argument (identifier) (float)))))
+
+=====================
+Axis list as call argument
+=====================
+
+C = aggregate(sum, [.i, .k], A[.i, .j] * B[.j, .k])
+
+---
+
+(module
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (identifier)
+        (axis_list
+          (axis_name (axis_id))
+          (axis_name (axis_id)))
+        (binary_expression
+          (index_expression
+            (identifier)
+            (axis_name (axis_id))
+            (axis_name (axis_id)))
+          (index_expression
+            (identifier)
+            (axis_name (axis_id))
+            (axis_name (axis_id))))))))
+
+=====================
+Empty axis list as call argument
+=====================
+
+aggregate(sum, [], y)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (axis_list)
+      (identifier))))
+
+=====================
+Axis list argument with variance markers
+=====================
+
+metricsum(g, [.i^, .j_], x)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (axis_list
+        (axis_name (axis_id) (variance_marker))
+        (axis_name (axis_id) (variance_marker)))
+      (identifier))))
