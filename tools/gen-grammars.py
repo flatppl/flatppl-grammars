@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Sync keyword lists in TextMate, Kate, tree-sitter, Pygments, Sublime, and highlight.js grammars from keyword-lists.json.
+"""Sync keyword lists in TextMate, Kate, tree-sitter, Pygments, Sublime, highlight.js, and cspell grammars from keyword-lists.json.
 
 Usage:
     gen-grammars.py           -- update all grammars in-place
@@ -378,6 +378,26 @@ def check_or_update_highlightjs(categories, operators, *, check):
     )
 
 
+# ── cspell ───────────────────────────────────────────────────────────────────
+
+def check_or_update_cspell(categories, *, check):
+    """Return list of drifted GEN markers in cspell/flatppl-words.txt. Write
+    fixes unless check=True. Splices ONLY the generated word list between the
+    `# GEN:keywords-start` / `-end` markers; hand-added entries outside the
+    markers (words not in keyword-lists.json) are preserved untouched."""
+    path = ROOT / "cspell" / "flatppl-words.txt"
+    words = sorted({w for cat in categories for w in cat["words"]}, key=lambda w: (w.casefold(), w))
+    blocks = [("keywords", words)]
+    return _splice_gen_markers(
+        path,
+        "cspell: flatppl-words.txt",
+        "#",
+        lambda var, words_list: "".join(f"{w}\n" for w in words_list),
+        blocks,
+        check=check,
+    )
+
+
 # ── textobjects (editor copies) ────────────────────────────────────────────
 
 TEXTOBJECTS_SRC = ROOT / "tree-sitter" / "queries" / "textobjects.scm"
@@ -450,6 +470,7 @@ def main():
     drifted += check_or_update_pygments(categories, operators, check=args.check)
     drifted += check_or_update_sublime(categories, check=args.check)
     drifted += check_or_update_highlightjs(categories, operators, check=args.check)
+    drifted += check_or_update_cspell(categories, check=args.check)
     drifted += check_or_update_textobjects(check=args.check)
 
     if drifted:

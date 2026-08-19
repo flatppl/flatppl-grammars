@@ -2,9 +2,15 @@
 """Check keyword-lists.json against the FlatPPL spec's built-in function tables.
 
 Extracts every function name from the markdown tables in 07-functions.md,
-06-measure-algebra.md, and 08-distributions.md, and verifies each appears
-somewhere in keyword-lists.json. Catches spec additions that have not yet been
-mirrored into the grammars' keyword source.
+06-measure-algebra.md, 08-distributions.md, and the standard-module member
+tables in 09-standard-modules.md, and verifies each appears somewhere in
+keyword-lists.json. Catches spec additions that have not yet been mirrored
+into the grammars' keyword source.
+
+09-standard-modules.md members are checked per-module: a module in
+EXCLUDED_MODULES (still changing, deliberately not yet in keyword-lists.json)
+is skipped; any other module's members (currently `particle-physics`) MUST be
+present.
 
 The spec lives in a SEPARATE repo (flatppl-design). If the docs directory is
 absent (e.g. in flatppl-grammars CI, where that repo is not checked out) the
@@ -56,6 +62,41 @@ CATALOG_DOCS = [
     ("08-distributions.md", _LINKED_BACKTICK),
 ]
 
+# 09-standard-modules.md: module member tables use the same linked-entry form.
+STANDARD_MODULES_DOC = "09-standard-modules.md"
+_MODULE_HEADER = re.compile(r"^### Module `([a-zA-Z0-9_-]+)`")
+
+# Modules deliberately NOT in keyword-lists.json (user decision 2026-07-01,
+# reaffirmed 2026-08-19: still changing). Members of these modules must NOT be
+# required. Stabilising a module means deleting its line here.
+EXCLUDED_MODULES = {
+    "generalized-linear-models",
+    "ext-linear-algebra",
+    "special-functions",
+    "polynomials",
+    "distances",
+}
+
+
+def standard_module_names(docs: Path):
+    """Collect member names from non-excluded module tables in 09-standard-modules.md."""
+    path = docs / STANDARD_MODULES_DOC
+    if not path.is_file():
+        return []
+    names = []
+    module = None
+    for line in path.read_text().splitlines():
+        h = _MODULE_HEADER.match(line)
+        if h:
+            module = h.group(1)
+            continue
+        if module in EXCLUDED_MODULES:
+            continue
+        m = _LINKED_BACKTICK.match(line)
+        if m:
+            names.append(m.group(1))
+    return names
+
 
 def spec_keyword_names(docs: Path):
     """Collect catalogued keyword names from every catalog doc present."""
@@ -68,6 +109,7 @@ def spec_keyword_names(docs: Path):
             m = pat.match(line)
             if m:
                 names.append(m.group(1))
+    names += standard_module_names(docs)
     return list(dict.fromkeys(names))
 
 
