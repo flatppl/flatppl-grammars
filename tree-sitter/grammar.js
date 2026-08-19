@@ -206,10 +206,15 @@ module.exports = grammar({
     ),
 
     // Postfix: left-recursive, highest binding (prec 8).
+    //
+    // The argument list is NOT optional: §05 `Call ::= "(" CallArgs ")"` has no
+    // empty alternative (every CallArgs branch takes at least one argument) and
+    // §04 "Calling conventions" states "Nullary calls (`f()`) are not allowed."
+    // So `f()` is a parse error, not a call with no arguments.
     call_expression: $ => prec.left(8, seq(
       $._comp_operand,
       $._lparen,
-      optional($.argument_list),
+      $.argument_list,
       $._rparen,
     )),
 
@@ -239,11 +244,13 @@ module.exports = grammar({
       $.identifier,
     )),
 
+    // §05 `DotCall ::= "." "(" CallArgs ")"` — same non-empty CallArgs as Call,
+    // so `f.()` is a parse error too.
     dot_call: $ => prec.left(8, seq(
       $._comp_operand,
       '.',
       $._lparen,
-      optional($.argument_list),
+      $.argument_list,
       $._rparen,
     )),
 
@@ -357,7 +364,11 @@ module.exports = grammar({
     // only `in`, `true`, `false`, `all`, `only` — so it must still lex as a
     // plain identifier everywhere else: bare (`x = record`), as a prefix
     // (`recordx(1)`), and in a call the EBNF cannot read as a RecordLiteral
-    // (`record()`, `record(1, 2)`). A grammar-level "record" string would be
+    // (`record(1, 2)`, which stays a positional call_expression — a static
+    // error, not a parse error). `record()` needs no special case: it is
+    // rejected by the general nullary-call rule on call_expression (§04
+    // "Calling conventions": "Nullary calls (`f()`) are not allowed.").
+    // A grammar-level "record" string would be
     // keyword-extracted against $.identifier and break all three, so the
     // keyword is an EXTERNAL token that the scanner only emits when the
     // one-token `=` lookahead of §05 "Note on parser disambiguation" says the

@@ -508,16 +508,8 @@
             "name": "_lparen"
           },
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "argument_list"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "argument_list"
           },
           {
             "type": "SYMBOL",
@@ -671,16 +663,8 @@
             "name": "_lparen"
           },
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "argument_list"
-              },
-              {
-                "type": "BLANK"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "argument_list"
           },
           {
             "type": "SYMBOL",

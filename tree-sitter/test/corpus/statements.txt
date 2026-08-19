@@ -278,7 +278,7 @@ f() = 3
 ---
 
 (module
-  (call_expression
-    (identifier))
-  (ERROR
+  (binding
+    (identifier)
+    (ERROR)
     (integer)))

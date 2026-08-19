@@ -229,7 +229,7 @@ x = record(a = record(b = 2))
             (integer)))))))
 
 ==================
-Empty record is a plain call, not a record literal
+Empty record is rejected as a nullary call
 ==================
 
 x = record()
@@ -239,8 +239,8 @@ x = record()
 (module
   (binding
     (identifier)
-    (call_expression
-      (identifier))))
+    (identifier))
+  (ERROR))
 
 ==================
 Positional args are a plain call, not a record literal
