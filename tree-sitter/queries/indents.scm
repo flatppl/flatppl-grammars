@@ -10,7 +10,8 @@
 ; argument_list, so a node and its argument_list both carry @indent.begin. This
 ; does NOT double-indent: the call and its `(` open on the same source line, and
 ; nvim-treesitter collapses multiple @indent.begin nodes that start on one line
-; to a single indent level.
+; to a single indent level. record_literal holds its keyword_arguments directly
+; (no argument_list child), so one @indent.begin covers it — same net level.
 ;
 ; KNOWN LIMITATION: without bracket tokens the dedent line is the node's last
 ; line (handled by @indent.end), which is correct for the canonical
@@ -22,6 +23,7 @@
   (array_literal)
   (axis_list)
   (tuple_literal)
+  (record_literal)
   (parenthesized_expression)
   (argument_list)
 ] @indent.begin
@@ -33,6 +35,7 @@
   (array_literal)
   (axis_list)
   (tuple_literal)
+  (record_literal)
   (parenthesized_expression)
   (argument_list)
 ] @indent.end

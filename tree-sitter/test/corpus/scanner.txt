@@ -56,24 +56,30 @@ inner
 (module (doc_block))
 
 ==================
-Doc block opener tightening: partial tag is not a fence
+Doc block opener with a partial tag is a parse error
 ==================
 
 %%%m
 
 ---
 
-(module (doc_line))
+(module
+  (ERROR
+    (UNEXPECTED '%'))
+  (doc_line))
 
 ==================
-Doc block opener tightening: unknown tag suffix is not a fence
+Doc block opener with an unknown tag suffix is a parse error
 ==================
 
 %%%mdx
 
 ---
 
-(module (doc_line))
+(module
+  (ERROR
+    (UNEXPECTED '%'))
+  (doc_line))
 
 ==================
 Unterminated doc-block opener does not crash the parser
@@ -85,11 +91,36 @@ inner no close
 ---
 
 (module
+  (ERROR
+    (UNEXPECTED '%'))
   (doc_line)
   (identifier)
   (ERROR
     (identifier)
     (identifier)))
+
+==================
+Doc block opener with an unrecognized tag is a parse error
+==================
+
+%%%bogus
+inner
+%%%
+x = 1
+
+---
+
+(module
+  (ERROR
+    (UNEXPECTED '%'))
+  (doc_line)
+  (identifier)
+  (ERROR
+    (UNEXPECTED '%'))
+  (doc_line)
+  (binding
+    (identifier)
+    (integer)))
 
 ==================
 Line continuation across blank line inside parens (valid; must NOT resync)

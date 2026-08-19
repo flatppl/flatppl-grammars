@@ -7,6 +7,7 @@
   (array_literal)
   (axis_list)
   (tuple_literal)
+  (record_literal)
   (parenthesized_expression)
   (block_comment)
   (doc_block)

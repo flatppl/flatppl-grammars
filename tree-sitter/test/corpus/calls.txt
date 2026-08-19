@@ -282,3 +282,50 @@ metricsum(g, [.i^, .j_], x)
         (axis_name (axis_id) (variance_marker))
         (axis_name (axis_id) (variance_marker)))
       (identifier))))
+
+==================
+Keyword argument before positional is rejected
+==================
+
+f(x, a = 1, y)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (keyword_argument
+        (identifier)
+        (integer)))
+    (ERROR
+      (identifier))))
+
+==================
+Nullary call is rejected
+==================
+
+x = f()
+
+---
+
+(module
+  (binding
+    (identifier)
+    (identifier))
+  (ERROR))
+
+==================
+Nullary dot-call is rejected
+==================
+
+x = f.()
+
+---
+
+(module
+  (binding
+    (identifier)
+    (identifier))
+  (ERROR))

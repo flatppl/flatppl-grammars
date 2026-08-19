@@ -113,3 +113,82 @@ this is a block
 
 (module
   (block_comment))
+
+==================
+Doc line with md tag
+==================
+
+%md tagged doc
+x = 1
+
+---
+
+(module
+  (doc_line)
+  (binding
+    (identifier)
+    (integer)))
+
+==================
+Doc line with typ tag and no content
+==================
+
+%typ
+x = 1
+
+---
+
+(module
+  (doc_line)
+  (binding
+    (identifier)
+    (integer)))
+
+==================
+Illegal doc line: unrecognized markup tag
+==================
+
+%bogus text
+x = 1
+
+---
+
+(module
+  (ERROR
+    (UNEXPECTED '%')
+    (identifier))
+  (identifier)
+  (binding
+    (identifier)
+    (integer)))
+
+==================
+Illegal doc line: recognized tag with a suffix
+==================
+
+%mdx text
+x = 1
+
+---
+
+(module
+  (ERROR
+    (UNEXPECTED '%')
+    (identifier))
+  (identifier)
+  (binding
+    (identifier)
+    (integer)))
+
+==================
+Indented triple-hash opens a block fence
+==================
+
+  ###
+  inner
+  ###
+
+---
+
+(module
+  (block_comment))
