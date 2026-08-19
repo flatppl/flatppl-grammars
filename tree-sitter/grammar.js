@@ -124,29 +124,35 @@ module.exports = grammar({
       $._expression,
     ),
 
+    // §05 "Formal grammar": AggregateBinding ::= Name AxisList ":=" Expression
     aggregate_binding: $ => seq(
       $.identifier,
+      $.axis_list,
+      ':=',
+      $._expression,
+    ),
+
+    // §05 "Formal grammar": MetricsumBinding ::= Name ":" Name AxisList ":=" Expression
+    metricsum_binding: $ => seq(
+      field('metric', $.identifier),
+      ':',
+      field('result', $.identifier),
+      $.axis_list,
+      ':=',
+      $._expression,
+    ),
+
+    // §05 "Formal grammar": AxisList ::= "[" (Axis ("," Axis)*)? "]".
+    // Unlike ArrayLiteral it may be empty (`aggregate(sum, [], e)` is a full
+    // reduction to a scalar). Restricting WHERE an axis list is legal is a
+    // static check, not the parser's job — §05 admits AxisList as a Primary.
+    axis_list: $ => seq(
       $._lbracket,
-      // §05: the axis list may be empty (`x[] := expr`) for full reduction to a scalar.
       optional(seq(
         $.axis_name,
         repeat(seq(',', $.axis_name)),
       )),
       $._rbracket,
-      ':=',
-      $._expression,
-    ),
-
-    // §05 L275: MetricsumBinding ::= Name ":" Name "[" (Axis ("," Axis)*)? "]" ":=" Expression
-    metricsum_binding: $ => seq(
-      field('metric', $.identifier),
-      ':',
-      field('result', $.identifier),
-      $._lbracket,
-      optional(seq($.axis_name, repeat(seq(',', $.axis_name)))),
-      $._rbracket,
-      ':=',
-      $._expression,
     ),
 
     // §05: Axis ::= "." AxisName VarianceMarker?  (VarianceMarker = "^" | "_").
@@ -188,6 +194,7 @@ module.exports = grammar({
       $.index_expression,
       $.field_access,
       $.dot_call,
+      $.axis_list,
     ),
 
     // Postfix: left-recursive, highest binding (prec 8).
@@ -357,13 +364,13 @@ module.exports = grammar({
 
     boolean: _ => token(choice('true', 'false')),
 
+    // §05 "Formal grammar": ArrayLiteral ::= "[" Expression ("," Expression)* ","? "]"
+    // — at least one element. Empty `[]` is an axis_list.
     array_literal: $ => seq(
       $._lbracket,
-      optional(seq(
-        $._expression,
-        repeat(seq(',', $._expression)),
-        optional(','),
-      )),
+      $._expression,
+      repeat(seq(',', $._expression)),
+      optional(','),
       $._rbracket,
     ),
 

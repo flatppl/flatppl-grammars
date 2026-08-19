@@ -134,14 +134,14 @@ Array literal multiline trailing comma
     (integer)))
 
 ==============
-Empty array
+Empty brackets are an axis list, not an array literal
 ==============
 
 []
 
 ---
 
-(module (array_literal))
+(module (axis_list))
 
 ==============
 Tuple literal

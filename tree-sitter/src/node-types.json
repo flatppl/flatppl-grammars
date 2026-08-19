@@ -12,7 +12,7 @@
           "named": true
         },
         {
-          "type": "axis_name",
+          "type": "axis_list",
           "named": true
         },
         {
@@ -99,6 +99,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -179,10 +183,14 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": false,
+      "required": true,
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -257,6 +265,21 @@
     }
   },
   {
+    "type": "axis_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "axis_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "axis_name",
     "named": true,
     "fields": {
@@ -292,6 +315,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -363,6 +390,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -453,6 +484,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -521,6 +556,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -601,6 +640,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -691,6 +734,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -759,6 +806,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -833,6 +884,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -901,6 +956,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -984,6 +1043,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -1082,6 +1145,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -1165,6 +1232,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -1245,6 +1316,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -1352,7 +1427,7 @@
           "named": true
         },
         {
-          "type": "axis_name",
+          "type": "axis_list",
           "named": true
         },
         {
@@ -1441,6 +1516,10 @@
         },
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -1556,6 +1635,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -1663,6 +1746,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -1743,6 +1830,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {
@@ -1829,6 +1920,10 @@
           "named": true
         },
         {
+          "type": "axis_list",
+          "named": true
+        },
+        {
           "type": "binary_expression",
           "named": true
         },
@@ -1909,6 +2004,10 @@
       "types": [
         {
           "type": "array_literal",
+          "named": true
+        },
+        {
+          "type": "axis_list",
           "named": true
         },
         {

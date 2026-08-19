@@ -209,3 +209,16 @@ Illegal lambda: single param with trailing comma
     (identifier)
     (MISSING identifier)
     (identifier)))
+
+=====================
+Axis list outside a legal position still parses
+=====================
+
+x = [.i]
+
+---
+
+(module
+  (binding
+    (identifier)
+    (axis_list (axis_name (axis_id)))))
