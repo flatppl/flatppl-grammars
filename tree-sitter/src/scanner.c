@@ -13,6 +13,8 @@ enum TokenType {
   RPAREN,
   LBRACKET,
   RBRACKET,
+  DOC_LINE,
+  RECORD_KEYWORD,
 };
 
 // Scanner state: bracket nesting depth for ( and [ line-continuation.
@@ -57,6 +59,55 @@ static inline void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 
 static inline bool is_hws(int32_t c) { return c == ' ' || c == '\t'; }
 static inline bool is_newline(int32_t c) { return c == '\n' || c == '\r'; }
+
+// A `Name` continuation character (§05: Letter | Digit | "_"). Doubles as the
+// markup-tag character set: the run of these immediately after the leading `%`
+// IS the tag, so `%md5` reads as the single unrecognized tag `md5`, not as `md`
+// followed by the content `5`.
+static inline bool is_word_char(int32_t c) {
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+         (c >= '0' && c <= '9') || c == '_';
+}
+
+// True when the tag is over: §05 "Documentation" gives no space after the
+// leading `%`, so a recognized tag must be followed by whitespace, a `;`, or
+// the end of the line.
+static inline bool at_tag_end(TSLexer *lexer) {
+  return is_hws(lexer->lookahead) || lexer->lookahead == ';' ||
+         is_newline(lexer->lookahead) || lexer->eof(lexer);
+}
+
+// Scan the body of a single-line doc-comment; the leading `%` is consumed.
+// §05 "Documentation": the content "runs to end of line or to the next `;`,
+// whichever comes first".
+//
+// Returns false when the tag position holds an unrecognized tag — §05: "An
+// unrecognized tag is a parse error." Declining leaves the `%` unlexable (no
+// grammar rule matches it), which is how that parse error surfaces.
+//
+// `check_tag` is false when a non-tag character was already consumed from the
+// tag position, so no tag can be present (`%%%` after a failed fence opener).
+static bool scan_doc_line(TSLexer *lexer, bool check_tag) {
+  if (check_tag && is_word_char(lexer->lookahead)) {
+    // MarkupTag ::= "md" | "typ"
+    char tag[3] = {0, 0, 0};
+    uint32_t len = 0;
+    while (is_word_char(lexer->lookahead)) {
+      if (len < 3) tag[len] = (char)lexer->lookahead;
+      len++;
+      advance(lexer);
+    }
+    bool known = (len == 2 && tag[0] == 'm' && tag[1] == 'd') ||
+                 (len == 3 && tag[0] == 't' && tag[1] == 'y' && tag[2] == 'p');
+    if (!known || !at_tag_end(lexer)) return false;
+  }
+  while (!lexer->eof(lexer) && !is_newline(lexer->lookahead) &&
+         lexer->lookahead != ';') {
+    advance(lexer);
+  }
+  lexer->mark_end(lexer);
+  return true;
+}
 
 // Advance past a single newline, consuming a CRLF pair as one.
 static inline void advance_newline(TSLexer *lexer) {
@@ -130,6 +181,47 @@ static bool scan_fenced(TSLexer *lexer, const char *fence) {
   }
 }
 
+// Decide whether the `record` at the cursor opens a §05 RecordLiteral. The
+// keyword is external because `record` is not reserved (§05 "Note on reserved
+// words"), so the SAME text must stay an ordinary identifier in `x = record`,
+// `recordx(1)`, `record()` and `record(1, 2)`. Only a lookahead can tell those
+// apart, and §05 "Note on parser disambiguation" licenses exactly this one:
+// "a one-token lookahead after the leading `Name` (checking for `=`) suffices
+// to choose between `PositionalArgs`/`MixedArgs` and `KeywordArgs`".
+//
+// So we require, in order: the exact word `record`; `(`; a `Name`; `=` (and not
+// `==`, which would be a comparison in a positional argument). Newlines are
+// skipped only after the `(`, where §05 makes them implicit line continuation.
+//
+// On a match the token spans `record` alone — mark_end is called before the
+// lookahead, so everything scanned past it is discarded.
+static bool scan_record_keyword(TSLexer *lexer) {
+  static const char *kw = "record";
+  for (const char *p = kw; *p; p++) {
+    if (lexer->lookahead != *p) return false;
+    advance(lexer);
+  }
+  // `recordx` is one identifier, not the keyword plus `x`.
+  if (is_word_char(lexer->lookahead)) return false;
+  lexer->mark_end(lexer);
+
+  while (is_hws(lexer->lookahead)) advance(lexer);
+  if (lexer->lookahead != '(') return false;
+  advance(lexer);
+  while (is_hws(lexer->lookahead) || is_newline(lexer->lookahead)) advance(lexer);
+  // Name ::= (Letter | "_") (Letter | Digit | "_")*
+  if (!((lexer->lookahead >= 'a' && lexer->lookahead <= 'z') ||
+        (lexer->lookahead >= 'A' && lexer->lookahead <= 'Z') ||
+        lexer->lookahead == '_')) {
+    return false;
+  }
+  while (is_word_char(lexer->lookahead)) advance(lexer);
+  while (is_hws(lexer->lookahead) || is_newline(lexer->lookahead)) advance(lexer);
+  if (lexer->lookahead != '=') return false;
+  advance(lexer);
+  return lexer->lookahead != '=';
+}
+
 bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   Scanner *s = (Scanner *)payload;
 
@@ -150,7 +242,8 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       valid_symbols[NEWLINE] && valid_symbols[BLOCK_COMMENT] &&
       valid_symbols[DOC_BLOCK] && valid_symbols[LPAREN] &&
       valid_symbols[RPAREN] && valid_symbols[LBRACKET] &&
-      valid_symbols[RBRACKET];
+      valid_symbols[RBRACKET] && valid_symbols[DOC_LINE] &&
+      valid_symbols[RECORD_KEYWORD];
 
   // Strategy: the external scanner is invoked before each token whenever any of
   // its tokens is in `valid_symbols`. We skip leading horizontal whitespace,
@@ -226,6 +319,15 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       return true;
     }
 
+    if (c == 'r' && valid_symbols[RECORD_KEYWORD]) {
+      if (scan_record_keyword(lexer)) {
+        lexer->result_symbol = RECORD_KEYWORD;
+        return true;
+      }
+      // Not a record literal: let the identifier regex lex the word.
+      return false;
+    }
+
     if (is_newline(c)) {
       // On UNBALANCED input (more `(`/`[` than `)`/`]`) bracket_depth stays > 0
       // through EOF, which would suppress every remaining newline and merge all
@@ -277,8 +379,8 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
     // line (leading indentation is allowed): per spec §05
     // `BlockComment ::= HWS* "###" HWS* Newline` and the Kate reference
     // `^[ \t]*###[ \t]*$`. When not at line start (other tokens preceded `###`
-    // / `%%%` on this line) we fall through (return false) so the
-    // line_comment / doc_line regex handles it.
+    // / `%%%` on this line) `###` falls through to the line_comment regex and
+    // `%%%` is scanned as a DOC_LINE below.
     if (c == '#' && valid_symbols[BLOCK_COMMENT] && at_line_start) {
       // Need exactly "###" then HWS* then newline/EOF to be a fence opener.
       // Peek by advancing; if it's not a fence, we still must let the line
@@ -303,9 +405,9 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       return false;
     }
 
-    if (c == '%' && valid_symbols[DOC_BLOCK] && at_line_start) {
+    if (c == '%' && (valid_symbols[DOC_BLOCK] || valid_symbols[DOC_LINE])) {
       advance(lexer);
-      if (lexer->lookahead == '%') {
+      if (valid_symbols[DOC_BLOCK] && at_line_start && lexer->lookahead == '%') {
         advance(lexer);
         if (lexer->lookahead == '%') {
           advance(lexer);
@@ -313,7 +415,7 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
           // The opener is `%%%` optionally followed IMMEDIATELY by exactly
           // `md` or exactly `typ`, then optional HWS, then EOL. A partial or
           // unexpected tag (`%%%m`, `%%%ty`, `%%%mdx`, `%%%xyz`) is NOT a valid
-          // opener: we must decline so it falls back to the `%`-doc_line regex.
+          // opener; see the parse-error note below.
           bool tag_ok = true;
           if (lexer->lookahead == 'm') {
             advance(lexer);
@@ -348,12 +450,31 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
               return false;
             }
           }
-          // Not a valid doc-block opener (`%%%`, `%%%md`, `%%%typ` + HWS* EOL):
-          // decline so the `%`-doc_line regex handles the line.
+          // A `%%%`-at-line-start IS the block form, so an opener that is not
+          // `%%%` / `%%%md` / `%%%typ` + HWS* EOL is a parse error, not a
+          // doc_line. §05 "Documentation": "An unrecognized tag is a parse
+          // error." Falling back to doc_line here used to degrade `%%%bogus`
+          // into a one-line comment and leak the block's content into the
+          // module as bare statements.
+          //
+          // An unterminated (but well-tagged) opener declines the same way:
+          // scan_fenced returns false above and the fence is never closed, so
+          // there is no doc-block and no doc_line either.
           return false;
         }
+        // `%%` followed by something other than a third `%`: not a fence. The
+        // tag position held a `%`, which no tag can start with, so the rest of
+        // the line is untagged content.
+        if (valid_symbols[DOC_LINE] && scan_doc_line(lexer, false)) {
+          lexer->result_symbol = DOC_LINE;
+          return true;
+        }
+        return false;
       }
-      // Not a doc fence -> let doc_line regex handle it.
+      if (valid_symbols[DOC_LINE] && scan_doc_line(lexer, true)) {
+        lexer->result_symbol = DOC_LINE;
+        return true;
+      }
       return false;
     }
 

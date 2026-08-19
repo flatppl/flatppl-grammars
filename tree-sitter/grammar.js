@@ -21,10 +21,18 @@ module.exports = grammar({
     $._rparen,
     $._lbracket,
     $._rbracket,
+    // `doc_line` is external because §05 "Documentation" makes an unrecognized
+    // markup tag a parse error: the scanner must be able to DECLINE `%bogus`
+    // outright. A grammar regex cannot — with no negative lookahead it would
+    // match the shortest prefix (`%`) and let the bad tag through as ordinary
+    // statements.
+    $.doc_line,
+    // The `record` of a record_literal; see that rule.
+    $._record_keyword,
   ],
 
-  // NOTE: `block_comment` and `doc_block` appear in both `externals` and
-  // `extras`. Listing them in `extras` makes doc-comments float as whitespace
+  // NOTE: `block_comment`, `doc_block` and `doc_line` appear in both
+  // `externals` and `extras`. Listing them in `extras` makes doc-comments float as whitespace
   // anywhere in the token stream. The §04/§05 binding-ATTACHMENT semantics
   // (i.e. which binding a doc-comment belongs to) are intentionally NOT
   // represented in this tree — this grammar targets syntax highlighting and
@@ -268,6 +276,10 @@ module.exports = grammar({
     only_selector: _ => '!',
 
     // Lambda: lowest precedence, body extends right.
+    //
+    // §05 "Formal grammar": LambdaParams ::= Name | "(" Name "," Name ("," Name)* ")"
+    // — the parenthesised form takes NO trailing comma (unlike ArrayLiteral /
+    // TupleLiteral / CallArgs, which all spell an explicit `","?`).
     lambda: $ => prec.right(0, seq(
       choice(
         $.identifier,
@@ -275,7 +287,6 @@ module.exports = grammar({
           $._lparen,
           $.identifier,
           repeat1(seq(',', $.identifier)),
-          optional(','),
           $._rparen,
         ),
       ),
@@ -334,6 +345,32 @@ module.exports = grammar({
       $.boolean,
       $.array_literal,
       $.tuple_literal,
+      $.record_literal,
+    ),
+
+    // §05 "Formal grammar": RecordLiteral ::= "record" "(" KeywordArg
+    // ("," KeywordArg)* ","? ")" — a Literal in its own right, alongside
+    // ArrayLiteral and TupleLiteral, so `record(a = 1)` must NOT parse as an
+    // ordinary call_expression on an identifier named `record`.
+    //
+    // `record` is NOT a reserved word — §05 "Note on reserved words" reserves
+    // only `in`, `true`, `false`, `all`, `only` — so it must still lex as a
+    // plain identifier everywhere else: bare (`x = record`), as a prefix
+    // (`recordx(1)`), and in a call the EBNF cannot read as a RecordLiteral
+    // (`record()`, `record(1, 2)`). A grammar-level "record" string would be
+    // keyword-extracted against $.identifier and break all three, so the
+    // keyword is an EXTERNAL token that the scanner only emits when the
+    // one-token `=` lookahead of §05 "Note on parser disambiguation" says the
+    // first argument is a KeywordArg. It is aliased to `identifier` so the
+    // `record` @function.builtin highlight (queries/highlights.scm) is
+    // unchanged.
+    record_literal: $ => seq(
+      alias($._record_keyword, $.identifier),
+      $._lparen,
+      $.keyword_argument,
+      repeat(seq(',', $.keyword_argument)),
+      optional(','),
+      $._rparen,
     ),
 
     integer: _ => token(choice(
@@ -384,6 +421,5 @@ module.exports = grammar({
 
     identifier: _ => /[a-zA-Z_][a-zA-Z0-9_]*/,
     line_comment: _ => token(seq('#', /[^\n;]*/)),
-    doc_line: _ => token(seq('%', /[^\n;]*/)),
   },
 });

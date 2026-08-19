@@ -226,15 +226,14 @@ g(x, y, z) = record(p = x + y, q = y * z)
     (identifier)
     (identifier)
     (identifier)
-    (call_expression
+    (record_literal
       (identifier)
-      (argument_list
-        (keyword_argument
-          (identifier)
-          (binary_expression (identifier) (identifier)))
-        (keyword_argument
-          (identifier)
-          (binary_expression (identifier) (identifier)))))))
+      (keyword_argument
+        (identifier)
+        (binary_expression (identifier) (identifier)))
+      (keyword_argument
+        (identifier)
+        (binary_expression (identifier) (identifier))))))
 
 ====================
 Function-call statement is not a function definition
@@ -269,3 +268,17 @@ x[.i] := y
     (identifier)
     (axis_list (axis_name (axis_id)))
     (identifier)))
+
+====================
+Nullary function definition is rejected
+====================
+
+f() = 3
+
+---
+
+(module
+  (call_expression
+    (identifier))
+  (ERROR
+    (integer)))

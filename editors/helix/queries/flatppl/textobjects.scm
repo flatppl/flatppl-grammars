@@ -33,6 +33,11 @@
 ; argument (`key = 7`) is captured whole as one parameter.
 (argument_list (_) @parameter.inside @parameter.around)
 
+; Record-literal fields. record_literal holds its keyword_arguments directly, so
+; they need their own pattern to stay parameters; naming the node also keeps the
+; leading `record` out of the capture (it was never in an argument_list either).
+(record_literal (keyword_argument) @parameter.inside @parameter.around)
+
 ; Function-definition params: identifiers immediately before a `,` or the `=`.
 ; (The name is followed by the first param, never by `,`/`=`; the body follows
 ; `=`. So only the parameters match.)

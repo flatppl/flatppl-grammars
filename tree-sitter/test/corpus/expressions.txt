@@ -222,3 +222,22 @@ x = [.i]
   (binding
     (identifier)
     (axis_list (axis_name (axis_id)))))
+
+=================
+Illegal lambda: multi param with trailing comma
+=================
+
+f = (x, y,) -> x + y
+
+---
+
+(module
+  (binding
+    (identifier)
+    (binary_expression
+      (tuple_literal
+        (identifier)
+        (identifier))
+      (ERROR
+        (identifier))
+      (identifier))))

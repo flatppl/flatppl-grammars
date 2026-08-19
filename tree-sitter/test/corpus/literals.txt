@@ -169,3 +169,137 @@ Tuple three elements
     (identifier)
     (identifier)
     (identifier)))
+
+==================
+Record literal
+==================
+
+x = record(a = 1, b = 2)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (record_literal
+      (identifier)
+      (keyword_argument
+        (identifier)
+        (integer))
+      (keyword_argument
+        (identifier)
+        (integer)))))
+
+==================
+Record literal trailing comma
+==================
+
+x = record(a = 1,)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (record_literal
+      (identifier)
+      (keyword_argument
+        (identifier)
+        (integer)))))
+
+==================
+Record literal nested
+==================
+
+x = record(a = record(b = 2))
+
+---
+
+(module
+  (binding
+    (identifier)
+    (record_literal
+      (identifier)
+      (keyword_argument
+        (identifier)
+        (record_literal
+          (identifier)
+          (keyword_argument
+            (identifier)
+            (integer)))))))
+
+==================
+Empty record is a plain call, not a record literal
+==================
+
+x = record()
+
+---
+
+(module
+  (binding
+    (identifier)
+    (call_expression
+      (identifier))))
+
+==================
+Positional args are a plain call, not a record literal
+==================
+
+x = record(1, 2)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (integer)
+        (integer)))))
+
+==================
+Record is not a reserved word
+==================
+
+x = record
+y = recordx(1)
+z = f(record = 1)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (identifier))
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (integer))))
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list
+        (keyword_argument
+          (identifier)
+          (integer))))))
+
+==================
+Tuple literal trailing comma
+==================
+
+x = (a, b, c,)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (tuple_literal
+      (identifier)
+      (identifier)
+      (identifier))))
