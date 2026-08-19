@@ -1,0 +1,153 @@
+=================
+Dotted additive chain left-associative
+=================
+
+a .+ b .- c
+
+---
+
+(module
+  (binary_expression
+    (binary_expression
+      (identifier)
+      (identifier))
+    (identifier)))
+
+=================
+Dotted unary minus
+=================
+
+.-x
+
+---
+
+(module
+  (unary_expression
+    (identifier)))
+
+=================
+Dotted unary not
+=================
+
+.!x
+
+---
+
+(module
+  (unary_expression
+    (identifier)))
+
+=================
+Chained dotted comparison stays flat
+=================
+
+a .< b .<= c
+
+---
+
+(module
+  (comparison_expression
+    (identifier)
+    (comparison_operator)
+    (identifier)
+    (comparison_operator)
+    (identifier)))
+
+=================
+Dotted exponent right associative
+=================
+
+a .^ b .^ c
+
+---
+
+(module
+  (exponential_expression
+    (identifier)
+    (exponential_expression
+      (identifier)
+      (identifier))))
+
+=================
+Mixed dotted and plain precedence
+=================
+
+a .+ b .* c
+
+---
+
+(module
+  (binary_expression
+    (identifier)
+    (binary_expression
+      (identifier)
+      (identifier))))
+
+=================
+Dot-call single argument
+=================
+
+f.(x)
+
+---
+
+(module
+  (dot_call
+    (identifier)
+    (argument_list (identifier))))
+
+=================
+Dot-call multiple arguments
+=================
+
+f.(x, y)
+
+---
+
+(module
+  (dot_call
+    (identifier)
+    (argument_list (identifier) (identifier))))
+
+=================
+Chained postfix field access then dot-call
+=================
+
+xs.f.(y)
+
+---
+
+(module
+  (dot_call
+    (field_access
+      (identifier)
+      (identifier))
+    (argument_list (identifier))))
+
+=================
+Chained postfix index then dot-call
+=================
+
+a[i].(z)
+
+---
+
+(module
+  (dot_call
+    (index_expression
+      (identifier)
+      (identifier))
+    (argument_list (identifier))))
+
+=================
+Integer dotted divide needs whitespace
+=================
+
+1 ./ x
+
+---
+
+(module
+  (binary_expression
+    (integer)
+    (identifier)))
