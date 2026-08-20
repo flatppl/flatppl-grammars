@@ -69,6 +69,8 @@ Counting
 cross
 crosscorr
 CrystalBall
+cummax
+cummin
 cumprod
 cumsum
 densityof
@@ -145,14 +147,17 @@ l1norm
 l1unit
 l2norm
 l2unit
+lall
 land
 Landau
+lany
 Laplace
 lawof
 le
 Lebesgue
 lengthof
 likelihoodof
+linfnorm
 linsolve
 linspace
 LKJ
@@ -181,6 +186,7 @@ markovchain
 max
 maximum
 mean
+median
 metricsum
 min
 minimum
@@ -212,6 +218,7 @@ prod
 pushfwd
 qr
 quadform
+quantile
 rand
 real
 reals
