@@ -88,7 +88,7 @@ contexts:
       scope: entity.name.type.kernel.flatppl
     # GEN-END:kernels
     # GEN:combinators
-    - match: '\b(weighted|logweighted|normalize|totalmass|superpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd|locscale)\b'
+    - match: '\b(weighted|logweighted|normalize|totalmass|superpose|ksuperpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd|locscale)\b'
       scope: entity.name.function.measure.flatppl
     # GEN-END:combinators
     # GEN:analysis
