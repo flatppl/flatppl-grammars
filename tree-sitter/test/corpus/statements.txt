@@ -282,3 +282,216 @@ f() = 3
     (identifier)
     (ERROR)
     (integer)))
+
+====================
+Trailing AddOp continues the line at depth 0
+====================
+
+rate = mu_sig * signal_yield +
+       mu_bkg * bkg_yield
+
+---
+
+(module
+  (binding
+    (identifier)
+    (binary_expression
+      (binary_expression (identifier) (identifier))
+      (binary_expression (identifier) (identifier)))))
+
+====================
+Trailing MulOp continues the line at depth 0
+====================
+
+r = a *
+    b
+
+---
+
+(module
+  (binding
+    (identifier)
+    (binary_expression (identifier) (identifier))))
+
+====================
+Trailing CompOp continues the line at depth 0
+====================
+
+ok = a <
+     b
+
+---
+
+(module
+  (binding
+    (identifier)
+    (comparison_expression (identifier) (comparison_operator) (identifier))))
+
+====================
+Trailing lambda arrow continues the line at depth 0
+====================
+
+f = x ->
+    x + 1
+
+---
+
+(module
+  (binding
+    (identifier)
+    (lambda
+      (identifier)
+      (binary_expression (identifier) (integer)))))
+
+====================
+Trailing = continues the line at depth 0
+====================
+
+x =
+    1
+
+---
+
+(module
+  (binding (identifier) (integer)))
+
+====================
+Trailing ~ continues the line at depth 0
+====================
+
+x ~
+  Normal(0, 1)
+
+---
+
+(module
+  (tilde_binding
+    (identifier)
+    (call_expression (identifier) (argument_list (integer) (integer)))))
+
+====================
+Trailing := continues the line at depth 0
+====================
+
+C[.i] :=
+  y
+
+---
+
+(module
+  (aggregate_binding
+    (identifier)
+    (axis_list (axis_name (axis_id)))
+    (identifier)))
+
+====================
+Trailing metricsum : continues the line at depth 0
+====================
+
+g:
+ C[.i, .k] := A[.i] * B[.k]
+
+---
+
+(module
+  (metricsum_binding
+    metric: (identifier)
+    result: (identifier)
+    (axis_list
+      (axis_name name: (axis_id))
+      (axis_name name: (axis_id)))
+    (binary_expression
+      (index_expression (identifier) (axis_name name: (axis_id)))
+      (index_expression (identifier) (axis_name name: (axis_id))))))
+
+====================
+Blank line inside a trailing-operator continuation does not end it
+====================
+
+rate = mu_sig * signal_yield +
+
+       mu_bkg * bkg_yield
+
+---
+
+(module
+  (binding
+    (identifier)
+    (binary_expression
+      (binary_expression (identifier) (identifier))
+      (binary_expression (identifier) (identifier)))))
+
+====================
+Trailing line comment after a ContinuationOp does not end the continuation
+====================
+
+rate = mu_sig * signal_yield +      # trailing operator continues the line
+       mu_bkg * bkg_yield
+
+---
+
+(module
+  (binding
+    (identifier)
+    (binary_expression
+      (binary_expression (identifier) (identifier))
+      (line_comment)
+      (binary_expression (identifier) (identifier)))))
+
+====================
+Axis variance marker after an axis name is not a ContinuationOp
+====================
+
+g: C[.mu^, .nu_] :=
+  x
+
+---
+
+(module
+  (metricsum_binding
+    metric: (identifier)
+    result: (identifier)
+    (axis_list
+      (axis_name name: (axis_id) variance: (variance_marker))
+      (axis_name name: (axis_id) variance: (variance_marker)))
+    (identifier)))
+
+====================
+Leading operator on the next line is a parse error, not a continuation
+====================
+
+x = a
++ b
+
+---
+
+(module
+  (binding (identifier) (identifier))
+  (ERROR)
+  (identifier))
+
+====================
+Dangling trailing comma in a decomposition is not a continuation
+====================
+
+a, b,
+
+---
+
+(module
+  (identifier)
+  (ERROR (identifier)))
+
+====================
+Dangling trailing dot before a field name is not a continuation
+====================
+
+y = a.
+  b
+
+---
+
+(module
+  (binding
+    (identifier)
+    (field_access (identifier) (ERROR) (identifier))))

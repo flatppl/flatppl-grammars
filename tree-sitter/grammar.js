@@ -29,6 +29,16 @@ module.exports = grammar({
     $.doc_line,
     // The `record` of a record_literal; see that rule.
     $._record_keyword,
+    // Marker used as `repeat($._cont)` immediately after every depth-0-reachable
+    // ContinuationOp token (§05 "Statement separation"). Each occurrence
+    // consumes ONE step of trailing horizontal whitespace and/or a single
+    // newline (see src/scanner.c) — never a comment itself, so a trailing
+    // `#...` or doc-comment still lexes as its own node via the normal
+    // extras path, and `repeat` simply asks for `$._cont` again afterward to
+    // keep swallowing blank/comment-only lines. Sites that only ever occur
+    // inside brackets don't need it, since bracket_depth already forces
+    // continuation there.
+    $._cont,
   ],
 
   // NOTE: `block_comment`, `doc_block` and `doc_line` appear in both
@@ -101,7 +111,7 @@ module.exports = grammar({
       $._expression,
     ),
 
-    binding: $ => seq($.identifier, '=', $._expression),
+    binding: $ => seq($.identifier, '=', repeat($._cont), $._expression),
 
     // §05 "Function definition syntax": FunctionDefinition ::= Name "(" Name
     // ("," Name)* ")" "=" Expression. Sugar for `f = (args) -> expr`; the
@@ -115,20 +125,26 @@ module.exports = grammar({
       repeat(seq(',', $.identifier)),
       $._rparen,
       '=',
+      repeat($._cont),
       $._expression,
     ),
-    tilde_binding: $ => seq($.identifier, '~', $._expression),
+    tilde_binding: $ => seq($.identifier, '~', repeat($._cont), $._expression),
 
+    // The `,` here is deliberately UNMARKED: it is not in §05's ContinuationOp
+    // list, so a trailing `,` before a newline must NOT continue the
+    // statement (a dangling `a, b,` is a parse error, not a joined line).
     decomposition: $ => seq(
       $.identifier,
       repeat1(seq(',', $.identifier)),
       '=',
+      repeat($._cont),
       $._expression,
     ),
     tilde_decomposition: $ => seq(
       $.identifier,
       repeat1(seq(',', $.identifier)),
       '~',
+      repeat($._cont),
       $._expression,
     ),
 
@@ -137,6 +153,7 @@ module.exports = grammar({
       $.identifier,
       $.axis_list,
       ':=',
+      repeat($._cont),
       $._expression,
     ),
 
@@ -144,9 +161,11 @@ module.exports = grammar({
     metricsum_binding: $ => seq(
       field('metric', $.identifier),
       ':',
+      repeat($._cont),
       field('result', $.identifier),
       $.axis_list,
       ':=',
+      repeat($._cont),
       $._expression,
     ),
 
@@ -298,20 +317,21 @@ module.exports = grammar({
         ),
       ),
       '->',
+      repeat($._cont),
       $._expression,
     )),
 
     // Logical OR/AND — LOOSER than comparison, so operands are full `_expression`
     // (they may contain comparisons, e.g. `a < b && c < d`).
     logical_expression: $ => choice(
-      prec.left(1, seq($._expression, choice('||', '.||'), $._expression)),
-      prec.left(2, seq($._expression, choice('&&', '.&&'), $._expression)),
+      prec.left(1, seq($._expression, choice('||', '.||'), repeat($._cont), $._expression)),
+      prec.left(2, seq($._expression, choice('&&', '.&&'), repeat($._cont), $._expression)),
     ),
 
     // Arithmetic — TIGHTER than comparison, so operands are `_comp_operand`.
     binary_expression: $ => choice(
-      prec.left(4, seq($._comp_operand, choice('+', '-', '.+', '.-'), $._comp_operand)),
-      prec.left(5, seq($._comp_operand, choice('*', '/', '.*', './'), $._comp_operand)),
+      prec.left(4, seq($._comp_operand, choice('+', '-', '.+', '.-'), repeat($._cont), $._comp_operand)),
+      prec.left(5, seq($._comp_operand, choice('*', '/', '.*', './'), repeat($._cont), $._comp_operand)),
     ),
 
     // §05: `Comparison ::= Additive (CompOp Additive)*` — a FLAT chain.
@@ -322,6 +342,7 @@ module.exports = grammar({
       $._comp_operand,
       repeat1(seq(
         $.comparison_operator,
+        repeat($._cont),
         $._comp_operand,
       )),
     )),
@@ -331,6 +352,9 @@ module.exports = grammar({
       '.<', '.>', '.==', '.!=', '.<=', '.>=',
     ),
 
+    // The unary prefix operators ('-', '!', '.-', '.!') are not marked: they
+    // begin an operand, and a bare unary operator dangling at end of line
+    // with its operand on the next line is not a construct §05 licenses.
     unary_expression: $ => prec.right(6, seq(
       choice('-', '!', '.-', '.!'),
       $._comp_operand,
@@ -340,6 +364,7 @@ module.exports = grammar({
     exponential_expression: $ => prec.right(7, seq(
       $._comp_operand,
       choice('^', '.^'),
+      repeat($._cont),
       $._comp_operand,
     )),
 
