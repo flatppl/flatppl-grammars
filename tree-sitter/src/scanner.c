@@ -15,6 +15,7 @@ enum TokenType {
   RBRACKET,
   DOC_LINE,
   RECORD_KEYWORD,
+  CONT,
 };
 
 // Scanner state: bracket nesting depth for ( and [ line-continuation.
@@ -235,6 +236,10 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
   // instead of merging. On VALID input this is never true, so multi-line and
   // blank-line-in-brackets continuation (spec §05) is completely unaffected.
   //
+  // CONT is included: during recovery it is marked valid alongside everything
+  // else, and without this the branch below would swallow every recovery
+  // invocation into a spurious CONT token before the resync logic ever ran.
+  //
   // FRAGILE: this relies on tree-sitter's undocumented "all external symbols
   // valid during error recovery" behavior. Verified on CLI 0.26.9; the
   // scanner.txt corpus tests guard it. RE-VERIFY ON ANY tree-sitter CLI BUMP.
@@ -243,7 +248,49 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
       valid_symbols[DOC_BLOCK] && valid_symbols[LPAREN] &&
       valid_symbols[RPAREN] && valid_symbols[LBRACKET] &&
       valid_symbols[RBRACKET] && valid_symbols[DOC_LINE] &&
-      valid_symbols[RECORD_KEYWORD];
+      valid_symbols[RECORD_KEYWORD] && valid_symbols[CONT];
+
+  // CONT: grammar.js uses this as `repeat($._cont)` immediately after every
+  // depth-0-reachable ContinuationOp (§05 "Statement separation"). Unlike the
+  // bracket tokens, a single CONT scan does NOT just flag the position and
+  // rely on a later, separate scan() call to read that flag back: tree-sitter
+  // only persists a Scanner state mutation when the call that made it
+  // returns true, so a flag set here and cleared by some other, declining
+  // (`return false`) call further down would never actually stick — the
+  // clear is silently discarded and the flag reverts to whatever it was at
+  // the last successful (true-returning) scan.
+  //
+  // So CONT instead consumes ONE step of pure whitespace per call — either
+  // trailing horizontal whitespace, or a single newline — and nothing else.
+  // It deliberately does NOT consume a `#` line comment (or a doc-comment):
+  // those stay their own extras-lexed nodes, and `repeat` simply asks for
+  // another `$._cont` afterward, so the comment sits between two CONT spans
+  // instead of being silently absorbed into one. Being right after a
+  // ContinuationOp, the grammar mandates an expression next (no alternative
+  // reduction could end the statement here), so every such step is safe to
+  // take.
+  //
+  // When there's nothing to consume (real content, a comment start, or EOF),
+  // this does NOT `return false` — CONT is valid at essentially every
+  // position (BLOCK_COMMENT/DOC_LINE/DOC_BLOCK are extras, so at least one
+  // external symbol is always valid, meaning THIS call is often the only
+  // chance the OTHER branches below (brackets, `record`, NEWLINE, fenced
+  // comments) get to run). Returning false here would end the whole scan()
+  // invocation right away and skip them. Falling through instead is safe:
+  // zero characters have been consumed in that case.
+  bool cont_consumed = false;
+  if (valid_symbols[CONT] && !error_recovery) {
+    while (is_hws(lexer->lookahead)) { advance(lexer); cont_consumed = true; }
+    if (is_newline(lexer->lookahead)) {
+      advance_newline(lexer);
+      cont_consumed = true;
+    }
+    if (cont_consumed) {
+      lexer->mark_end(lexer);
+      lexer->result_symbol = CONT;
+      return true;
+    }
+  }
 
   // Strategy: the external scanner is invoked before each token whenever any of
   // its tokens is in `valid_symbols`. We skip leading horizontal whitespace,
@@ -369,10 +416,22 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
         lexer->mark_end(lexer);
         return true;
       }
-      // NEWLINE not valid in this state: skip it so we don't block the parse.
-      skip(lexer);
-      at_line_start = true;
-      continue;
+      // NEWLINE is not a valid shift here: the statement is mid-production.
+      // Any ContinuationOp-trailing case was already resolved by CONT above,
+      // BEFORE the parser ever asked for a token at this position — CONT
+      // consumed the operator's trailing whitespace/comment/blank-lines run
+      // (and the newline(s) in it) as part of its own span. So reaching an
+      // actual, still-unconsumed newline here means the statement is
+      // mid-production for some OTHER reason (a dangling `,` in a
+      // decomposition list, a trailing bare `.` before a field name, …) that
+      // §05 "Statement separation" does NOT license as a continuation. Emit a
+      // real NEWLINE anyway so the malformed statement errors here and the
+      // next line gets a fresh statement attempt, instead of silently
+      // merging into it.
+      advance_newline(lexer);
+      lexer->result_symbol = NEWLINE;
+      lexer->mark_end(lexer);
+      return true;
     }
 
     // Fenced comments. A fence opener must be the FIRST non-whitespace on its
