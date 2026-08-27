@@ -1,0 +1,5 @@
+r = record(sum = 1.0, mean = 2.0)
+member_read = r.sum
+builtin_call = sum(r.mean, 3.0)
+module_read = hepphys.resonance_breitwigner
+module_call = hepphys.resonance_breitwigner(s, m0, w0, ma, mb, l, dd)
