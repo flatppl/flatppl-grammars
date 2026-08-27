@@ -3,3 +3,6 @@ member_read = r.sum
 builtin_call = sum(r.mean, 3.0)
 module_read = hepphys.resonance_breitwigner
 module_call = hepphys.resonance_breitwigner(s, m0, w0, ma, mb, l, dd)
+bare_call = resonance_breitwigner(s, m0, w0, ma, mb, l, dd)
+kernel_module_call = hepphys.CrystalBall(m0 = 125.0, sigma = 2.0, alpha = 1.5, n = 3.0)
+kernel_bare_call = CrystalBall(m0 = 125.0, sigma = 2.0, alpha = 1.5, n = 3.0)
