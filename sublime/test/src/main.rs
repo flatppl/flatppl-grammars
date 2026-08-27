@@ -53,6 +53,9 @@ const CASES: &[(&str, &str, &str, &str)] = &[
     // ── axis name + variance marker (spec §05) ──
     ("g = C[.mu^]", "mu", "variable.other.member.flatppl", "axis name .mu"),
     ("g = C[.mu^]", "^", "variable.other.member.variance.flatppl", "axis variance ^"),
+    // ── §09 particle-physics module members are member reads, never builtins ──
+    ("q = hepphys.resonance_breitwigner(s)", "resonance_breitwigner", "variable.other.member.flatppl", "module member resonance_breitwigner"),
+    ("bare = resonance_breitwigner(s)", "resonance_breitwigner", "variable.function.flatppl", "unqualified §09 name is a plain call, not a builtin"),
 ];
 
 fn main() {

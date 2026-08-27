@@ -69,6 +69,7 @@ check_scope 2:15 "sum("                           function.builtin
 check_scope 2:21 "r.mean"                         variable.member
 check_scope 3:22 "hepphys.resonance_breitwigner"  variable.member
 check_scope 4:22 "hepphys.resonance_breitwigner(" variable.member
+check_scope 5:12 "resonance_breitwigner("         function.call
 check_scope 0:11 "record(sum = ...)"              variable.parameter
 
 [ "$fail" -eq 0 ] && echo "ok: member reads captured as @variable.member, builtin calls as @function.builtin"

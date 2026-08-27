@@ -77,6 +77,24 @@ EXCLUDED_MODULES = {
     "distances",
 }
 
+# Individual standard-module members deliberately NOT in keyword-lists.json
+# (user ruling 2026-08-27): §09 members resolve only via alias.member(...),
+# so an unqualified name is not a valid call and must never highlight as
+# @function.builtin. Distinct from EXCLUDED_MODULES (a whole module omitted
+# for being unstable) — particle-physics itself IS catalogued; only these
+# function members are excluded, one per §09 heading below.
+EXCLUDED_MODULE_MEMBERS = {
+    # Three-point interpolation functions
+    "interp_pwlin", "interp_pwexp", "interp_poly2_lin",
+    "interp_poly6_lin", "interp_poly6_exp",
+    # Resonance functions
+    "resonance_breitwigner",
+    # Kinematics functions
+    "kallen", "breakup_momentum", "blatt_weisskopf",
+    # Wigner rotation functions
+    "wignerd", "wignerD", "wignerd_doublearg", "wignerD_doublearg",
+}
+
 
 def standard_module_names(docs: Path):
     """Collect member names from non-excluded module tables in 09-standard-modules.md."""
@@ -130,7 +148,8 @@ def main():
 
     listed = listed_words()
     missing = [n for n in spec_keyword_names(docs)
-               if n not in listed and n not in INTENTIONAL_EXCLUSIONS]
+               if n not in listed and n not in INTENTIONAL_EXCLUSIONS
+               and n not in EXCLUDED_MODULE_MEMBERS]
     if missing:
         print("Spec builtins/combinators/kernels missing from keyword-lists.json:")
         for n in missing:

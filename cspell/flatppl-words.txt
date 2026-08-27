@@ -4,6 +4,23 @@
 # deprecated or informal aliases). Keep them outside the GEN markers.
 tuple_get
 
+# particle-physics (#09) module members: alias.member(...) only, never a bare
+# builtin, so removed from keyword-lists.json (2026-08-27 ruling) — kept here
+# so spec/example prose stays spellable.
+interp_pwlin
+interp_pwexp
+interp_poly2_lin
+interp_poly6_lin
+interp_poly6_exp
+resonance_breitwigner
+kallen
+breakup_momentum
+blatt_weisskopf
+wignerd
+wignerD
+wignerd_doublearg
+wignerD_doublearg
+
 # GEN:keywords-start
 abs
 abs2
@@ -33,11 +50,9 @@ bijection
 bincounts
 BinnedPoissonProcess
 Binomial
-blatt_weisskopf
 blockdiagmat
 boolean
 booleans
-breakup_momentum
 broadcast
 broadcasted
 builtin_fromnormal
@@ -119,11 +134,6 @@ indicesof0
 inf
 integer
 integers
-interp_poly2_lin
-interp_poly6_exp
-interp_poly6_lin
-interp_pwexp
-interp_pwlin
 interval
 inv
 InverseGamma
@@ -138,7 +148,6 @@ joinblocks
 joint
 joint_likelihood
 jointchain
-kallen
 kchain
 kernelof
 kscan
@@ -226,7 +235,6 @@ record
 reduce
 relabel
 RelativisticBreitWigner
-resonance_breitwigner
 restrict
 reverse
 rnginit
@@ -274,10 +282,6 @@ Voigtian
 VonMises
 Weibull
 weighted
-wignerD
-wignerd
-wignerD_doublearg
-wignerd_doublearg
 Wishart
 zeros
 # GEN:keywords-end

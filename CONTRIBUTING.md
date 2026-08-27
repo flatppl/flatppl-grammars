@@ -87,5 +87,21 @@ One case stays accepted in every target: a **shadowed binding** (`Gamma = 0.1`)
 still takes the builtin scope. Deciding it needs module-wide scope analysis,
 which none of these engines can do.
 
+## Standard-module members never go in `keyword-lists.json`
+
+A §09 standard-module member (e.g. `particle-physics`'s `resonance_breitwigner`,
+`kallen`, the `interp_*` functions, the Wigner functions) resolves only through
+`alias.member(...)` after `standard_module(...)` — an unqualified call is not
+valid FlatPPL. Ruling (2026-08-27): such names must never be listed in any
+`keyword-lists.json` category, including `builtins`. An unqualified reference is
+a plain identifier/function-call, not `@function.builtin` — the "Member names are
+never builtins" scoping above already colours the qualified form correctly, so
+no keyword-list entry is needed on either side of the dot.
+
+`tools/check-spec-keywords.py`'s `EXCLUDED_MODULE_MEMBERS` set carries the
+exemption per name so the completeness guard does not demand these entries.
+Keep the names spellable via the hand-maintained block above the `cspell`
+`GEN:keywords` markers instead.
+
 Regression: `tree-sitter/test/query/check.sh` (fixture
 `tree-sitter/test/query/member.flatppl`), run by `pixi run check`.
