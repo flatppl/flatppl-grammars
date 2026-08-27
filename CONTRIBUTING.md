@@ -89,14 +89,17 @@ which none of these engines can do.
 
 ## Standard-module members never go in `keyword-lists.json`
 
-A §09 standard-module member (e.g. `particle-physics`'s `resonance_breitwigner`,
-`kallen`, the `interp_*` functions, the Wigner functions) resolves only through
-`alias.member(...)` after `standard_module(...)` — an unqualified call is not
-valid FlatPPL. Ruling (2026-08-27): such names must never be listed in any
-`keyword-lists.json` category, including `builtins`. An unqualified reference is
-a plain identifier/function-call, not `@function.builtin` — the "Member names are
-never builtins" scoping above already colours the qualified form correctly, so
-no keyword-list entry is needed on either side of the dot.
+A §09 standard-module member — a function (`particle-physics`'s
+`resonance_breitwigner`, `kallen`, the `interp_*` functions, the Wigner
+functions) or a distribution (`CrystalBall`, `Argus`, `Landau`, and the rest of
+that module's Distributions table) — resolves only through `alias.member(...)`
+after `standard_module(...)`: an unqualified reference is not valid FlatPPL.
+Ruling (2026-08-27, applies to every §09 category, not just functions): such
+names must never be listed in any `keyword-lists.json` category — `builtins`
+and `kernels` alike. An unqualified reference is a plain identifier/function-call,
+not `@function.builtin` or a kernel/`@type` — the "Member names are never
+builtins" scoping above already colours the qualified form correctly, so no
+keyword-list entry is needed on either side of the dot.
 
 `tools/check-spec-keywords.py`'s `EXCLUDED_MODULE_MEMBERS` set carries the
 exemption per name so the completeness guard does not demand these entries.

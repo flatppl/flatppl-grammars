@@ -30,7 +30,7 @@
 const SPECIALOPS = ["draw", "lawof", "functionof", "kernelof", "fn", "elementof", "external", "valueset", "load_module", "standard_module", "load_data"];
 // GEN:specialops-end
 // GEN:kernels-start
-const KERNELS = ["Uniform", "Normal", "GeneralizedNormal", "Cauchy", "StudentT", "Logistic", "LogNormal", "Exponential", "Gamma", "Weibull", "Pareto", "InverseGamma", "Beta", "ChiSquared", "VonMises", "Laplace", "Bernoulli", "Categorical", "Categorical0", "Binomial", "Poisson", "Geometric", "NegativeBinomial", "NegativeBinomial2", "MvNormal", "Wishart", "InverseWishart", "LKJ", "LKJCholesky", "Dirichlet", "Multinomial", "PoissonProcess", "BinnedPoissonProcess", "Dirac", "Lebesgue", "Counting", "CrystalBall", "DoubleSidedCrystalBall", "Argus", "RelativisticBreitWigner", "Voigtian", "Landau", "BifurcatedNormal", "ContinuedPoisson"];
+const KERNELS = ["Uniform", "Normal", "GeneralizedNormal", "Cauchy", "StudentT", "Logistic", "LogNormal", "Exponential", "Gamma", "Weibull", "Pareto", "InverseGamma", "Beta", "ChiSquared", "VonMises", "Laplace", "Bernoulli", "Categorical", "Categorical0", "Binomial", "Poisson", "Geometric", "NegativeBinomial", "NegativeBinomial2", "MvNormal", "Wishart", "InverseWishart", "LKJ", "LKJCholesky", "Dirichlet", "Multinomial", "PoissonProcess", "BinnedPoissonProcess", "Dirac", "Lebesgue", "Counting"];
 // GEN:kernels-end
 // GEN:combinators-start
 const COMBINATORS = ["weighted", "logweighted", "normalize", "totalmass", "superpose", "ksuperpose", "joint", "jointchain", "kchain", "markovchain", "kscan", "iid", "truncate", "pushfwd", "locscale"];

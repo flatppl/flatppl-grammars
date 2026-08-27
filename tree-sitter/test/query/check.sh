@@ -13,7 +13,9 @@
 #     coloured as the arithmetic `^` operator (@keyword.operator).
 #  2. §04 member names are local to their object, so `r.sum` is @variable.member
 #     and not the builtin `sum` — while a real `sum(...)` call stays
-#     @function.builtin.
+#     @function.builtin. A §09 standard-module member (function or
+#     distribution) resolves only via alias.member(...), so its unqualified
+#     spelling is a plain @function.call, never @function.builtin/@type.
 set -euo pipefail
 cd "$(dirname "$0")/../.."          # -> tree-sitter/
 FIXTURE="test/query/variance.flatppl"
@@ -70,6 +72,8 @@ check_scope 2:21 "r.mean"                         variable.member
 check_scope 3:22 "hepphys.resonance_breitwigner"  variable.member
 check_scope 4:22 "hepphys.resonance_breitwigner(" variable.member
 check_scope 5:12 "resonance_breitwigner("         function.call
+check_scope 6:29 "hepphys.CrystalBall("            variable.member
+check_scope 7:19 "CrystalBall("                    function.call
 check_scope 0:11 "record(sum = ...)"              variable.parameter
 
 [ "$fail" -eq 0 ] && echo "ok: member reads captured as @variable.member, builtin calls as @function.builtin"

@@ -5,8 +5,17 @@
 tuple_get
 
 # particle-physics (#09) module members: alias.member(...) only, never a bare
-# builtin, so removed from keyword-lists.json (2026-08-27 ruling) — kept here
-# so spec/example prose stays spellable.
+# builtin/kernel, so removed from keyword-lists.json (2026-08-27 ruling,
+# extended to distributions) — kept here so spec/example prose stays
+# spellable.
+CrystalBall
+DoubleSidedCrystalBall
+Argus
+RelativisticBreitWigner
+Voigtian
+Landau
+BifurcatedNormal
+ContinuedPoisson
 interp_pwlin
 interp_pwexp
 interp_poly2_lin
@@ -32,7 +41,6 @@ adjoint
 aggregate
 all
 anything
-Argus
 array
 asin
 asinh
@@ -45,7 +53,6 @@ bayesupdate
 Bernoulli
 bernstein
 Beta
-BifurcatedNormal
 bijection
 bincounts
 BinnedPoissonProcess
@@ -76,14 +83,12 @@ colstack
 complex
 complexes
 conj
-ContinuedPoisson
 conv
 cos
 cosh
 Counting
 cross
 crosscorr
-CrystalBall
 cummax
 cummin
 cumprod
@@ -97,7 +102,6 @@ Dirichlet
 disintegrate
 div
 divide
-DoubleSidedCrystalBall
 draw
 elementof
 equal
@@ -158,7 +162,6 @@ l2norm
 l2unit
 lall
 land
-Landau
 lany
 Laplace
 lawof
@@ -234,7 +237,6 @@ reals
 record
 reduce
 relabel
-RelativisticBreitWigner
 restrict
 reverse
 rnginit
@@ -278,7 +280,6 @@ unitinterval
 valueset
 var
 vector
-Voigtian
 VonMises
 Weibull
 weighted

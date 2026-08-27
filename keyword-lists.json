@@ -20,10 +20,7 @@
                 "Geometric", "NegativeBinomial", "NegativeBinomial2", "MvNormal",
                 "Wishart", "InverseWishart", "LKJ", "LKJCholesky", "Dirichlet",
                 "Multinomial", "PoissonProcess", "BinnedPoissonProcess",
-                "Dirac", "Lebesgue", "Counting",
-                "CrystalBall", "DoubleSidedCrystalBall", "Argus",
-                "RelativisticBreitWigner", "Voigtian", "Landau",
-                "BifurcatedNormal", "ContinuedPoisson"]
+                "Dirac", "Lebesgue", "Counting"]
     },
     {
       "kate_list": "combinators",
