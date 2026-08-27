@@ -50,5 +50,42 @@ all forced by skylighting/Pandoc:
    rule ordering (skylighting lookbehind is unreliable; lookahead is fine).
 3. Builtin names match as a keyword list with no `(?=\s*\()` call-context guard
    (Kate keyword lists can't take a lookahead), so a builtin name highlights even
-   where it isn't a call. These names are reserved in FlatPPL, so the colouring
-   is semantically correct.
+   where it isn't a call — `f = sum` colours `sum` as a builtin, where TextMate
+   leaves it a plain variable. This over-colours, and the reason is the keyword
+   list, not the language: §04 "Name resolution" makes builtin names shadowable
+   ("a module may bind any name except for `self` and `base`"), so the name is
+   not reserved and a bare reference to it need not be the builtin. Accepted,
+   because a flat keyword list cannot take the lookahead that would express it.
+
+## Member names are never builtins
+
+Every target scopes a `field_access` member name (`r.sum`, `tbl.col`,
+`mod.member`) as a **member**, never as a builtin, and does so whether or not the
+member is called:
+
+| Target | Member scope |
+|---|---|
+| tree-sitter | `@variable.member` |
+| TextMate / Sublime / CodeMirror | `variable.other.member.flatppl` |
+| Pygments | `Name.Attribute` |
+| Kate | `Member` (`dsAttribute`) |
+| highlight.js | `hljs-property` |
+
+§04 "Objects, expressions, names and modules" is the rule: "record field names
+and table column names are local to their object and not part of the global
+module namespace". So `r.sum` is not the builtin `sum`, and a highlighter must
+not paint it as one.
+
+The word-list targets get this from rule ordering — their `\.name` rule consumes
+the dot and the name together, before the builtin word list can see the name.
+tree-sitter gets it from capture ordering: the `field_access` member capture sits
+**after** the GEN keyword blocks in `highlights.scm`, which is last-match-wins.
+Keep it there. Moving it back above the GEN blocks silently reintroduces the bug
+without any parse error.
+
+One case stays accepted in every target: a **shadowed binding** (`Gamma = 0.1`)
+still takes the builtin scope. Deciding it needs module-wide scope analysis,
+which none of these engines can do.
+
+Regression: `tree-sitter/test/query/check.sh` (fixture
+`tree-sitter/test/query/member.flatppl`), run by `pixi run check`.

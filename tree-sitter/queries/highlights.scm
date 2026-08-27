@@ -62,18 +62,15 @@
 ; ── Capture ordering: tree-sitter uses LAST-match-wins, so more-specific
 ;    captures must appear AFTER less-specific ones.
 ;      1. @variable                    — most generic fallback
-;      2. @variable.member             — field access overrides plain variable
-;      3. @function.call               — call-position identifier overrides plain variable
-;      4. GEN keyword blocks           — known keyword names override @function.call
+;      2. @function.call               — call-position identifier overrides plain variable
+;      3. GEN keyword blocks           — known keyword names override @function.call
+;      4. field_access member          — a member name is not a global name
 ;      5. axis_name / keyword_argument — position-specific labels override keyword scope
 ;      6. placeholder/_hole_ patterns  — always last (most specific)
 ; ──────────────────────────────────────────────────────────────────────────────
 
-; Variables (generic fallback — must come BEFORE @variable.member, @function.call, and keyword blocks)
+; Variables (generic fallback — must come BEFORE @function.call and the keyword blocks)
 (identifier) @variable
-
-; Field access member (overrides @variable for `r.field`'s field component)
-(field_access (identifier) @variable.member .)
 
 ; Function calls — generic callee (overrides @variable; overridden by GEN keyword blocks)
 (call_expression (identifier) @function.call)
@@ -133,6 +130,16 @@
 ((identifier) @variable.builtin
  (#match? @variable.builtin "^(self|base|flatppl_compat)$"))
 ; GEN:reserved-end
+
+; Field-access member name (`r.field`, `tbl.col`, `mod.member`). Placed AFTER the
+; GEN keyword blocks so a member whose name collides with a builtin does not take
+; the builtin scope: §04 "Objects, expressions, names and modules" — "Record field
+; names and table column names are local to their object and not part of the
+; global module namespace". Same last-match-wins ordering as (keyword_argument)
+; below. Call position does NOT re-override: every other target scopes a member
+; name as a member whether or not it is called (TextMate variable.other.member,
+; Pygments Name.Attribute, Kate dsAttribute, highlight.js hljs-property).
+(field_access (identifier) @variable.member .)
 
 ; Axis sigil `.` (distinct from list/field punctuation)
 (axis_name "." @punctuation.special)
