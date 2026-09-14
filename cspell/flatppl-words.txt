@@ -141,6 +141,7 @@ integers
 interval
 inv
 InverseGamma
+inverseof
 InverseWishart
 invlogit
 invprobit
@@ -254,6 +255,7 @@ sin
 sinh
 sizeof
 softmax
+sort
 splitblocks
 sqrt
 standard_module
@@ -278,6 +280,7 @@ tuple
 unequal
 Uniform
 unitinterval
+valuemap
 valueset
 var
 vector

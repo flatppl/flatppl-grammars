@@ -45,7 +45,7 @@
       "tm_suffix": "",
       "ts_scope": "function",
       "words": ["broadcast", "broadcasted", "reduce", "scan", "fchain",
-                "bijection", "aggregate", "metricsum"]
+                "bijection", "inverseof", "aggregate", "metricsum"]
     },
     {
       "kate_list": "setctors",
@@ -62,7 +62,7 @@
       "words": [
         "identity", "vector", "array", "fill", "zeros", "ones", "eye", "onehot",
         "linspace", "extlinspace", "get", "get0", "cat", "rowstack", "colstack",
-        "record", "table", "tuple", "partition", "reverse", "relabel", "fixed",
+        "record", "table", "tuple", "partition", "reverse", "sort", "relabel", "fixed",
         "tile", "splitblocks", "joinblocks", "addaxes", "blockdiagmat", "bandedmat",
         "conv", "crosscorr",
         "boolean", "integer", "real", "complex", "string", "imag",
@@ -83,7 +83,7 @@
         "indicesof", "indicesof0", "l1norm", "l2norm", "linfnorm", "l1unit", "l2unit",
         "logsumexp", "softmax", "logsoftmax",
         "land", "lor", "lnot", "lxor", "lany", "lall", "ifelse",
-        "filter", "selectbins", "bincounts",
+        "filter", "selectbins", "valuemap", "bincounts",
         "polynomial", "bernstein", "stepwise",
         "rngstate", "rnginit", "rand",
         "builtin_logdensityof", "builtin_sample",

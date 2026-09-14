@@ -128,7 +128,7 @@
     },
     "higher-order": {
       "comment": "Higher-order callables and function annotations. `aggregate` (spec §04 §sec:aggregate) is the multi-axis tensor contraction; axis labels `.name` inside its body are picked up by the dot-access pattern.",
-      "match": "\\b(broadcast|broadcasted|reduce|scan|fchain|bijection|aggregate|metricsum)\\b",
+      "match": "\\b(broadcast|broadcasted|reduce|scan|fchain|bijection|inverseof|aggregate|metricsum)\\b",
       "name": "entity.name.function.higher-order.flatppl"
     },
     "set-constructor": {
@@ -138,7 +138,7 @@
     },
     "builtin-function": {
       "comment": "Built-in functions and value constructors. Spec §07 catalogue.",
-      "match": "\\b(identity|vector|array|fill|zeros|ones|eye|onehot|linspace|extlinspace|get|get0|cat|rowstack|colstack|record|table|tuple|partition|reverse|relabel|fixed|tile|splitblocks|joinblocks|addaxes|blockdiagmat|bandedmat|conv|crosscorr|boolean|integer|real|complex|string|imag|exp|expm1|log|log2|log10|log1p|pow|sqrt|abs|abs2|sin|cos|tan|asin|acos|atan|atan2|sinh|cosh|tanh|asinh|acosh|atanh|min|max|floor|ceil|round|div|mod|conj|cis|gamma|loggamma|logit|invlogit|probit|invprobit|add|sub|mul|divide|neg|equal|unequal|lt|le|gt|ge|isfinite|isinf|isnan|iszero|transpose|adjoint|det|logabsdet|inv|trace|linsolve|lower_cholesky|row_gram|col_gram|self_outer|cross|diagmat|qr|diag|quadform|sum|mean|var|std|prod|maximum|minimum|median|quantile|cumsum|cumprod|cummax|cummin|lengthof|sizeof|indicesof|indicesof0|l1norm|l2norm|linfnorm|l1unit|l2unit|logsumexp|softmax|logsoftmax|land|lor|lnot|lxor|lany|lall|ifelse|filter|selectbins|bincounts|polynomial|bernstein|stepwise|rngstate|rnginit|rand|builtin_logdensityof|builtin_sample|builtin_touniform|builtin_fromuniform|builtin_tonormal|builtin_fromnormal|checked)(?=\\s*\\()",
+      "match": "\\b(identity|vector|array|fill|zeros|ones|eye|onehot|linspace|extlinspace|get|get0|cat|rowstack|colstack|record|table|tuple|partition|reverse|sort|relabel|fixed|tile|splitblocks|joinblocks|addaxes|blockdiagmat|bandedmat|conv|crosscorr|boolean|integer|real|complex|string|imag|exp|expm1|log|log2|log10|log1p|pow|sqrt|abs|abs2|sin|cos|tan|asin|acos|atan|atan2|sinh|cosh|tanh|asinh|acosh|atanh|min|max|floor|ceil|round|div|mod|conj|cis|gamma|loggamma|logit|invlogit|probit|invprobit|add|sub|mul|divide|neg|equal|unequal|lt|le|gt|ge|isfinite|isinf|isnan|iszero|transpose|adjoint|det|logabsdet|inv|trace|linsolve|lower_cholesky|row_gram|col_gram|self_outer|cross|diagmat|qr|diag|quadform|sum|mean|var|std|prod|maximum|minimum|median|quantile|cumsum|cumprod|cummax|cummin|lengthof|sizeof|indicesof|indicesof0|l1norm|l2norm|linfnorm|l1unit|l2unit|logsumexp|softmax|logsoftmax|land|lor|lnot|lxor|lany|lall|ifelse|filter|selectbins|valuemap|bincounts|polynomial|bernstein|stepwise|rngstate|rnginit|rand|builtin_logdensityof|builtin_sample|builtin_touniform|builtin_fromuniform|builtin_tonormal|builtin_fromnormal|checked)(?=\\s*\\()",
       "name": "support.function.builtin.flatppl"
     },
     "constant": {
