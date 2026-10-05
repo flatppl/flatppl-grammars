@@ -98,6 +98,8 @@ EXCLUDED_MODULE_MEMBERS = {
     "kallen", "breakup_momentum", "blatt_weisskopf",
     # Wigner rotation functions
     "wignerd", "wignerD", "wignerd_doublearg", "wignerD_doublearg",
+    # pyhf helpers remain module-qualified, not base builtins.
+    "normsys_factor", "histosys_shift", "sample_yields", "expected_counts",
 }
 
 
