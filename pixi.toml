@@ -4,7 +4,8 @@ platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
 
 [dependencies]
 python = ">=3.11,<4"
-pandoc = ">=3.9,<4"
+# Pandoc 3.12 breaks custom keyword lists: jgm/pandoc#11921.
+pandoc = ">=3.9,<3.12"
 pip = "*"
 pre-commit = ">=4,<5"
 nodejs = ">=24,<25"
