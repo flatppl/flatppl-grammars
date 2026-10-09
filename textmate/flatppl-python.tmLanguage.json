@@ -1,27 +1,37 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "scopeName": "flatppl.embedded.python",
-  "injectionSelector": "L:source.python -comment",
+  "injectionSelector": "L:source.python -comment -string",
   "patterns": [
     { "include": "#flatppl-call" }
   ],
   "repository": {
     "flatppl-call": {
-      "comment": "Embedded canonical FlatPPL in Python: flatppl(r\"\"\"…\"\"\") / flatppl(r'''…'''). The raw-string prefix (r/R, optionally with b) is optional but recommended; both triple-quote styles are supported.",
-      "begin": "(\\bflatppl)\\s*(\\()\\s*((?:[rR][bB]?|[bB][rR])?)(\"\"\"|''')",
+      "comment": "Keep the call open across lines until its first argument. TextMate matches one line at a time. The string/comment rules win before the fallback returns nonliteral arguments to Python.",
+      "begin": "(\\bflatppl)\\s*(\\()",
       "beginCaptures": {
         "1": { "name": "support.function.flatppl.python" },
-        "2": { "name": "punctuation.section.arguments.begin.bracket.round.python" },
-        "3": { "name": "storage.type.string.python" },
-        "4": { "name": "punctuation.definition.string.begin.python" }
+        "2": { "name": "punctuation.section.arguments.begin.bracket.round.python" }
       },
-      "end": "(\\4)",
-      "endCaptures": {
-        "1": { "name": "punctuation.definition.string.end.python" }
-      },
-      "contentName": "meta.embedded.block.flatppl",
+      "end": "(?=\\S)",
+      "applyEndPatternLast": true,
       "patterns": [
-        { "include": "source.flatppl" }
+        { "name": "comment.line.number-sign.python", "match": "#.*$" },
+        {
+          "begin": "((?:[rR][bB]?|[bB][rR])?)(\"\"\"|''')",
+          "beginCaptures": {
+            "1": { "name": "storage.type.string.python" },
+            "2": { "name": "punctuation.definition.string.begin.python" }
+          },
+          "end": "(\\2)",
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.string.end.python" }
+          },
+          "contentName": "meta.embedded.block.flatppl",
+          "patterns": [
+            { "include": "source.flatppl" }
+          ]
+        }
       ]
     }
   }
