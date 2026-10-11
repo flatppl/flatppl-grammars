@@ -23,6 +23,8 @@ const CASES: &[(&str, &str, &str, &str)] = &[
     ("L = likelihoodof(k, d)", "likelihoodof", "entity.name.function.analysis.flatppl", "analysis likelihoodof"),
     ("z = reduce(add, v)", "reduce", "entity.name.function.higher-order.flatppl", "higher-order reduce"),
     ("s = interval(0, 1)", "interval", "entity.name.function.set-constructor.flatppl", "set-ctor interval"),
+    ("s = ordered(3)", "ordered", "entity.name.function.set-constructor.flatppl", "set-ctor ordered"),
+    ("s = zerosum(3)", "zerosum", "entity.name.function.set-constructor.flatppl", "set-ctor zerosum"),
     ("f = fn(_ -> 1)", "fn", "keyword.other.special-operation.flatppl", "special-op fn"),
     ("r = record(a = 1)", "record", "support.function.builtin.flatppl", "builtin record"),
     ("x = inf", "inf", "constant.language.flatppl", "constant inf"),

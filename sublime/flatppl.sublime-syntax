@@ -100,7 +100,7 @@ contexts:
       scope: entity.name.function.higher-order.flatppl
     # GEN-END:higherorder
     # GEN:setctors
-    - match: '\b(interval|cartprod|cartpow|stdsimplex)\b'
+    - match: '\b(interval|cartprod|cartpow|stdsimplex|ordered|zerosum)\b'
       scope: entity.name.function.set-constructor.flatppl
     # GEN-END:setctors
     # GEN:builtins

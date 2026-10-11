@@ -88,6 +88,8 @@ assertScope('m = iid(d, 3)', 'iid', 'entity.name.function.measure', 'combinator 
 assertScope('y = likelihoodof(m, d)', 'likelihoodof', 'entity.name.function.analysis', 'analysis likelihoodof');
 assertScope('z = reduce(f, xs)', 'reduce', 'entity.name.function.higher-order', 'higher-order reduce');
 assertScope('s = interval(0, 1)', 'interval', 'entity.name.function.set-constructor', 'set-constructor interval');
+assertScope('s = ordered(3)', 'ordered', 'entity.name.function.set-constructor', 'set-constructor ordered');
+assertScope('s = zerosum(3)', 'zerosum', 'entity.name.function.set-constructor', 'set-constructor zerosum');
 assertScope('fn(x)', 'fn', 'keyword.other.special-operation', 'special-operation fn');
 assertScope('r = record(a)', 'record', 'support.function.builtin', 'builtin record');
 assertScope('c = inf', 'inf', 'constant.language', 'constant inf');

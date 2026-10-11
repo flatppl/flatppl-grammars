@@ -52,7 +52,7 @@
       "tm_key": "set-constructor",
       "tm_suffix": "",
       "ts_scope": "function",
-      "words": ["interval", "cartprod", "cartpow", "stdsimplex"]
+      "words": ["interval", "cartprod", "cartpow", "stdsimplex", "ordered", "zerosum"]
     },
     {
       "kate_list": "builtins",
