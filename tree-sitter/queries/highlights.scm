@@ -88,7 +88,7 @@
 
 ; GEN:combinators-start
 ((identifier) @function
- (#match? @function "^(weighted|logweighted|normalize|rebase|totalmass|superpose|ksuperpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd|locscale)$"))
+ (#match? @function "^(weighted|logweighted|normalize|tilt|totalmass|superpose|ksuperpose|joint|jointchain|kchain|markovchain|kscan|iid|truncate|pushfwd|locscale)$"))
 ; GEN:combinators-end
 
 ; GEN:analysis-start
