@@ -103,7 +103,7 @@
 
 ; GEN:setctors-start
 ((identifier) @function
- (#match? @function "^(interval|cartprod|cartpow|stdsimplex)$"))
+ (#match? @function "^(interval|cartprod|cartpow|stdsimplex|ordered|zerosum)$"))
 ; GEN:setctors-end
 
 ; GEN:builtins-start

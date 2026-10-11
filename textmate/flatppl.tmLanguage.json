@@ -133,7 +133,7 @@
     },
     "set-constructor": {
       "comment": "Set-construction callables",
-      "match": "\\b(interval|cartprod|cartpow|stdsimplex)\\b",
+      "match": "\\b(interval|cartprod|cartpow|stdsimplex|ordered|zerosum)\\b",
       "name": "entity.name.function.set-constructor.flatppl"
     },
     "builtin-function": {

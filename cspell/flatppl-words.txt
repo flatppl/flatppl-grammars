@@ -218,6 +218,7 @@ normalize
 onehot
 ones
 only
+ordered
 Pareto
 partition
 pi
@@ -289,4 +290,5 @@ Weibull
 weighted
 Wishart
 zeros
+zerosum
 # GEN:keywords-end
