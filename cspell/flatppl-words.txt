@@ -237,6 +237,7 @@ quantile
 rand
 real
 reals
+rebase
 record
 reduce
 relabel
