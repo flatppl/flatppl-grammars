@@ -84,7 +84,7 @@ x[] := y
 Decomposition with hole
 ====================
 
-value, _ = rand(rstate, m)
+value, _ = rand(m, rstate)
 
 ---
 
