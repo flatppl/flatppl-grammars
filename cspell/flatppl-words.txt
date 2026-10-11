@@ -237,7 +237,6 @@ quantile
 rand
 real
 reals
-rebase
 record
 reduce
 relabel
@@ -273,6 +272,7 @@ table
 tan
 tanh
 tile
+tilt
 totalmass
 trace
 transpose
