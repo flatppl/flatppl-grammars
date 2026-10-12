@@ -226,14 +226,13 @@ module.exports = grammar({
 
     // Postfix: left-recursive, highest binding (prec 8).
     //
-    // The argument list is NOT optional: §05 `Call ::= "(" CallArgs ")"` has no
-    // empty alternative (every CallArgs branch takes at least one argument) and
-    // §04 "Calling conventions" states "Nullary calls (`f()`) are not allowed."
-    // So `f()` is a parse error, not a call with no arguments.
+    // §05 `Call ::= "(" CallArgs? ")"`. §04 permits nullary calls only for
+    // documented standard-module constructors. Name resolution and arity
+    // validation enforce that restriction after parsing.
     call_expression: $ => prec.left(8, seq(
       $._comp_operand,
       $._lparen,
-      $.argument_list,
+      optional($.argument_list),
       $._rparen,
     )),
 
@@ -263,8 +262,8 @@ module.exports = grammar({
       $.identifier,
     )),
 
-    // §05 `DotCall ::= "." "(" CallArgs ")"` — same non-empty CallArgs as Call,
-    // so `f.()` is a parse error too.
+    // §05 `DotCall ::= "." "(" CallArgs ")"` still requires an argument,
+    // so `f.()` is a parse error.
     dot_call: $ => prec.left(8, seq(
       $._comp_operand,
       '.',

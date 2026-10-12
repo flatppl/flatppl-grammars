@@ -70,7 +70,6 @@ _MODULE_HEADER = re.compile(r"^### Module `([a-zA-Z0-9_-]+)`")
 # reaffirmed 2026-08-19: still changing). Members of these modules must NOT be
 # required. Stabilising a module means deleting its line here.
 EXCLUDED_MODULES = {
-    "generalized-linear-models",
     "ext-linear-algebra",
     "special-functions",
     "polynomials",
@@ -100,6 +99,9 @@ EXCLUDED_MODULE_MEMBERS = {
     "wignerd", "wignerD", "wignerd_doublearg", "wignerD_doublearg",
     # pyhf helpers remain module-qualified, not base builtins.
     "normsys_factor", "histosys_shift", "sample_yields", "expected_counts",
+    # Regression priors and GLM distributions are module-qualified too.
+    "Flat", "BernoulliLogitGLM", "BinomialLogitGLM", "CategoricalLogitGLM",
+    "NormalGLM", "PoissonLogGLM",
 }
 
 
