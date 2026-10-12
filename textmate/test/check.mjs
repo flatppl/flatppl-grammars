@@ -110,6 +110,10 @@ assertAnyScope('n = 42', 'constant.numeric.integer', 'decimal integer');
 
 // ── Members / placeholders / variance markers ───────────────────────────────
 assertScope('r.field', 'field', 'variable.other.member', 'field member');
+for (const member of ['thinplate_basis', 'thinplate_penalty']) {
+  assertScope(`sp.${member}(x)`, member, 'variable.other.member', `spline member ${member}`);
+  refuteAnyScope(`${member}(x)`, 'support.function.builtin', `unqualified ${member} is not a builtin`);
+}
 assertScope('y = a.sigma^', '^', 'variable.other.member.variance', 'axis variance marker ^');
 assertScope('y = a.sigma_', '_', 'variable.other.member.variance', 'axis variance marker _');
 assertScope('p = _name_', '_name_', 'variable.other.placeholder', 'placeholder _name_');

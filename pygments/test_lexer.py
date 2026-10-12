@@ -69,6 +69,9 @@ check("C[.j_]", Name.Attribute, "_", "axis variance marker _ -> Name.Attribute")
 # builtin name used as an ordinary identifier stays Name (spec §05: not reserved).
 check("real(0)", Name.Builtin, "real", "builtin in call position -> Name.Builtin")
 check("real = 1", Name, "real", "bare builtin (no call) -> Name, not Name.Builtin")
+for member in ("thinplate_basis", "thinplate_penalty"):
+    check(f"sp.{member}(x)", Name.Attribute, member, f"spline member {member}")
+    check(f"{member}(x)", Name, member, f"unqualified {member} is not a builtin")
 # Bad string escape -> Error (good escapes are String.Escape).
 check('"a\\q"', Error, "\\q", "invalid string escape -> Error")
 check('"a\\n"', String.Escape, "\\n", "valid string escape -> String.Escape")
