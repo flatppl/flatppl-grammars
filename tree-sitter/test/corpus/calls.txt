@@ -329,3 +329,30 @@ x = f.()
     (identifier)
     (identifier))
   (ERROR))
+
+==================
+Spline standard-module members
+==================
+
+sp = standard_module("splines", "0.1")
+basis = sp.thinplate_basis(x, centers)
+penalty = sp.thinplate_penalty(centers)
+
+---
+
+(module
+  (binding
+    (identifier)
+    (call_expression
+      (identifier)
+      (argument_list (string) (string))))
+  (binding
+    (identifier)
+    (call_expression
+      (field_access (identifier) (identifier))
+      (argument_list (identifier) (identifier))))
+  (binding
+    (identifier)
+    (call_expression
+      (field_access (identifier) (identifier))
+      (argument_list (identifier)))))

@@ -117,6 +117,10 @@ refuteScope('x = log10', '10', 'number', 'bare `log10` digit `10` is NOT chopped
 // which also stops the keyword matcher from tagging the field.
 refuteScope('y = r.Normal', 'Normal', 'type', 'field `.Normal` is NOT the kernel type');
 assertScope('y = r.Normal', '.Normal', 'property', 'field `.Normal` → property');
+for (const member of ['thinplate_basis', 'thinplate_penalty']) {
+  assertScope(`sp.${member}(x)`, `.${member}`, 'property', `spline member ${member}`);
+  refuteScope(`${member}(x)`, member, 'built_in', `unqualified ${member} is not a builtin`);
+}
 
 // ── Comments / strings / numbers ────────────────────────────────────────────
 assertAnyScope('# a comment', 'comment', 'line comment');

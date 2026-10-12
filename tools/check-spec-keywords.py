@@ -102,6 +102,8 @@ EXCLUDED_MODULE_MEMBERS = {
     # Regression priors and GLM distributions are module-qualified too.
     "Flat", "BernoulliLogitGLM", "BinomialLogitGLM", "CategoricalLogitGLM",
     "NormalGLM", "PoissonLogGLM",
+    # Spline basis and penalty functions are module-qualified.
+    "thinplate_basis", "thinplate_penalty",
 }
 
 
