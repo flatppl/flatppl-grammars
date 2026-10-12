@@ -303,18 +303,18 @@ f(x, a = 1, y)
       (identifier))))
 
 ==================
-Nullary call is rejected
+Nullary standard-module constructor
 ==================
 
-x = f()
+b ~ reg.Flat()
 
 ---
 
 (module
-  (binding
+  (tilde_binding
     (identifier)
-    (identifier))
-  (ERROR))
+    (call_expression
+      (field_access (identifier) (identifier)))))
 
 ==================
 Nullary dot-call is rejected
