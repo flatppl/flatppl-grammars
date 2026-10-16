@@ -231,13 +231,11 @@ module.exports = grammar({
 
     // Postfix: left-recursive, highest binding (prec 8).
     //
-    // §05 `Call ::= "(" CallArgs? ")"`. §04 permits nullary calls only for
-    // documented standard-module constructors. Name resolution and arity
-    // validation enforce that restriction after parsing.
+    // §05 Call requires at least one argument.
     call_expression: $ => prec.left(8, seq(
       $._comp_operand,
       $._lparen,
-      optional($.argument_list),
+      $.argument_list,
       $._rparen,
     )),
 
