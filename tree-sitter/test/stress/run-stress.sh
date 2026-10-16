@@ -40,6 +40,7 @@ N="${STRESS_N:-20000}"
 { printf 'z = '; for _ in $(seq 1 "$N"); do printf '('; done; printf 'a'; for _ in $(seq 1 "$N"); do printf ')'; done; printf '\n'; } > "$gen_dir/big_parens.flatppl"
 { printf 'z = A'; for _ in $(seq 1 "$N"); do printf '[.i]'; done; printf '\n'; } > "$gen_dir/big_index.flatppl"
 { printf 'z = '; for _ in $(seq 1 "$N"); do printf '!'; done; printf 'a\n'; } > "$gen_dir/big_unary.flatppl"
+{ printf 'z = functionof(x'; for _ in $(seq 1 "$N"); do printf ', a'; done; printf ', b = b, c)\n'; } > "$gen_dir/big_boundaries.flatppl"
 { printf 'z = '; for _ in $(seq 1 "$N"); do printf '('; done; printf 'a\n'; } > "$gen_dir/big_unbalanced.flatppl"
 
 for f in "$gen_dir"/*.flatppl; do
