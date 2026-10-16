@@ -229,7 +229,7 @@ x = record(a = record(b = 2))
             (integer)))))))
 
 ==================
-Empty record call parses before arity checking
+Empty record call is rejected
 ==================
 
 x = record()
@@ -239,8 +239,8 @@ x = record()
 (module
   (binding
     (identifier)
-    (call_expression
-      (identifier))))
+    (identifier))
+  (ERROR))
 
 ==================
 Positional args are a plain call, not a record literal

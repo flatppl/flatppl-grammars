@@ -31,7 +31,6 @@ wignerd_doublearg
 wignerD_doublearg
 
 # regression module members: alias.member(...) only.
-Flat
 BernoulliLogitGLM
 BinomialLogitGLM
 CategoricalLogitGLM

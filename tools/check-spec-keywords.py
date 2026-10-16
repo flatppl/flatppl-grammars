@@ -99,8 +99,8 @@ EXCLUDED_MODULE_MEMBERS = {
     "wignerd", "wignerD", "wignerd_doublearg", "wignerD_doublearg",
     # pyhf helpers remain module-qualified, not base builtins.
     "normsys_factor", "histosys_shift", "sample_yields", "expected_counts",
-    # Regression priors and GLM distributions are module-qualified too.
-    "Flat", "BernoulliLogitGLM", "BinomialLogitGLM", "CategoricalLogitGLM",
+    # GLM distributions are module-qualified too.
+    "BernoulliLogitGLM", "BinomialLogitGLM", "CategoricalLogitGLM",
     "NormalGLM", "PoissonLogGLM",
     # Spline basis and penalty functions are module-qualified.
     "thinplate_basis", "thinplate_penalty",

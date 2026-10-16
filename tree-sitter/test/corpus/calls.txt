@@ -302,20 +302,6 @@ f(a = 1, y)
       (identifier))))
 
 ==================
-Nullary standard-module constructor
-==================
-
-b ~ reg.Flat()
-
----
-
-(module
-  (tilde_binding
-    (identifier)
-    (call_expression
-      (field_access (identifier) (identifier)))))
-
-==================
 Nullary dot-call is rejected
 ==================
 
