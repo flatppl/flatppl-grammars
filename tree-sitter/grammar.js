@@ -81,6 +81,11 @@ module.exports = grammar({
     // cannot decide until it sees whether the closing `)` is followed by `=`.
     // GLR explores both; the trailing `=` (or its absence) disambiguates.
     [$._comp_operand, $.function_definition],
+
+    // A bare boundary name is also an ordinary positional expression. Keep
+    // both argument forms until a later keyword/bare boundary distinguishes them.
+    [$._comp_operand, $.argument_list],
+    [$.argument_list],
   ],
 
   rules: {
@@ -236,9 +241,8 @@ module.exports = grammar({
       $._rparen,
     )),
 
-    // §05 CallArgs: PositionalArgs | KeywordArgs | MixedArgs. A keyword arg may
-    // only FOLLOW positionals — `f(a = 1, x)` (keyword before positional) is
-    // rejected. Two branches: all-keyword, or positionals-then-(optional)-keywords.
+    // §05 CallArgs. Reification permits bare names after keyword boundaries;
+    // the engine checks that the callee is functionof or kernelof.
     argument_list: $ => seq(
       choice(
         seq(
@@ -249,6 +253,10 @@ module.exports = grammar({
           $._expression,
           repeat(seq(',', $._expression)),
           repeat(seq(',', $.keyword_argument)),
+        ),
+        seq(
+          $._expression,
+          repeat1(seq(',', choice($.identifier, $.keyword_argument))),
         ),
       ),
       optional(','),
@@ -400,7 +408,7 @@ module.exports = grammar({
     // `record` @function.builtin highlight (queries/highlights.scm) is
     // unchanged.
     record_literal: $ => seq(
-      alias($._record_keyword, $.identifier),
+      optional(alias($._record_keyword, $.identifier)),
       $._lparen,
       $.keyword_argument,
       repeat(seq(',', $.keyword_argument)),

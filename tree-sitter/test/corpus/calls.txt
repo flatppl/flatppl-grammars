@@ -284,10 +284,10 @@ metricsum(g, [.i^, .j_], x)
       (identifier))))
 
 ==================
-Keyword argument before positional is rejected
+Keyword-only argument lists reject a trailing positional argument
 ==================
 
-f(x, a = 1, y)
+f(a = 1, y)
 
 ---
 
@@ -295,7 +295,6 @@ f(x, a = 1, y)
   (call_expression
     (identifier)
     (argument_list
-      (identifier)
       (keyword_argument
         (identifier)
         (integer)))

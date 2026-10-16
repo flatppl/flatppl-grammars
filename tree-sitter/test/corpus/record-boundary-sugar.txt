@@ -1,0 +1,43 @@
+==================
+Parenthesized records preserve field and expression nesting
+==================
+p = (a = 1, b = (c = 2))
+single = (a = 3).a
+make(x) = (a = x)
+---
+
+(module
+  (binding (identifier)
+    (record_literal
+      (keyword_argument (identifier) (integer))
+      (keyword_argument (identifier)
+        (record_literal (keyword_argument (identifier) (integer))))))
+  (binding (identifier)
+    (field_access
+      (record_literal (keyword_argument (identifier) (integer)))
+      (identifier)))
+  (function_definition (identifier) (identifier)
+    (record_literal (keyword_argument (identifier) (identifier)))))
+
+==================
+Bare boundaries and explicit bindings retain their written order
+==================
+f = functionof(e, a, b)
+g = functionof(e, p = a, b)
+k = kernelof(e, a, q = b, c)
+---
+
+(module
+  (binding (identifier)
+    (call_expression (identifier)
+      (argument_list (identifier) (identifier) (identifier))))
+  (binding (identifier)
+    (call_expression (identifier)
+      (argument_list (identifier)
+        (keyword_argument (identifier) (identifier))
+        (identifier))))
+  (binding (identifier)
+    (call_expression (identifier)
+      (argument_list (identifier) (identifier)
+        (keyword_argument (identifier) (identifier))
+        (identifier)))))
