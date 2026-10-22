@@ -20,11 +20,12 @@ make(x) = (a = x)
     (record_literal (keyword_argument (identifier) (identifier)))))
 
 ==================
-Bare boundaries and explicit bindings retain their written order
+Bare, keyword and placeholder boundaries retain their written order
 ==================
 f = functionof(e, a, b)
-g = functionof(e, p = a, b)
-k = kernelof(e, a, q = b, c)
+g = functionof(e, p = a, b = b)
+k = kernelof(e, a, b, c)
+h = functionof(a * d + _x_, a, d, _x_)
 ---
 
 (module
@@ -35,9 +36,14 @@ k = kernelof(e, a, q = b, c)
     (call_expression (identifier)
       (argument_list (identifier)
         (keyword_argument (identifier) (identifier))
-        (identifier))))
+        (keyword_argument (identifier) (identifier)))))
   (binding (identifier)
     (call_expression (identifier)
-      (argument_list (identifier) (identifier)
-        (keyword_argument (identifier) (identifier))
-        (identifier)))))
+      (argument_list (identifier) (identifier) (identifier) (identifier))))
+  (binding (identifier)
+    (call_expression (identifier)
+      (argument_list
+        (binary_expression
+          (binary_expression (identifier) (identifier))
+          (identifier))
+        (identifier) (identifier) (identifier)))))
