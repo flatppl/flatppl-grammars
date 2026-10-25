@@ -223,6 +223,15 @@ static bool scan_record_keyword(TSLexer *lexer) {
   return lexer->lookahead != '=';
 }
 
+// Whether only leading indentation lies between the start of the line and the
+// cursor. `hws_skipped` counts the HWS that this scan() call skipped. Unless
+// the call skipped a newline, the cursor is at line start iff its column equals
+// that count. Call this only at a fence candidate: `get_column` re-reads the
+// line from its start, so one call per scan makes a long line quadratic.
+static inline bool at_line_start(TSLexer *lexer, bool newline_skipped, uint32_t hws_skipped) {
+  return newline_skipped || lexer->get_column(lexer) == hws_skipped;
+}
+
 bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   Scanner *s = (Scanner *)payload;
 
@@ -312,19 +321,16 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
   //
   //  - On `###` / `%%%` fence openers: emit the fenced comment token.
 
-  // Whether the scanner is positioned at the start of a line (only leading
-  // indentation, if any, between the start of the line and the current
-  // position). `get_column` counts codepoints since the last newline, so it is
-  // 0 at the true start of any line, including indented lines (indentation
-  // begins at column 0). The HWS-skip below does NOT change this flag, so it
-  // stays true while skipping leading indentation; it is reset to true only
-  // after the scanner itself consumes a newline.
-  bool at_line_start = lexer->get_column(lexer) == 0;
+  // Line-start state for the fence openers, read lazily through
+  // `at_line_start` (see there for why).
+  bool newline_skipped = false;
+  uint32_t hws_skipped = 0;
 
   for (;;) {
     // Skip horizontal whitespace.
     while (is_hws(lexer->lookahead)) {
       skip(lexer);
+      hws_skipped++;
     }
 
     if (lexer->eof(lexer)) {
@@ -392,7 +398,7 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
         // to, producing an ERROR node. Skipping here keeps every parse stack
         // consistent: no stack ever sees a NEWLINE token inside brackets.
         skip(lexer);
-        at_line_start = true;
+        newline_skipped = true;
         continue;
       }
       if (s->bracket_depth > 0) {
@@ -440,7 +446,8 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
     // `^[ \t]*###[ \t]*$`. When not at line start (other tokens preceded `###`
     // / `%%%` on this line) `###` falls through to the line_comment regex and
     // `%%%` is scanned as a DOC_LINE below.
-    if (c == '#' && valid_symbols[BLOCK_COMMENT] && at_line_start) {
+    if (c == '#' && valid_symbols[BLOCK_COMMENT] &&
+        at_line_start(lexer, newline_skipped, hws_skipped)) {
       // Need exactly "###" then HWS* then newline/EOF to be a fence opener.
       // Peek by advancing; if it's not a fence, we still must let the line
       // comment regex handle a single '#'. So only commit if "###" + EOL.
@@ -465,8 +472,10 @@ bool tree_sitter_flatppl_external_scanner_scan(void *payload, TSLexer *lexer, co
     }
 
     if (c == '%' && (valid_symbols[DOC_BLOCK] || valid_symbols[DOC_LINE])) {
+      bool block_ok = valid_symbols[DOC_BLOCK] &&
+                      at_line_start(lexer, newline_skipped, hws_skipped);
       advance(lexer);
-      if (valid_symbols[DOC_BLOCK] && at_line_start && lexer->lookahead == '%') {
+      if (block_ok && lexer->lookahead == '%') {
         advance(lexer);
         if (lexer->lookahead == '%') {
           advance(lexer);
