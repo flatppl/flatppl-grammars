@@ -151,3 +151,36 @@ Integer dotted divide needs whitespace
   (binary_expression
     (integer)
     (identifier)))
+
+=================
+Direct mixture calls use ordinary argument lists
+=================
+
+ksuperpose(Normal, weights, means, sigmas)
+ksuperpose(Normal, weights, mu = means, sigma = sigmas)
+ksuperpose(Normal, weights, means, sigma = sigmas)
+
+---
+
+(module
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)))
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (identifier)
+      (keyword_argument (identifier) (identifier))
+      (keyword_argument (identifier) (identifier))))
+  (call_expression
+    (identifier)
+    (argument_list
+      (identifier)
+      (identifier)
+      (identifier)
+      (keyword_argument (identifier) (identifier)))))
