@@ -10,14 +10,17 @@ consumers — e.g. `flatppl-js`'s web playground — at build time.
 
 - **Bundle it yourself.** Build `textmate-highlight.ts` as an IIFE that bundles
   `vscode-textmate` + `vscode-oniguruma`. It publishes `window.FlatPPLTextmate =
-  { init, makeHighlightPlugin, classForScopes }`.
+  { init, makeHighlightPlugin, classForScopes, highlightText }`.
 - **Shared CodeMirror instance.** `makeHighlightPlugin(bundle)` takes YOUR
   `@codemirror/view` exports (`{ ViewPlugin, Decoration }`). Do not let this
   module bundle its own `@codemirror/view` — decorations must be built with the
   same instance that owns the `EditorView`.
-- **Runtime assets.** It fetches `vendor/flatppl.tmLanguage.json` and
-  `vendor/onig.wasm` (paths relative to the page). Vendor both next to your
-  bundle.
+- **Runtime assets.** By default it fetches `vendor/flatppl.tmLanguage.json`
+  and `vendor/onig.wasm` (paths relative to the page). A host that serves them
+  elsewhere (a VS Code webview) passes `init({ grammarUrl, wasmUrl })`.
+- **Text outside an editor.** `highlightText(text)` returns `{ text, cls }`
+  runs for a fragment (an expression in a header or a tooltip), or `null` until
+  `init()` has loaded the grammar.
 - **Theme.** It emits these classes — define them in your editor CSS:
   `tok-comment, tok-string, tok-number, tok-special, tok-dist, tok-mop,
   tok-set, tok-func, tok-const, tok-reserved, tok-keyword, tok-op,

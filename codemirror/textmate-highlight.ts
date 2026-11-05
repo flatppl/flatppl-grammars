@@ -13,9 +13,17 @@
 import * as vsctm from 'vscode-textmate';
 import * as oniguruma from 'vscode-oniguruma';
 
-// Runtime asset URLs, relative to the page (consumer vendors these into vendor/).
+// Default runtime asset URLs, relative to the page (consumer vendors these into
+// vendor/). A host that serves them elsewhere passes its URLs to init().
 const GRAMMAR_URL = 'vendor/flatppl.tmLanguage.json';
 const WASM_URL = 'vendor/onig.wasm';
+
+/** Where init() fetches the grammar and the Oniguruma wasm. */
+export interface Assets { grammarUrl?: string; wasmUrl?: string }
+
+/** One highlighted run of text: its `tok-*` class, or null for plain text. */
+export interface Run { text: string; cls: string | null }
+
 const SCOPE_NAME = 'source.flatppl';
 
 let grammar: vsctm.IGrammar | null = null;
@@ -56,27 +64,30 @@ export function classForScopes(scopes: string[]): string | null {
 
 /** Load onig.wasm + the grammar once. Resolves to the IGrammar, or null on
     failure (highlighting silently degrades to plain text). Refreshes any
-    editors mounted before the grammar finished loading. */
-export function init(): Promise<vsctm.IGrammar | null> {
+    editors mounted before the grammar finished loading. The first call's
+    `assets` win; later calls share its load. */
+export function init(assets: Assets = {}): Promise<vsctm.IGrammar | null> {
   if (readyPromise) return readyPromise;
+  const wasmUrl = assets.wasmUrl || WASM_URL;
+  const grammarUrl = assets.grammarUrl || GRAMMAR_URL;
   readyPromise = (async () => {
     try {
-      const wasmRes = await fetch(WASM_URL);
-      if (!wasmRes.ok) throw new Error(`Failed to fetch ${WASM_URL}: ${wasmRes.status}`);
+      const wasmRes = await fetch(wasmUrl);
+      if (!wasmRes.ok) throw new Error(`Failed to fetch ${wasmUrl}: ${wasmRes.status}`);
       const wasmBin = await wasmRes.arrayBuffer();
       await oniguruma.loadWASM(wasmBin);
       const onigLib = Promise.resolve({
         createOnigScanner: (patterns: string[]) => new oniguruma.OnigScanner(patterns),
         createOnigString: (s: string) => new oniguruma.OnigString(s),
       });
-      const grammarRes = await fetch(GRAMMAR_URL);
-      if (!grammarRes.ok) throw new Error(`Failed to fetch ${GRAMMAR_URL}: ${grammarRes.status}`);
+      const grammarRes = await fetch(grammarUrl);
+      if (!grammarRes.ok) throw new Error(`Failed to fetch ${grammarUrl}: ${grammarRes.status}`);
       const grammarText = await grammarRes.text();
       const registry = new vsctm.Registry({
         onigLib,
         loadGrammar: async (scopeName: string) =>
           scopeName === SCOPE_NAME
-            ? vsctm.parseRawGrammar(grammarText, GRAMMAR_URL)
+            ? vsctm.parseRawGrammar(grammarText, grammarUrl)
             : null,
       });
       grammar = await registry.loadGrammar(SCOPE_NAME);
@@ -87,6 +98,25 @@ export function init(): Promise<vsctm.IGrammar | null> {
     return grammar;
   })();
   return readyPromise;
+}
+
+/** Highlight a source fragment outside an editor (a one-line expression, a
+    tooltip). Returns the runs in order, newlines included as plain runs, or
+    null while the grammar is not loaded; call init() first. */
+export function highlightText(text: string): Run[] | null {
+  if (!grammar) return null;
+  const runs: Run[] = [];
+  let ruleStack = vsctm.INITIAL;
+  text.split('\n').forEach((line, i) => {
+    if (i > 0) runs.push({ text: '\n', cls: null });
+    const res = grammar!.tokenizeLine(line, ruleStack);
+    ruleStack = res.ruleStack;
+    for (const t of res.tokens) {
+      const piece = line.slice(t.startIndex, t.endIndex);
+      if (piece) runs.push({ text: piece, cls: classForScopes(t.scopes) });
+    }
+  });
+  return runs;
 }
 
 /** Build a CodeMirror ViewPlugin that highlights the whole document via the
@@ -149,7 +179,7 @@ export function makeHighlightPlugin(bundle: any) {
 // that sets window.FlatPPLTextmate; esbuild's IIFE/global wrapper handles it).
 declare const window: any;
 if (typeof window !== 'undefined') {
-  window.FlatPPLTextmate = { init, makeHighlightPlugin, classForScopes };
+  window.FlatPPLTextmate = { init, makeHighlightPlugin, classForScopes, highlightText };
 }
 
-export default { init, makeHighlightPlugin, classForScopes };
+export default { init, makeHighlightPlugin, classForScopes, highlightText };
