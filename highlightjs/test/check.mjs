@@ -74,7 +74,7 @@ function refuteScope(line, text, needle, desc) {
 // `variable.constant` / `variable.language` scopes emit `hljs-variable
 // constant_` / `hljs-variable language_`, so we match the trailing token).
 // `call` categories (builtins) only highlight in call position (`name(`),
-// matching the `(?=\s*\()` suffix — assert them as a `word(` form.
+// matching the `(?=\s*\.?\()` suffix — assert them as a `word(` form.
 const CATEGORY_SCOPE = {
   specialops: { needle: 'keyword' },
   selectors: { needle: 'keyword' },
@@ -110,6 +110,8 @@ for (const cat of keywordLists.categories ?? []) {
 
 // ── Builtins are NOT reserved: bare (non-call) use stays unscoped (spec §05) ──
 refuteScope('real = 1', 'real', 'built_in', 'bare `real` (not a call) is NOT built_in');
+// §05 dot-call `f.(...)` is a call position too.
+assertScope('p = invlogit.(eta)', 'invlogit', 'built_in', 'builtin dot-call invlogit.(…) → built_in');
 // Bare `log10` (no call) is intentionally unscoped — but the NUMBER `(?<!\w)`
 // guard must still stop the trailing `10` from being chopped off as a number.
 refuteScope('x = log10', '10', 'number', 'bare `log10` digit `10` is NOT chopped to number');

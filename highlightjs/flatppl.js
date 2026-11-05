@@ -69,12 +69,12 @@ function escapeRe(s) {
 
 /** @see https://highlightjs.readthedocs.io/en/latest/language-guide.html */
 export default function flatppl(hljs) {
-  // Builtins highlight only in call position (`name(...)`), mirroring the
-  // `(?=\s*\()` suffix the other grammars use: builtins are NOT reserved
+  // Builtins highlight only in call position (`name(...)` or `name.(...)`), mirroring the
+  // `(?=\s*\.?\()` suffix the other grammars use: builtins are NOT reserved
   // (spec §05), so a bare `real`/`sum` used as an ordinary name stays plain.
   const BUILTIN_CALL = {
     scope: 'built_in',
-    begin: new RegExp('\\b(?:' + BUILTINS.map(escapeRe).join('|') + ')\\b(?=\\s*\\()'),
+    begin: new RegExp('\\b(?:' + BUILTINS.map(escapeRe).join('|') + ')\\b(?=\\s*\\.?\\()'),
   };
 
   // Symbolic operators (from JSON) plus the hand-maintained special operators.

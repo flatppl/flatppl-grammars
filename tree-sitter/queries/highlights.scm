@@ -74,6 +74,7 @@
 
 ; Function calls — generic callee (overrides @variable; overridden by GEN keyword blocks)
 (call_expression (identifier) @function.call)
+(dot_call (identifier) @function.call)
 
 ; ── Keyword categories — SYNCED from keyword-lists.json via gen-grammars.py ──
 ; GEN:specialops-start

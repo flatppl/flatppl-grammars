@@ -69,6 +69,8 @@ check("C[.j_]", Name.Attribute, "_", "axis variance marker _ -> Name.Attribute")
 # builtin name used as an ordinary identifier stays Name (spec §05: not reserved).
 check("real(0)", Name.Builtin, "real", "builtin in call position -> Name.Builtin")
 check("real = 1", Name, "real", "bare builtin (no call) -> Name, not Name.Builtin")
+# §05 dot-call `f.(...)` is a call position too.
+check("p = invlogit.(eta)", Name.Builtin, "invlogit", "builtin dot-call -> Name.Builtin")
 for member in ("thinplate_basis", "thinplate_penalty"):
     check(f"sp.{member}(x)", Name.Attribute, member, f"spline member {member}")
     check(f"{member}(x)", Name, member, f"unqualified {member} is not a builtin")
@@ -104,7 +106,7 @@ _kw_path = os.path.join(os.path.dirname(__file__), "..", "keyword-lists.json")
 with open(_kw_path) as f:
     _kw = json.load(f)
 
-# Categories scoped only in call position (lexer uses `\b(?=\s*\()`), so their
+# Categories scoped only in call position (lexer uses `\b(?=\s*\.?\()`), so their
 # coverage words must be tested followed by `(`, not bare.
 CALL_ONLY = {"builtins"}
 

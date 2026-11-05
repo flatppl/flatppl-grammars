@@ -33,9 +33,10 @@ scopes the TextMate / tree-sitter / Pygments grammars emit are coarsened here:
 | `predefsets` | `variable.constant` |
 | `reserved` | `variable.language` |
 
-Builtins are scoped only in call position (`name(`), matching the `(?=\s*\()`
-suffix the other grammars use — a bare `real`/`sum` used as an ordinary name
-stays unscoped (builtins are not reserved; spec §05).
+Builtins are scoped only in call position (`name(`, or the dot-call
+`name.(`), matching the `(?=\s*\.?\()` suffix the other grammars use — a
+bare `real`/`sum` used as an ordinary name stays unscoped (builtins are not
+reserved; spec §05).
 
 Known coarsening (a regex highlighter cannot disambiguate these without a
 parser, matching `pygments/flatppl_lexer.py`): `.name` is uniformly scoped

@@ -27,3 +27,4 @@ ph = _name_
 hole = fn(_ -> 1)
 cmp = (a <= b) && (c != d)
 sel = v[all, only, :, !]
+dotcall = invlogit.(eta)

@@ -92,6 +92,10 @@ assertScope('s = ordered(3)', 'ordered', 'entity.name.function.set-constructor',
 assertScope('s = zerosum(3)', 'zerosum', 'entity.name.function.set-constructor', 'set-constructor zerosum');
 assertScope('fn(x)', 'fn', 'keyword.other.special-operation', 'special-operation fn');
 assertScope('r = record(a)', 'record', 'support.function.builtin', 'builtin record');
+// §05 dot-call `f.(...)` is a call, so its callee takes the call scopes.
+assertScope('p = invlogit.(eta)', 'invlogit', 'support.function.builtin', 'builtin dot-call invlogit.(…)');
+assertScope('p = f.(eta)', 'f', 'entity.name.function.call', 'user dot-call f.(…)');
+refuteAnyScope('p = invlogit', 'support.function.builtin', 'bare invlogit is not a call');
 assertScope('c = inf', 'inf', 'constant.language', 'constant inf');
 assertScope('q = reals', 'reals', 'constant.other.set', 'predefined-set reals');
 assertScope('v = self', 'self', 'variable.language', 'reserved self');
