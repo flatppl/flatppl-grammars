@@ -48,7 +48,7 @@ all forced by skylighting/Pandoc:
    no HTML class).
 2. The TextMate number/hole/assignment lookbehind assertions are replaced by
    rule ordering (skylighting lookbehind is unreliable; lookahead is fine).
-3. Builtin names match as a keyword list with no `(?=\s*\()` call-context guard
+3. Builtin names match as a keyword list with no `(?=\s*\.?\()` call-context guard
    (Kate keyword lists can't take a lookahead), so a builtin name highlights even
    where it isn't a call — `f = sum` colours `sum` as a builtin, where TextMate
    leaves it a plain variable. This over-colours, and the reason is the keyword

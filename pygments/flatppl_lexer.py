@@ -86,11 +86,11 @@ class FlatPPLLexer(RegexLexer):
             (words(ANALYSIS, prefix=r"\b", suffix=r"\b"), Name.Function),
             (words(HIGHERORDER, prefix=r"\b", suffix=r"\b"), Name.Function),
             (words(SETCTORS, prefix=r"\b", suffix=r"\b"), Name.Function),
-            # Builtins are scoped only in call position (`\b(?=\s*\()`), matching
-            # the `(?=\s*\()` tm_suffix the other FlatPPL grammars use — builtins
+            # Builtins are scoped only in call position (`\b(?=\s*\.?\()`), matching
+            # the `(?=\s*\.?\()` tm_suffix the other FlatPPL grammars use — builtins
             # are NOT reserved (spec §05), so a bare `real`/`string`/`sum` used as
             # an ordinary name stays Name, not Name.Builtin.
-            (words(BUILTINS, prefix=r"\b", suffix=r"\b(?=\s*\()"), Name.Builtin),
+            (words(BUILTINS, prefix=r"\b", suffix=r"\b(?=\s*\.?\()"), Name.Builtin),
             (words(CONSTANTS, prefix=r"\b", suffix=r"\b"), Keyword.Constant),
             (words(PREDEFSETS, prefix=r"\b", suffix=r"\b"), Name.Constant),
             (words(SELECTORS, prefix=r"\b", suffix=r"\b"), Keyword),

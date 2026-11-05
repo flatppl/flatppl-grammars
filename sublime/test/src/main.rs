@@ -27,6 +27,9 @@ const CASES: &[(&str, &str, &str, &str)] = &[
     ("s = zerosum(3)", "zerosum", "entity.name.function.set-constructor.flatppl", "set-ctor zerosum"),
     ("f = fn(_ -> 1)", "fn", "keyword.other.special-operation.flatppl", "special-op fn"),
     ("r = record(a = 1)", "record", "support.function.builtin.flatppl", "builtin record"),
+    // §05 dot-call `f.(...)` is a call: its callee takes the call scopes.
+    ("p = invlogit.(eta)", "invlogit", "support.function.builtin.flatppl", "builtin dot-call"),
+    ("p = f.(eta)", "f", "variable.function.flatppl", "user dot-call"),
     ("x = inf", "inf", "constant.language.flatppl", "constant inf"),
     ("dom = reals", "reals", "constant.other.set.flatppl", "predefined-set reals"),
     ("y = v[all]", "all", "keyword.other.selector.flatppl", "selector all"),

@@ -44,6 +44,7 @@ assert '<span class="im">reduce</span>' 'higher-order reduce -> im'
 assert '<span class="ex">interval</span>' 'set-constructor interval -> ex'
 # Task 6
 assert '<span class="fu">record</span>' 'builtin record -> fu'
+assert '<span class="fu">invlogit</span>' 'builtin dot-call invlogit.(…) -> fu'
 assert '<span class="cn">inf</span>' 'constant inf -> cn'
 assert '<span class="vs">reals</span>' 'predefined-set reals -> vs'
 assert '<span class="va">self</span>' 'reserved self -> va'

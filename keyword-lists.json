@@ -57,7 +57,7 @@
     {
       "kate_list": "builtins",
       "tm_key": "builtin-function",
-      "tm_suffix": "(?=\\s*\\()",
+      "tm_suffix": "(?=\\s*\\.?\\()",
       "ts_scope": "function.builtin",
       "words": [
         "identity", "vector", "array", "fill", "zeros", "ones", "eye", "onehot",

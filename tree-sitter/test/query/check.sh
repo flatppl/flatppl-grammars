@@ -75,6 +75,9 @@ check_scope 5:12 "resonance_breitwigner("         function.call
 check_scope 6:29 "hepphys.CrystalBall("            variable.member
 check_scope 7:19 "CrystalBall("                    function.call
 check_scope 0:11 "record(sum = ...)"              variable.parameter
+# §05 dot-call `f.(...)` is a call: its callee takes the call scopes.
+check_scope 8:16 "f.("                            function.call
+check_scope 9:19 "exp.("                          function.builtin
 
 [ "$fail" -eq 0 ] && echo "ok: member reads captured as @variable.member, builtin calls as @function.builtin"
 exit "$fail"
