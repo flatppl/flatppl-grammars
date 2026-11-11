@@ -60,28 +60,71 @@ x % trailing doc
   (doc_line))
 
 ==================
-Semicolon terminates line comment
+Semicolon inside a line comment is comment text
 ==================
 
-# a; b
+# one; two
 
 ---
 
 (module
-  (line_comment)
-  (identifier))
+  (line_comment))
 
 ==================
-Semicolon terminates doc line
+Semicolon inside a trailing line comment is comment text
 ==================
 
-% a; b
+a = 1.0  # one; b = 2.0
 
 ---
 
 (module
-  (doc_line)
-  (identifier))
+  (binding
+    (identifier)
+    (float))
+  (line_comment))
+
+==================
+Semicolon inside a doc line is doc text
+==================
+
+% doc; text
+
+---
+
+(module
+  (doc_line))
+
+==================
+Semicolon inside a trailing doc line is doc text
+==================
+
+sigma = 1  % Prior std.; mu = 0
+
+---
+
+(module
+  (binding
+    (identifier)
+    (integer))
+  (doc_line))
+
+==================
+Semicolon inside a block comment is comment text
+==================
+
+###
+c = 1; d = 2
+###
+x = 1
+
+---
+
+(module
+  (block_comment)
+  (binding
+    (identifier)
+    (integer)))
 
 ==================
 Inline triple-hash after statement is not a block fence

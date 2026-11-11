@@ -151,10 +151,14 @@ assertScope('n = 1.5e-3', '1.5e-3', 'number', 'scientific `1.5e-3`');
 // Underscore digit separators.
 assertScope('n = 1_000', '1_000', 'number', 'separator `1_000`');
 assertScope('n = 0xFF_FF', '0xFF_FF', 'number', 'hex separator `0xFF_FF`');
-// Line comment terminates at `;` (guards the `(?=[\n;])` end): the `=` after
-// the `;` must escape the comment and scope as operator, not stay `comment`.
-assertScope('# c ; x = 1', '=', 'operator', 'line comment ends at `;` (`=` after escapes)');
-assertScope('# c ; x = 1', '1', 'number', 'line comment ends at `;` (`1` after escapes)');
+// A line comment and a doc line run to the end of the line: a `;` inside
+// one is comment text (spec §05), so nothing after it scopes as code.
+assertScope('a = 1.0  # one; b = 2.0', '# one; b = 2.0', 'comment', 'trailing comment runs through `;`');
+refuteScope('a = 1.0  # one; b = 2.0', '2.0', 'number', 'number after `;` in a comment stays comment');
+assertScope('# one; two', '# one; two', 'comment', 'comment line runs through `;`');
+assertScope('# a full-line comment', '# a full-line comment', 'comment', 'full-line comment');
+assertScope('sigma = 1  % Prior std.; mu = 0', '% Prior std.; mu = 0', 'comment', 'doc line runs through `;`');
+assertScope('%md *Prior*; x = 1', '%md *Prior*; x = 1', 'comment', 'tagged doc line runs through `;`');
 
 // ── Members / placeholders ──────────────────────────────────────────────────
 assertScope('r.field', '.field', 'property', 'field member → property');

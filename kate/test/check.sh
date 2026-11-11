@@ -28,6 +28,10 @@ assert '<span class="dt">Normal</span>' 'distribution kernel Normal -> dt'
 # Task 2
 assert '<span class="co">' 'plain comment -> co'
 assert '<span class="do">' 'doc comment -> do'
+# A line comment and a doc line run to the end of the line, `;` included (§05).
+assert '<span class="co"># one; b = 2.0</span>' 'trailing comment runs through ;'
+assert '<span class="co"># one; two</span>' 'comment line runs through ;'
+assert '<span class="do">% Prior std.; mu = 0</span>' 'doc line runs through ;'
 # Task 3
 assert '<span class="st">' 'string -> st'
 assert '<span class="sc">' 'valid escape -> sc'

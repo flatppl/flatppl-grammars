@@ -81,7 +81,28 @@ async function check(hostScope, lines, desc, expectEmbedded = true) {
   return ok;
 }
 
+// Inside an embedded block, `Normal` after a `;` in a line comment is comment
+// text (spec §05): embedded, scoped as a comment, not as a kernel.
+async function checkCommentedKernel(hostScope, lines, desc) {
+  const grammar = await registry.loadGrammar(hostScope);
+  let stack = vsctm.INITIAL;
+  let hit = null;
+  for (const line of lines) {
+    const r = grammar.tokenizeLine(line, stack);
+    stack = r.ruleStack;
+    for (const t of r.tokens) {
+      if (line.slice(t.startIndex, t.endIndex).includes('Normal')) hit = t.scopes;
+    }
+  }
+  const ok = !!hit && hit.includes('meta.embedded.block.flatppl')
+    && hit.some((s) => s.startsWith('comment.line.number-sign.flatppl'))
+    && !hit.some((s) => s.startsWith('entity.name.type.kernel.flatppl'));
+  console.log(`${ok ? 'ok ' : 'FAIL'}: ${desc} -> Normal scopes: ${hit ? hit.join(' ') : '(not found)'}`);
+  return ok;
+}
+
 let bad = 0;
+bad += !(await checkCommentedKernel('text.html.markdown', ['```flatppl', 'a = 1.0  # one; alpha ~ Normal(0, 1)', '```'], 'markdown: `;` inside a comment is comment text'));
 bad += !(await check('source.python', ['model = flatppl(r"""', 'alpha ~ Normal(0, 1)', '""")'], 'python flatppl(r""" ... """)'));
 bad += !(await check('source.python', ['model = flatppl(', '    r"""', '    alpha ~ Normal(0, 1)', '""", context=context)'], 'python multiline source argument'));
 bad += !(await check('source.python', ['model = flatppl(', '    # source follows', "    r'''", '# """ does not close single quotes', 'alpha ~ Normal(0, 1)', "''')"], 'python comment before single-quoted source'));

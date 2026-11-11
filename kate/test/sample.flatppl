@@ -28,3 +28,6 @@ hole = fn(_ -> 1)
 cmp = (a <= b) && (c != d)
 sel = v[all, only, :, !]
 dotcall = invlogit.(eta)
+semi1 = 1.0  # one; b = 2.0
+# one; two
+semi2 = 1  % Prior std.; mu = 0

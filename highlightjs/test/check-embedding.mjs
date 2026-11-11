@@ -51,6 +51,25 @@ function checkNoDispatch(hostName, embedMode, lines, desc) {
   }
 }
 
+// Inside a dispatched block, `Normal` after a `;` in a line comment is comment
+// text (spec §05): the block dispatches, and no kernel span appears.
+function checkCommentedKernel(hostName, embedMode, lines, desc) {
+  hljs.registerLanguage(hostName, () => ({ name: hostName, contains: [embedMode] }));
+  const html = hljs.highlight(lines.join('\n'), { language: hostName }).value;
+  const dispatched = /class="language-flatppl"/.test(html);
+  const kernel = /<span class="hljs-type">Normal<\/span>/.test(html);
+  const commented = /<span class="hljs-comment"># one; alpha ~ Normal\(0, 1\)<\/span>/.test(html);
+  if (dispatched && !kernel && commented) {
+    console.log(`ok: ${desc}`);
+  } else {
+    bad += 1;
+    console.error(`FAIL: ${desc}\n  dispatched=${dispatched} kernel=${kernel} commented=${commented}\n  got: ${html}`);
+  }
+}
+
+checkCommentedKernel('mdhost-semi', markdownEmbed(hljs),
+  ['```flatppl', 'a = 1.0  # one; alpha ~ Normal(0, 1)', '```'],
+  'markdown: `;` inside a comment is comment text');
 check('pyhost', pythonEmbed(hljs),
   ['model = flatppl(r"""', 'alpha ~ Normal(0, 1)', '""")'],
   'python flatppl(r""" ... """)');
