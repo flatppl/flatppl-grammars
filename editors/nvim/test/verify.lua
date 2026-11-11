@@ -2,10 +2,13 @@
 -- core highlighting + Python/Julia embedding injections (the flatppl-authored
 -- rules). Asserts query captures on the real parse trees — no rendering.
 --
--- Run:  nvim --headless -l editors/nvim/test/verify.lua
--- Prereqs (see ../README.md): the `flatppl` parser + queries installed in your
--- nvim, the `editors/nvim/queries/{python,julia}/injections.scm` in
--- ~/.config/nvim/after/queries/, and nvim-treesitter with python/julia parsers.
+-- Run:  bash editors/nvim/test/run.sh  (pixi `verify-nvim`). It compiles this
+-- checkout's grammar and passes it in FLATPPL_NVIM_PARSER, with the checkout's
+-- queries in FLATPPL_NVIM_QUERIES, so the check tests the grammar under change,
+-- not an installed copy. Without them, the installed `flatppl` parser and
+-- queries are used.
+-- Prereqs (see ../README.md): the `editors/nvim/queries/{python,julia}/injections.scm`
+-- in ~/.config/nvim/after/queries/, and nvim-treesitter with python/julia parsers.
 --
 -- NOT in the repo's pixi CI (no Neovim there). Markdown ` ```flatppl ` injection
 -- is nvim-treesitter's generic by-language machinery (not a flatppl rule); its
@@ -27,7 +30,19 @@ local function ok(cond, msg)
   if not cond then fail = fail + 1 end
 end
 
+local checkout_parser = os.getenv("FLATPPL_NVIM_PARSER")
+local checkout_queries = os.getenv("FLATPPL_NVIM_QUERIES")
+if checkout_queries then
+  local f = assert(io.open(checkout_queries .. "/highlights.scm", "r"))
+  vim.treesitter.query.set("flatppl", "highlights", f:read("*a"))
+  f:close()
+end
+
 local function add_lang(lang)
+  if lang == "flatppl" and checkout_parser then
+    vim.treesitter.language.add(lang, { path = checkout_parser })
+    return
+  end
   local hits = vim.fn.globpath(vim.o.rtp, "parser/" .. lang .. ".so", false, true)
   assert(#hits > 0, "no parser .so on rtp for " .. lang .. " (install it first)")
   vim.treesitter.language.add(lang, { path = hits[1] })
@@ -61,6 +76,13 @@ do
   local src, p = setup_str("alpha ~ Normal(0, 1)\n# a comment", "flatppl")
   ok(flatppl_caps(src, p, "Normal")["type"], "flatppl core: Normal -> @type")
   ok(next(flatppl_caps(src, p, "0")) ~= nil, "flatppl core: 0 -> a numeric capture")
+end
+
+-- §05: a `;` inside a line comment is comment text, so the comment node spans
+-- the rest of the line.
+do
+  local src, p = setup_str("a = 1.0  # one; b = 2.0", "flatppl")
+  ok(flatppl_caps(src, p, "# one; b = 2.0")["comment"], "flatppl core: `# one; b = 2.0` -> @comment")
 end
 
 -- 2/3. flatppl-specific injection rules (python/julia)

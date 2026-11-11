@@ -129,13 +129,14 @@ export default function flatppl(hljs) {
   };
 
   // Comments (spec §05): whole-line `###` block fence and `%%%[md|typ]` doc
-  // block; line comment `#…` and doc line `%[md|typ]…`, both ending at newline
-  // OR `;`. Fences must precede the single-char forms so `###`/`%%%` are not
-  // swallowed by the `#`/`%` line rules (ties resolve to the first-listed mode).
+  // block; line comment `#…` and doc line `%[md|typ]…`, both running to the end
+  // of the line, `;` included. Fences must precede the single-char forms so
+  // `###`/`%%%` are not swallowed by the `#`/`%` line rules (ties resolve to the
+  // first-listed mode).
   const BLOCK_COMMENT = { scope: 'comment', begin: /^[ \t]*###[ \t]*$/, end: /^[ \t]*###[ \t]*$/ };
   const DOC_BLOCK = { scope: 'comment', begin: /^[ \t]*%%%(?:md|typ)?[ \t]*$/, end: /^[ \t]*%%%[ \t]*$/ };
-  const LINE_COMMENT = { scope: 'comment', begin: /#/, end: /(?=[\n;])/ };
-  const DOC_LINE = { scope: 'comment', begin: /%(?:md|typ)?/, end: /(?=[\n;])/ };
+  const LINE_COMMENT = { scope: 'comment', begin: /#/, end: /$/ };
+  const DOC_LINE = { scope: 'comment', begin: /%(?:md|typ)?/, end: /$/ };
 
   return {
     name: 'FlatPPL',

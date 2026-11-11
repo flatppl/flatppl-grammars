@@ -19,7 +19,7 @@
     (ok (treesit-ready-p 'flatppl) "flatppl grammar lib loads (treesit-ready-p)")
 
     (with-temp-buffer
-      (insert "alpha ~ Normal(0, 1)\n# a comment\n")
+      (insert "alpha ~ Normal(0, 1)\n# a comment\na = 1.0  # one; b = 2.0\n")
       ;; flatppl-ts-mode -> treesit-major-mode-setup COMPILES the font-lock
       ;; queries; an invalid node name would signal here and fail the batch.
       (flatppl-ts-mode)
@@ -37,7 +37,11 @@
           "0 -> font-lock-number-face")
       (goto-char (point-min)) (search-forward "# a comment")
       (ok (has-face (match-beginning 0) 'font-lock-comment-face)
-          "# a comment -> font-lock-comment-face")))
+          "# a comment -> font-lock-comment-face")
+      ;; §05: a `;` inside a line comment is comment text.
+      (goto-char (point-min)) (search-forward "b = 2.0")
+      (ok (has-face (match-beginning 0) 'font-lock-comment-face)
+          "b = 2.0 after `;` in a comment -> font-lock-comment-face")))
 
   (if (> fail 0)
       (progn (princ (format "\n%d emacs check(s) failed\n" fail)) (kill-emacs 1))

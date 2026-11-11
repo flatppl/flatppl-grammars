@@ -79,8 +79,8 @@ static inline bool at_tag_end(TSLexer *lexer) {
 }
 
 // Scan the body of a single-line doc-comment; the leading `%` is consumed.
-// §05 "Documentation": the content "runs to end of line or to the next `;`,
-// whichever comes first".
+// §05 "Documentation": the content runs to the end of its line, as a line
+// comment does, so a `;` inside it is doc text.
 //
 // Returns false when the tag position holds an unrecognized tag — §05: "An
 // unrecognized tag is a parse error." Declining leaves the `%` unlexable (no
@@ -102,8 +102,7 @@ static bool scan_doc_line(TSLexer *lexer, bool check_tag) {
                  (len == 3 && tag[0] == 't' && tag[1] == 'y' && tag[2] == 'p');
     if (!known || !at_tag_end(lexer)) return false;
   }
-  while (!lexer->eof(lexer) && !is_newline(lexer->lookahead) &&
-         lexer->lookahead != ';') {
+  while (!lexer->eof(lexer) && !is_newline(lexer->lookahead)) {
     advance(lexer);
   }
   lexer->mark_end(lexer);

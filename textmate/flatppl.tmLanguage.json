@@ -35,7 +35,7 @@
           "name": "comment.block.documentation.flatppl markup.italic"
         },
         {
-          "comment": "Doc-comment line: % with optional markup tag (md, typ) immediately after, content to end of line (engine tokenizer also terminates on ; for transport safety). See the block-form note above re: the trailing `markup.italic` scope.",
+          "comment": "Doc-comment line: % with optional markup tag (md, typ) immediately after, content to end of line, ; included (spec §05). See the block-form note above re: the trailing `markup.italic` scope.",
           "match": "%(md|typ)?.*$",
           "name": "comment.line.documentation.flatppl markup.italic"
         },
@@ -46,7 +46,7 @@
           "name": "comment.block.number-sign.flatppl"
         },
         {
-          "comment": "Plain line comment: # to end of line (or to ; — handled by the engine tokenizer; the TextMate grammar highlights to EOL for simplicity).",
+          "comment": "Plain line comment: # to end of line, ; included (spec §05).",
           "match": "#.*$",
           "name": "comment.line.number-sign.flatppl"
         }

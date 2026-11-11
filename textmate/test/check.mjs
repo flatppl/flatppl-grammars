@@ -104,6 +104,11 @@ assertScope('w = all', 'all', 'keyword.other.selector', 'selector all');
 // ── Comments / strings / numbers ────────────────────────────────────────────
 assertAnyScope('# a comment', 'comment.line.number-sign', 'line comment');
 assertAnyScope('% a doc comment', 'comment.line.documentation', 'doc comment');
+// §05: a line comment and a doc line run to the end of the line, `;` included.
+assertScope('a = 1.0  # one; b = 2.0', '# one; b = 2.0', 'comment.line.number-sign', 'trailing comment runs through ;');
+assertScope('# one; two', '# one; two', 'comment.line.number-sign', 'comment line runs through ;');
+assertScope('sigma = 1  % Prior std.; mu = 0', '% Prior std.; mu = 0', 'comment.line.documentation', 'doc line runs through ;');
+assertScope('%md *Prior*; x = 1', '%md *Prior*; x = 1', 'comment.line.documentation', 'tagged doc line runs through ;');
 assertAnyScope('"a\\nb"', 'string.quoted.double', 'string');
 assertAnyScope('"a\\nb"', 'constant.character.escape', 'valid escape');
 assertAnyScope('"a\\zb"', 'invalid.illegal.escape', 'invalid escape');

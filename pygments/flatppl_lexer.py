@@ -65,9 +65,10 @@ class FlatPPLLexer(RegexLexer):
             # Fenced block comment / doc-block (whole-line fences, spec §05).
             (r"^[ \t]*###[ \t]*$", Comment.Multiline, "block_comment"),
             (r"^[ \t]*%%%(?:md|typ)?[ \t]*$", Comment.Special, "doc_block"),
-            # Line comments terminate at newline or ';' (spec §05).
-            (r"#[^\n;]*", Comment.Single),
-            (r"%(?:md|typ)?[^\n;]*", Comment.Special),
+            # Line comments run to the end of the line; a ';' inside one is
+            # comment text (spec §05).
+            (r"#[^\r\n]*", Comment.Single),
+            (r"%(?:md|typ)?[^\r\n]*", Comment.Special),
             # Strings.
             (r'"', String, "string"),
             # Numbers.

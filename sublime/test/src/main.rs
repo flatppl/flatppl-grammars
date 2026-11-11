@@ -37,6 +37,10 @@ const CASES: &[(&str, &str, &str, &str)] = &[
     // ── comments ──
     ("# a line comment", "#", "comment.line.number-sign.flatppl", "line comment"),
     ("% a doc comment", "%", "comment.line.documentation.flatppl", "doc-comment line"),
+    // A line comment and a doc line run to the end of the line, `;` included (§05).
+    ("a = 1.0  # one; b = 2.0", "2.0", "comment.line.number-sign.flatppl", "trailing comment runs through ;"),
+    ("# one; two", "two", "comment.line.number-sign.flatppl", "comment line runs through ;"),
+    ("sigma = 1  % Prior std.; mu = 0", "mu", "comment.line.documentation.flatppl", "doc line runs through ;"),
     // ── strings + escapes ──
     ("s = \"hello\"", "hello", "string.quoted.double.flatppl", "string body"),
     ("s = \"a\\nb\"", "\\n", "constant.character.escape.flatppl", "valid escape"),
