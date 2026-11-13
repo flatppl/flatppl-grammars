@@ -14,7 +14,7 @@
       "tm_suffix": "",
       "ts_scope": "type",
       "words": ["Uniform", "Normal", "GeneralizedNormal", "Cauchy", "StudentT",
-                "Logistic", "LogNormal", "Exponential", "Gamma", "Weibull",
+                "Logistic", "LogNormal", "Exponential", "Gamma", "Weibull", "Rayleigh",
                 "Pareto", "InverseGamma", "Beta", "ChiSquared", "VonMises", "Laplace",
                 "Bernoulli", "Categorical", "Categorical0", "Binomial", "Poisson",
                 "Geometric", "NegativeBinomial", "NegativeBinomial2", "MvNormal",

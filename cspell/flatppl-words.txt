@@ -242,6 +242,7 @@ qr
 quadform
 quantile
 rand
+Rayleigh
 real
 reals
 record
