@@ -102,6 +102,8 @@ EXCLUDED_MODULE_MEMBERS = {
     # GLM distributions are module-qualified too.
     "BernoulliLogitGLM", "BinomialLogitGLM", "CategoricalLogitGLM",
     "NormalGLM", "PoissonLogGLM",
+    "NegativeBinomial2LogGLM", "StudentTGLM", "GammaLogGLM",
+    "OrderedLogitGLM", "BetaLogitGLM",
     # Spline basis and penalty functions are module-qualified.
     "thinplate_basis", "thinplate_penalty",
 }
